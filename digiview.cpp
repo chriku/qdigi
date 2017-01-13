@@ -346,6 +346,8 @@ void DigiView::save(QString where)
 
 void DigiView::load(QString where)
 {
+    lines.clear();
+    blocks.clear();
     QFile file(where);
     file.open(QFile::ReadOnly);
     QJsonObject root=QJsonDocument::fromJson(file.readAll()).object();

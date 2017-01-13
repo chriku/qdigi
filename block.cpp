@@ -1,6 +1,8 @@
 #include "block.h"
+#include <QTime>
 #include <QFile>
 #include "settings.h"
+#include "painter.h"
 #include <QPixmap>
 #include <QPainter>
 #include <QDebug>
@@ -75,8 +77,8 @@ QPixmap Block::drawBlock()
 {
     QPixmap ret((width*Settings::final()->gridSize())+Settings::final()->gridSize()+1,(height*Settings::final()->gridSize())+1+Settings::final()->gridSize());
     ret.fill(Qt::transparent);
-    QPainter painter(&ret);
-    painter.setPen(Qt::black);
+    QPainter qpainter(&ret);
+    qpainter.setPen(Qt::black);
     for(int i=0;i<pins.length();i++)
     {
         QPen pen(Qt::black);
@@ -90,60 +92,30 @@ QPixmap Block::drawBlock()
                 pen.setColor(Qt::red);
         }
         pen.setWidth(3);
-        painter.setPen(pen);
+        qpainter.setPen(pen);
         QPoint dir(Settings::final()->gridSize()/2.0,0);
         if(pins[i].direction==2)
             dir=QPoint(-Settings::final()->gridSize()/2.0,0);
         if(pins[i].type==true)
         {
             double rad=abs(dir.x())/4.0;
-            painter.drawEllipse((pins[i].point*Settings::final()->gridSize())+((dir/4.0)*3.0),rad,rad);
+            qpainter.drawEllipse((QPointF(pins[i].point*Settings::final()->gridSize()))+((dir/4.0)*3.0),rad,rad);
             dir/=2.0;
         }
-        painter.drawLine(pins[i].point*Settings::final()->gridSize(),(pins[i].point*Settings::final()->gridSize())+dir);
+        qpainter.drawLine(pins[i].point*Settings::final()->gridSize(),(pins[i].point*Settings::final()->gridSize())+dir);
         //qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
-    painter.setPen(Qt::black);
+    qpainter.setPen(Qt::black);
     pushGlobal(L);
+    Painter painter(&qpainter);
+    lua_pushinteger(L,QTime::currentTime().msecsSinceStartOfDay());
+    lua_setglobal(L,"time");
     lua_getglobal(L,"paintEvent");
-    if(lua_pcall(L,0,1,0)==LUA_OK)
+    qpainter.setRenderHint(QPainter::Antialiasing,true);
+    painter.pushMe(L);
+    if(lua_pcall(L,1,0,0)==LUA_OK)
     {
-        int table=lua_gettop(L);
-        lua_pushnil(L);
-        while(lua_next(L,table))
-        {
-            int sub=lua_gettop(L);
-            lua_pushnil(L);
-            QPolygonF spline;
-            bool cyclic=false;
-            int cnt=0;
-            while(lua_next(L,sub))
-            {
-                if(lua_type(L,-1)==LUA_TTABLE)
-                {
-                    lua_geti(L,-1,1);
-                    double x=lua_tonumber(L,-1);
-                    lua_pop(L, 1);
-                    lua_geti(L,-1,2);
-                    double y=lua_tonumber(L,-1);
-                    lua_pop(L, 1);
-                    QPointF point(x*Settings::final()->gridSize(),y*Settings::final()->gridSize());
-                    spline.append(point);
-                }
-                else if((lua_type(L,-1)==LUA_TBOOLEAN)&&(cnt==0))
-                {
-                    cyclic=lua_toboolean(L,-1);
-                }
-                cnt++;
-                lua_pop(L, 1);
-            }
-            lua_pop(L, 1);
-            QPen pen(Qt::black);
-            pen.setWidth(3);
-            painter.setPen(pen);
-            drawSpline(&painter,spline,cyclic);
-        }
-        lua_pop(L, 1);
+        qpainter.setRenderHint(QPainter::Antialiasing,false);
     }
     else
         qDebug()<<"ERR3"<<lua_tostring(L,-1);
@@ -238,67 +210,7 @@ void Block::pushGlobal(lua_State *L)
     lua_setglobal(L,"pins");
 }
 
-void Block::drawSpline(QPainter *painter, QPolygonF spline,bool cyclic)
-{
-    if(spline.length()==2)
-        painter->drawLine(spline[0],spline[1]);
-    else
-    {
-        QList<QPointF> m;
-        if(!cyclic)
-        {
-        m.append(QPointF(0,0));
-        for(int i=1;i<spline.length()-1;i++)
-        {
-            QPointF pn=spline[i-1];
-            QPointF p0=spline[i];
-            QPointF pp=spline[i+1];
-            m.append(((p0-pn)/2.0)+((pp-p0)/2.0));
-        }
-        m.append(QPointF(0,0));
-        }
-        else
-        {
-            for(int i=0;i<spline.length();i++)
-            {
-                QPointF pn=spline[(i-1+spline.length())%spline.length()];
-                QPointF p0=spline[i];
-                QPointF pp=spline[(i+1)%spline.length()];
-                m.append(((p0-pn)/2.0)+((pp-p0)/2.0));
-            }
-            m.append(m.first());
-            spline.append(spline.first());
-            spline.append(spline.first());
-            spline.append(spline.first());
-            spline.append(spline.first());
-        }
-        QPolygonF pnt;
-        for(double pos=0;pos<(m.length()-1);pos+=0.01)
-        {
-            double i2=pos;
-            double t=modf(pos,&i2);
-            int i=i2;
-            QPointF p0=spline[i];
-            QPointF p1=spline[i+1];
-            QPointF m0=m[i];
-            QPointF m1=m[i+1];
-            QPointF p=(((2*p0)-(2*p1)+m0+m1)*pow(t,3))+(((-3*p0)+(3*p1)-(2*m0)-m1)*pow(t,2))+(m0*t)+p0;
-            pnt.append(p);
-        }
-        painter->drawPolyline(pnt);
-    }
-    /*for(int i=1;i<spline.length();i++)
-        painter->drawLine(spline[i-1],spline[i]);*/
-    /*double len=0;
-    double lenStep=0.1;
-    for(double i=0;i<1;i+=lenStep)
-        len+=QLineF(pointAt(spline,i,cyclic),pointAt(spline,i+lenStep,cyclic)).length();
-    double step=1.0/len;
-    for(double i=0;i<1;i+=step)
-    {
-        painter->drawLine(pointAt(spline,i,cyclic),pointAt(spline,i+step,cyclic));
-    }*/
-}
+
 
 QPointF Block::pointAt(QPolygonF spline, double pos,bool cyclic)
 {

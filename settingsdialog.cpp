@@ -9,6 +9,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->gridType->setCurrentIndex(Settings::final()->gridType());
     ui->gridSize->setValue(Settings::final()->gridSize());
+    ui->defaultSimu->setChecked(Settings::final()->defaultSimu());
 }
 
 SettingsDialog::~SettingsDialog()
@@ -24,4 +25,9 @@ void SettingsDialog::on_gridSize_valueChanged(int arg1)
 void SettingsDialog::on_gridType_currentIndexChanged(int index)
 {
     Settings::final()->setGridType((Settings::GRID)index);
+}
+
+void SettingsDialog::on_defaultSimu_clicked(bool checked)
+{
+    Settings().final()->setDefaultSimu(checked);
 }

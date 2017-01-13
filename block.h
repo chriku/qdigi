@@ -14,6 +14,10 @@ struct pin_t {
     int direction;
     bool state;
     bool type;
+    pin_t()
+    {
+        state=false;
+    }
 };
 
 class Block : public QObject
@@ -25,7 +29,6 @@ public:
     lua_State*L;
     QList<pin_t> pins;
     void pushGlobal(lua_State*L);
-    void drawSpline(QPainter*painter, QPolygonF spline, bool cyclic);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
 QPixmap drawBlock();
 QString name;

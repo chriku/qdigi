@@ -20,6 +20,8 @@ private slots:
 
     void on_gridType_currentIndexChanged(int index);
 
+    void on_defaultSimu_clicked(bool checked);
+
 private:
     Ui::SettingsDialog *ui;
 };

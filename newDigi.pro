@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -54,7 +54,9 @@ SOURCES += main.cpp\
     dragview.cpp \
     blocklist.cpp \
     settings.cpp \
-    settingsdialog.cpp
+    settingsdialog.cpp \
+    updater.cpp \
+    painter.cpp
 
 HEADERS  += mainwindow.h \
     digiview.h \
@@ -87,7 +89,11 @@ HEADERS  += mainwindow.h \
     dragview.h \
     blocklist.h \
     settings.h \
-    settingsdialog.h
+    settingsdialog.h \
+    updater.h \
+    painter.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui
+
+RESOURCES += images.qrc

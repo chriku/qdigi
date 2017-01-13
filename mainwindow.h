@@ -20,6 +20,14 @@ private slots:
 
     void on_actionEinstellungen_triggered();
 
+    void on_actionSpeichern_Unter_triggered();
+
+    void on_action_ffnen_triggered();
+
+    void on_simulation_clicked();
+
+    void on_actionNeu_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

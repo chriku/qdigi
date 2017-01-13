@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QMenu>
 #include "settings.h"
 #include "digiview.h"
@@ -20,7 +21,7 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
     BlockList list;
     setAcceptDrops(true);
     connect(&timer,SIGNAL(timeout()),this,SLOT(timeout()));
-    timer.start(1000);
+    timer.setInterval(10);
     setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
@@ -93,7 +94,7 @@ void DigiView::dragEnterEvent(QDragEnterEvent *event)
             /* do something with the data */
         }
         dragGate=gate;
-        dragPos=(event->posF()/Settings::final()->gridSize()).toPoint();
+        dragPos=toGrid(event->pos())-QPoint(1,1);
         event->acceptProposedAction();
         //qDebug()<<event;
         update();
@@ -102,7 +103,7 @@ void DigiView::dragEnterEvent(QDragEnterEvent *event)
 
 void DigiView::dragMoveEvent(QDragMoveEvent *event)
 {
-    dragPos=(event->posF()/Settings::final()->gridSize()).toPoint();
+    dragPos=toGrid(event->pos())-QPoint(1,1);
     update();
 }
 
@@ -114,7 +115,7 @@ void DigiView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void DigiView::dropEvent(QDropEvent *event)
 {
-    dragPos=(event->posF()/Settings::final()->gridSize()).toPoint();
+    dragPos=toGrid(event->pos())-QPoint(1,1);
     block_t blk;
     blk.block=BlockList::newBlock(dragGate);
     blk.pos=dragPos.toPoint();
@@ -299,6 +300,13 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
 
 void DigiView::save(QString where)
 {
+    if(where.isEmpty())
+        where=fileName;
+    if(where.isEmpty())
+        where=QFileDialog::getSaveFileName(NULL,"Speichern unter...",QString(),"*.json");
+    if(where.isEmpty())
+        return;
+    fileName=where;
     QJsonObject root;
     QJsonArray l;
     for(int i=0;i<lines.length();i++)
@@ -333,6 +341,7 @@ void DigiView::save(QString where)
     file.open(QFile::WriteOnly|QFile::Truncate);
     file.write(QJsonDocument(root).toJson());
     file.close();
+    Settings::final()->setLastFile(fileName);
 }
 
 void DigiView::load(QString where)
@@ -378,6 +387,8 @@ void DigiView::load(QString where)
         c.insert("name",blocks[i].block->name);
         g.append(c);
     }
+    fileName=where;
+    Settings::final()->setLastFile(fileName);
     update();
     cleanUp();
 }
@@ -404,6 +415,7 @@ void DigiView::timeout()
                 done[i].append(false);
         }
     }
+    QMap<QPair<int,int>,bool> states;
     for(int i=0;i<blocks.length();i++)
         for(int j=0;j<blocks[i].block->pins.length();j++)
             if(blocks[i].block->pins[j].direction==2)
@@ -439,14 +451,14 @@ void DigiView::timeout()
                                 if(blocks[k].block->pins[l].direction==0)
                                 {
                                     done[k][l]=true;
-                                    blocks[k].block->pins[l].state=state;
+                                    states.insert(QPair<int,int>(k,l),state);
                                 }
                                 if(blocks[k].block->pins[l].direction==2)
                                     if(!((i==k)&&(j==l)))
-                                        {
-                                            ok=false;
-                                            bar->showMessage("Zwei Ausgänge",1000);
-                                        }
+                                    {
+                                        ok=false;
+                                        bar->showMessage("Zwei Ausgänge",1000);
+                                    }
                             }
                 }
             }
@@ -462,6 +474,14 @@ void DigiView::timeout()
         if(!roundOk)
             bar->showMessage("Offene Eingänge",1000);
     }
+    QList<QPair<int,int> > keys=states.keys();
+    for(int i=0;i<keys.length();i++)
+    {
+        int k=keys[i].first;
+        int l=keys[i].second;
+        bool state=states[keys[i]];
+        blocks[k].block->pins[l].state=state;
+    }
     if(!ok)
     {
         for(int i=0;i<blocks.length();i++)
@@ -476,8 +496,8 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
 {
     event->accept();
     int block=-1;
+    bool ok=false;
     QMenu menu;
-    menu.addAction("A");
     QPoint p=toGrid(event->pos());
     for(int i=0;i<blocks.length();i++)
         if((blocks[i].pos.x()<=p.x())&&((blocks[i].pos.x()+blocks[i].block->width)>=p.x()))
@@ -491,14 +511,28 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             qDebug()<<blocks[block].block->pins[i].point+blocks[block].pos<<p;
             if(blocks[block].block->pins[i].point+blocks[block].pos==p)
                 pin=i;
+            if(blocks[block].block->pins[i].direction==0)
+            if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(1,0)==p)
+                pin=i;
+            if(blocks[block].block->pins[i].direction==2)
+            if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(-1,0)==p)
+                pin=i;
         }
     }
     QAction* delBlockAct=NULL;
     QAction* changePinAct=NULL;
     if(block>=0)
+    {
         delBlockAct=menu.addAction("Delete");
+        ok=true;
+    }
     if(pin>=0)
+    {
         changePinAct=menu.addAction("Pin");
+        ok=true;
+    }
+    if(ok)
+    {
     QAction* act=menu.exec(event->globalPos());
     if(block>=0)
         if(act==delBlockAct)
@@ -510,6 +544,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         {
             blocks[block].block->pins[pin].type=!blocks[block].block->pins[pin].type;
         }
+    }
     update();
 }
 
@@ -556,6 +591,7 @@ bool DigiView::interLine(QLine l1, QLine l2)
             if((l2.x2()<=fmax(l1.x1(),l1.x2()))&&(l2.x2()>=fmin(l1.x1(),l1.x2())))
                 return true;
         }
+    return false;
 }
 
 bool DigiView::onLine(QLine line, QPoint point)

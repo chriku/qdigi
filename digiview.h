@@ -12,6 +12,11 @@ struct block_t {
 };
 
 struct line_t {
+    line_t()
+    {
+        state=false;
+    }
+
     QLine line;
     bool state;
 };
@@ -20,6 +25,7 @@ class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    QString fileName;
     void cleanUp();
     explicit DigiView(QWidget *parent = 0);
     QTimer timer;
@@ -37,7 +43,7 @@ public:
     QPoint startPoint;
     QPoint curPoint;
     QList<line_t> lines;
-    void save(QString where);
+    void save(QString where=QString());
     void load(QString where);
     QPoint toGrid(QPoint in);
     void contextMenuEvent(QContextMenuEvent *event);

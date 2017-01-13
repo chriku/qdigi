@@ -6,9 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
-    <height>347</height>
+    <width>885</width>
+    <height>605</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+   </font>
   </property>
   <property name="windowTitle">
    <string>NewDigi</string>
@@ -20,7 +25,14 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QCheckBox" name="simulation">
+      <property name="text">
+       <string>Simulation</string>
+      </property>
+     </widget>
+    </item>
     <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="sizePolicy">
@@ -166,15 +178,18 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>492</width>
-     <height>20</height>
+     <width>885</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDatei">
     <property name="title">
      <string>Datei</string>
     </property>
+    <addaction name="actionNeu"/>
     <addaction name="actionSpeichern"/>
+    <addaction name="actionSpeichern_Unter"/>
+    <addaction name="action_ffnen"/>
     <addaction name="separator"/>
     <addaction name="actionEinstellungen"/>
    </widget>
@@ -192,6 +207,30 @@
   <action name="actionEinstellungen">
    <property name="text">
     <string>Einstellungen...</string>
+   </property>
+  </action>
+  <action name="actionSpeichern_Unter">
+   <property name="text">
+    <string>Speichern Unter...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="action_ffnen">
+   <property name="text">
+    <string>Öffnen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionNeu">
+   <property name="text">
+    <string>Neu</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

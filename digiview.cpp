@@ -57,6 +57,8 @@ void DigiView::paintEvent(QPaintEvent* event)
             painter.drawPixmap(dragPos.x()*Settings::final()->gridSize(),dragPos.y()*Settings::final()->gridSize(),block->drawBlock());
         }
     }
+    for(int i=0;i<blocks.length();i++)
+        painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock());
     QPen line(Qt::black);
     line.setWidth(5);
     painter.setPen(line);
@@ -74,8 +76,6 @@ void DigiView::paintEvent(QPaintEvent* event)
         painter.drawEllipse(lines[i].line.p1()*Settings::final()->gridSize(),3,3);
         painter.drawEllipse(lines[i].line.p2()*Settings::final()->gridSize(),3,3);
     }
-    for(int i=0;i<blocks.length();i++)
-        painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock());
 }
 void DigiView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -376,7 +376,8 @@ void DigiView::load(QString where)
         for(int j=0;j<pins.size();j++)
         {
             QJsonObject pin=pins[j].toObject();
-            c.block->pins[j].type=pin["type"].toBool();
+            if(c.block->pins.length()>j)
+                c.block->pins[j].type=pin["type"].toBool();
         }
         if(c.block!=0)
             blocks.append(c);
@@ -464,6 +465,7 @@ void DigiView::timeout()
                             }
                 }
             }
+    QPair<int,int> offen;
     for(int i=0;i<done.length();i++)
     {
         bool roundOk=true;
@@ -472,6 +474,7 @@ void DigiView::timeout()
             {
                 ok=false;
                 roundOk=false;
+                offen=QPair<int,int>(i,j);
             }
         if(!roundOk)
             bar->showMessage("Offene Eingänge",1000);
@@ -490,6 +493,9 @@ void DigiView::timeout()
             for(int j=0;j<blocks[i].block->pins.length();j++)
                 if(blocks[i].block->pins[j].direction==0)
                     blocks[i].block->pins[j].state=false;
+        for(int i=0;i<lines.length();i++)
+            lines[i].state=false;
+        blocks[offen.first].block->pins[offen.second].state=true;
     }
     update();
 }
@@ -514,11 +520,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if(blocks[block].block->pins[i].point+blocks[block].pos==p)
                 pin=i;
             if(blocks[block].block->pins[i].direction==0)
-            if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(1,0)==p)
-                pin=i;
+                if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(1,0)==p)
+                    pin=i;
             if(blocks[block].block->pins[i].direction==2)
-            if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(-1,0)==p)
-                pin=i;
+                if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(-1,0)==p)
+                    pin=i;
         }
     }
     QAction* delBlockAct=NULL;
@@ -535,17 +541,17 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     }
     if(ok)
     {
-    QAction* act=menu.exec(event->globalPos());
-    if(block>=0)
-        if(act==delBlockAct)
-        {
-            blocks.removeAt(block);
-        }
-    if(pin>=0)
-        if(act==changePinAct)
-        {
-            blocks[block].block->pins[pin].type=!blocks[block].block->pins[pin].type;
-        }
+        QAction* act=menu.exec(event->globalPos());
+        if(block>=0)
+            if(act==delBlockAct)
+            {
+                blocks.removeAt(block);
+            }
+        if(pin>=0)
+            if(act==changePinAct)
+            {
+                blocks[block].block->pins[pin].type=!blocks[block].block->pins[pin].type;
+            }
     }
     update();
 }
@@ -611,12 +617,15 @@ void DigiView::cleanUp()
 QList<QPoint> DigiView::allIntersect(QLine line)
 {
     QList<QPoint> ret;
+    ret.append(line.p1());
+    ret.append(line.p2());
     for(int i=0;i<lines.length();i++)
     {
-        if(onLine(lines[i].line,line.p1()))
-            ret.append(line.p1());
-        if(onLine(lines[i].line,line.p2()))
-            ret.append(line.p2());
+        if(onLine(lines[i].line,line.p1())||onLine(lines[i].line,line.p2()))
+        {
+            ret.append(lines[i].line.p1());
+            ret.append(lines[i].line.p2());
+        }
     }
     for(int i=0;i<lines.length();i++)
     {

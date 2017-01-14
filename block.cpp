@@ -79,6 +79,20 @@ QPixmap Block::drawBlock()
     ret.fill(Qt::transparent);
     QPainter qpainter(&ret);
     qpainter.setPen(Qt::black);
+    pushGlobal(L);
+    Painter painter(&qpainter);
+    lua_pushinteger(L,QTime::currentTime().msecsSinceStartOfDay());
+    lua_setglobal(L,"time");
+    lua_getglobal(L,"paintEvent");
+    qpainter.setRenderHint(QPainter::Antialiasing,true);
+    painter.pushMe(L);
+    if(lua_pcall(L,1,0,0)==LUA_OK)
+    {
+        qpainter.setRenderHint(QPainter::Antialiasing,false);
+    }
+    else
+        qDebug()<<"ERR3"<<lua_tostring(L,-1);
+    qpainter.setPen(Qt::black);
     for(int i=0;i<pins.length();i++)
     {
         QPen pen(Qt::black);
@@ -105,20 +119,6 @@ QPixmap Block::drawBlock()
         qpainter.drawLine(pins[i].point*Settings::final()->gridSize(),(pins[i].point*Settings::final()->gridSize())+dir);
         //qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
-    qpainter.setPen(Qt::black);
-    pushGlobal(L);
-    Painter painter(&qpainter);
-    lua_pushinteger(L,QTime::currentTime().msecsSinceStartOfDay());
-    lua_setglobal(L,"time");
-    lua_getglobal(L,"paintEvent");
-    qpainter.setRenderHint(QPainter::Antialiasing,true);
-    painter.pushMe(L);
-    if(lua_pcall(L,1,0,0)==LUA_OK)
-    {
-        qpainter.setRenderHint(QPainter::Antialiasing,false);
-    }
-    else
-        qDebug()<<"ERR3"<<lua_tostring(L,-1);
     return ret;
 }
 

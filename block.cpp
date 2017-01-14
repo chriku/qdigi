@@ -6,6 +6,9 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QDebug>
+extern "C" {
+#include "luasocket.h"
+}
 
 Block::Block(QObject *parent) : QObject(parent)
 {
@@ -19,6 +22,8 @@ void Block::load(QString fileName)
     file.open(QFile::ReadOnly);
     QString data=file.readAll();
     luaL_openlibs(L);
+    luaopen_socket_core(L);
+    lua_setglobal(L,"socket");
     if(luaL_loadstring(L,data.toUtf8().data())==LUA_OK)
     {
         if(lua_pcall(L,0,1,0)==LUA_OK)

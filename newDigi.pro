@@ -56,7 +56,26 @@ SOURCES += main.cpp\
     settings.cpp \
     settingsdialog.cpp \
     updater.cpp \
-    painter.cpp
+    painter.cpp \
+    wsocket.c \
+    usocket.c \
+    unixstream.c \
+    unixdgram.c \
+    unix.c \
+    udp.c \
+    timeout.c \
+    tcp.c \
+    serial.c \
+    select.c \
+    options.c \
+    mime.c \
+    luasocket.c \
+    io.c \
+    inet.c \
+    except.c \
+    compat.c \
+    buffer.c \
+    auxiliar.c
 
 HEADERS  += mainwindow.h \
     digiview.h \
@@ -91,9 +110,31 @@ HEADERS  += mainwindow.h \
     settings.h \
     settingsdialog.h \
     updater.h \
-    painter.h
+    painter.h \
+    wsocket.h \
+    usocket.h \
+    unixstream.h \
+    unixdgram.h \
+    unix.h \
+    udp.h \
+    timeout.h \
+    tcp.h \
+    socket.h \
+    select.h \
+    pierror.h \
+    options.h \
+    mime.h \
+    luasocket.h \
+    io.h \
+    inet.h \
+    except.h \
+    compat.h \
+    buffer.h \
+    auxiliar.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui
 
 RESOURCES += images.qrc
+DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"
+win32:DEFINES  += _WIN32

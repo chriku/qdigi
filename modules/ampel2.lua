@@ -62,6 +62,11 @@ function paintEvent(painter)
 
   drawAmpelFus(painter,5.5,5,3)
   drawAmpelFus(painter,5.5,2,3)
+
+  painter:setPen(nil)
+  painter:setBrush("white")
+  painter:drawRect(4.95,2.5,0.05,2)
+  painter:drawRect(6,2.5,0.05,2)
 end
 function getState(pin)
   if (num>>(pin-1))%2==1 then

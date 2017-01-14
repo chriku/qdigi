@@ -516,7 +516,6 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     {
         for(int i=0;i<blocks[block].block->pins.length();i++)
         {
-            qDebug()<<blocks[block].block->pins[i].point+blocks[block].pos<<p;
             if(blocks[block].block->pins[i].point+blocks[block].pos==p)
                 pin=i;
             if(blocks[block].block->pins[i].direction==0)

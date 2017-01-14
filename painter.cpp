@@ -97,6 +97,8 @@ int Painter::lsetPen(lua_State *L)
         pen=QPen(color);
         pen.setWidth(3);
     }
+    if(lua_isnumber(L,3))
+        pen.setWidth(lua_tonumber(L,3));
     painter->setPen(pen);
     return 0;
 }

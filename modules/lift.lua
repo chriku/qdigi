@@ -1,4 +1,3 @@
-print(socket.connect("www.google.de",80))
 pos=0.0
 otime=0
 function paintEvent(painter)

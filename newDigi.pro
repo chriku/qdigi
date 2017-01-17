@@ -77,6 +77,7 @@ SOURCES += main.cpp\
     buffer.c \
     auxiliar.c
 
+
 HEADERS  += mainwindow.h \
     digiview.h \
     lapi.h \
@@ -131,10 +132,11 @@ HEADERS  += mainwindow.h \
     compat.h \
     buffer.h \
     auxiliar.h
-
+android:SOURCES = crypto/arm_arch.h \
+crypto/armcap.c
 FORMS    += mainwindow.ui \
     settingsdialog.ui
-
+INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"
 win32:DEFINES  += _WIN32

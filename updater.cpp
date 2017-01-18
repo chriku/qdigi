@@ -1,5 +1,8 @@
 #include "updater.h"
+#include <QMessageBox>
 #include <QBitmap>
+#include <QDir>
+#include <QApplication>
 #include "settings.h"
 
 Updater::Updater(QObject *parent) : QObject(parent),
@@ -25,6 +28,39 @@ void Updater::update()
         if(error.error==error.NoError)
         {
             QJsonObject root=doc.object();
+            QString nhash=root["app"].toString();
+            QCryptographicHash hash(QCryptographicHash::Sha512);
+            QString fname=QApplication::applicationFilePath();
+            if(fname.endsWith(".exe"))
+            {
+                QFile file(fname);
+                file.open(QFile::ReadOnly);
+                hash.addData(&file);
+                file.close();
+                QString chash=hash.result().toHex();
+                if(chash.length()==nhash.length())
+                    if(chash!=nhash)
+                if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?\n--- "+chash+"\n--- "+nhash,QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
+                {
+                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+root["exeName"].toString()));
+                    QNetworkReply* rep=manager.get(req);
+                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                    loop.exec();
+                    if(rep->error()==QNetworkReply::NoError)
+                    {
+                        QByteArray newExe=rep->readAll();
+                        QString path=QApplication::applicationFilePath();
+                        QDir dir(QApplication::applicationDirPath());
+                        dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
+                        QFile file(path);
+                        file.open(QFile::WriteOnly|QFile::Truncate);
+                        file.write(newExe);
+                        file.close();
+                        QMessageBox::information(NULL,"Update fetig","Update Fertig, bitte nocheinmal starten.");
+                        exit(0);
+                    }
+                }
+            }
             QJsonArray files=root["files"].toArray();
             QStringList requestFiles;
             for(int i=0;i<files.size();i++)

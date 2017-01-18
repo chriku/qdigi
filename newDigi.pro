@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = btd
 TEMPLATE = app
-
+LIBS += -lws2_32
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -57,26 +57,25 @@ SOURCES += main.cpp\
     settingsdialog.cpp \
     updater.cpp \
     painter.cpp \
-    wsocket.c \
-    usocket.c \
-    unixstream.c \
-    unixdgram.c \
-    unix.c \
-    udp.c \
-    timeout.c \
-    tcp.c \
-    serial.c \
-    select.c \
-    options.c \
-    mime.c \
-    luasocket.c \
-    io.c \
-    inet.c \
-    except.c \
-    compat.c \
-    buffer.c \
-    auxiliar.c \
-    passworddialog.cpp
+#    wsocket.c \
+##    usocket.c \
+##    unixstream.c \
+##    unixdgram.c \
+##    unix.c \
+#    udp.c \
+#    timeout.c \
+#    tcp.c \
+##    serial.c \
+#    select.c \
+#    options.c \
+#    mime.c \
+#    luasocket.c \
+#    io.c \
+#    inet.c \
+#    except.c \
+#    compat.c \
+#    buffer.c \
+#    auxiliar.c
 
 
 HEADERS  += mainwindow.h \
@@ -142,4 +141,8 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"
+DEFINES += LUASOCKET_INET_PTON
+DEFINES += WINVER=0x0501
+# -DLUASOCKET_API='__declspec(dllexport)' \
+#	-DMIME_API='__declspec(dllexport)'
 win32:DEFINES  += _WIN32

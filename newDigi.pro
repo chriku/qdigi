@@ -8,9 +8,9 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = btd
+TARGET = newDigi
 TEMPLATE = app
-LIBS += -lws2_32
+win32:LIBS += -lws2_32
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -141,8 +141,8 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"
-DEFINES += LUASOCKET_INET_PTON
-DEFINES += WINVER=0x0501
+win32:DEFINES += LUASOCKET_INET_PTON
+win32:DEFINES += WINVER=0x0501
 # -DLUASOCKET_API='__declspec(dllexport)' \
 #	-DMIME_API='__declspec(dllexport)'
 win32:DEFINES  += _WIN32

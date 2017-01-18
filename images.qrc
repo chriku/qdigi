@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>splash.png</file>
         <file>mask.png</file>
+        <file>icon.png</file>
     </qresource>
 </RCC>

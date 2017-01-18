@@ -21,6 +21,7 @@ function paintEvent(painter)
   painter:drawRect(0.5,0.5,2,9)
   painter:drawLine(1.5,2,2.5,2)
   painter:drawLine(1.5,8,2.5,8)
+  painter:drawLine(1.5,5,2.5,5)
   painter:drawEllipse(1.5,2+(6.0*pos),0.5)
 end
 function getState(pin)

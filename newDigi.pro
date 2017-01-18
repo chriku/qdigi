@@ -75,7 +75,8 @@ SOURCES += main.cpp\
     except.c \
     compat.c \
     buffer.c \
-    auxiliar.c
+    auxiliar.c \
+    passworddialog.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -131,11 +132,13 @@ HEADERS  += mainwindow.h \
     except.h \
     compat.h \
     buffer.h \
-    auxiliar.h
+    auxiliar.h \
+    passworddialog.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
-    settingsdialog.ui
+    settingsdialog.ui \
+    passworddialog.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"

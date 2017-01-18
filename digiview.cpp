@@ -526,11 +526,21 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     pin=i;
         }
     }
+    int line=-1;
+    for(int i=0;i<lines.length();i++)
+        if(onLine(lines[i].line,p))
+            line=i;
     QAction* delBlockAct=NULL;
+    QAction* delLineAct=NULL;
     QAction* changePinAct=NULL;
     if(block>=0)
     {
-        delBlockAct=menu.addAction("Delete");
+        delBlockAct=menu.addAction("Block Löschen");
+        ok=true;
+    }
+    if(line>=0)
+    {
+        delLineAct=menu.addAction("Linie Löschen");
         ok=true;
     }
     if(pin>=0)
@@ -550,6 +560,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if(act==changePinAct)
             {
                 blocks[block].block->pins[pin].type=!blocks[block].block->pins[pin].type;
+            }
+        if(line>=0)
+            if(act==delLineAct)
+            {
+                lines.removeAt(line);
             }
     }
     update();

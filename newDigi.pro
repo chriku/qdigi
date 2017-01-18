@@ -57,7 +57,7 @@ SOURCES += main.cpp\
     settingsdialog.cpp \
     updater.cpp \
     painter.cpp \
-    passworddialog.h \
+    passworddialog.cpp \
 #    wsocket.c \
 ##    usocket.c \
 ##    unixstream.c \

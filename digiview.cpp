@@ -645,6 +645,7 @@ void DigiView::cleanUp()
     {
         for(int i=0;i<lines.length();i++)
             for(int j=0;j<lines.length();j++)
+                if((i>=0)&&(j>=0))
                 if(i!=j)
                 {
                     if(onLine(lines[i].line,lines[j].line.p1()))
@@ -659,6 +660,7 @@ void DigiView::cleanUp()
                 }
         for(int i=0;i<lines.length();i++)
             for(int j=0;j<lines.length();j++)
+                if((i>=0)&&(j>=0))
                 if(i!=j)
                 {
                     bool kill=false;
@@ -782,19 +784,20 @@ void DigiView::cleanUp()
         }
         for(int i=0;i<lines.length();i++)
             for(int j=0;j<vias.length();j++)
-                if(onLine(lines[i].line,vias[j],true))
-                {
-                    line_t line=lines.takeAt(i);
-                    i--;
-                    line_t l1;
-                    l1.state=line.state;
-                    l1.line=QLine(line.line.p1(),vias[j]);
-                    lines.append(l1);
-                    line_t l2;
-                    l2.state=line.state;
-                    l2.line=QLine(line.line.p2(),vias[j]);
-                    lines.append(l2);
-                }
+                if((i>=0)&&(j>=0))
+                    if(onLine(lines[i].line,vias[j],true))
+                    {
+                        line_t line=lines.takeAt(i);
+                        i--;
+                        line_t l1;
+                        l1.state=line.state;
+                        l1.line=QLine(line.line.p1(),vias[j]);
+                        lines.append(l1);
+                        line_t l2;
+                        l2.state=line.state;
+                        l2.line=QLine(line.line.p2(),vias[j]);
+                        lines.append(l2);
+                    }
     }
 }
 

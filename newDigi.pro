@@ -149,4 +149,4 @@ win32:DEFINES += WINVER=0x0501
 # -DLUASOCKET_API='__declspec(dllexport)' \
 #	-DMIME_API='__declspec(dllexport)'
 win32:DEFINES  += _WIN32
-win32:CONFIG += console
+#win32:CONFIG += console

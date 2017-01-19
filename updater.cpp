@@ -14,6 +14,9 @@ Updater::Updater(QObject *parent) : QObject(parent),
 
 void Updater::update()
 {
+    QFile rfile(QApplication::applicationFilePath()+".old");
+    if(rfile.exists())
+    rfile.remove();
     screen.showMessage("Auf Updates prüfen...",Qt::AlignCenter);
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/index.cgi"));
     QNetworkReply*rep=manager.get(req);
@@ -40,26 +43,26 @@ void Updater::update()
                 QString chash=hash.result().toHex();
                 if(chash.length()==nhash.length())
                     if(chash!=nhash)
-                if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?\n--- "+chash+"\n--- "+nhash,QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
-                {
-                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+root["exeName"].toString()));
-                    QNetworkReply* rep=manager.get(req);
-                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                    loop.exec();
-                    if(rep->error()==QNetworkReply::NoError)
-                    {
-                        QByteArray newExe=rep->readAll();
-                        QString path=QApplication::applicationFilePath();
-                        QDir dir(QApplication::applicationDirPath());
-                        dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
-                        QFile file(path);
-                        file.open(QFile::WriteOnly|QFile::Truncate);
-                        file.write(newExe);
-                        file.close();
-                        QMessageBox::information(NULL,"Update fetig","Update Fertig, bitte nocheinmal starten.");
-                        exit(0);
-                    }
-                }
+                        if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
+                        {
+                            QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+root["exeName"].toString()));
+                            QNetworkReply* rep=manager.get(req);
+                            connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                            loop.exec();
+                            if(rep->error()==QNetworkReply::NoError)
+                            {
+                                QByteArray newExe=rep->readAll();
+                                QString path=QApplication::applicationFilePath();
+                                QDir dir(QApplication::applicationDirPath());
+                                dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
+                                QFile file(path);
+                                file.open(QFile::WriteOnly|QFile::Truncate);
+                                file.write(newExe);
+                                file.close();
+                                QMessageBox::information(NULL,"Update fetig","Update Fertig, bitte nocheinmal starten.");
+                                exit(0);
+                            }
+                        }
             }
             QJsonArray files=root["files"].toArray();
             QStringList requestFiles;

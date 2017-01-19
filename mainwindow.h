@@ -28,6 +28,8 @@ private slots:
 
     void on_actionNeu_triggered();
 
+    void changed();
+
 private:
     Ui::MainWindow *ui;
 };

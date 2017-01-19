@@ -34,6 +34,7 @@ public:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
+    QList<QPoint> vias;
     QPointF dragPos;
     QString dragGate;
     QList<block_t> blocks;
@@ -49,11 +50,11 @@ public:
     void contextMenuEvent(QContextMenuEvent *event);
     void wheelEvent(QWheelEvent *event);
     bool interLine(QLine l1,QLine l2);
-    bool onLine(QLine line,QPoint point);
+    bool onLine(QLine line,QPoint point,bool proper=false);
     QStatusBar* bar;
     QList<QPoint> allIntersect(QLine line);
 signals:
-
+    void changed();
 public slots:
     void timeout();
 };

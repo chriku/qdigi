@@ -78,7 +78,7 @@
    <property name="minimumSize">
     <size>
      <width>162</width>
-     <height>229</height>
+     <height>237</height>
     </size>
    </property>
    <property name="floating">
@@ -99,7 +99,7 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="DragView" name="tableWidget">
+      <widget class="DragView" name="tableWidget_2">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
          <horstretch>0</horstretch>

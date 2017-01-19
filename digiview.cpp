@@ -120,12 +120,13 @@ void DigiView::dropEvent(QDropEvent *event)
     blk.block=BlockList::newBlock(dragGate);
     blk.pos=dragPos.toPoint();
     dragGate="";
-    update();
     for(int i=0;i<blocks.length();i++)
         if(QRect(blocks[i].pos.x(),blocks[i].pos.y(),blocks[i].block->width,blocks[i].block->height).intersects(QRect(blk.pos.x(),blk.pos.y(),blk.block->width,blk.block->height)))
             return;
     blocks.append(blk);
     emit changed();
+    cleanUp();
+    update();
 }
 
 void DigiView::mousePressEvent(QMouseEvent *event)
@@ -640,141 +641,161 @@ bool DigiView::onLine(QLine line, QPoint point, bool proper)
 
 void DigiView::cleanUp()
 {
-    for(int i=0;i<lines.length();i++)
-        for(int j=0;j<lines.length();j++)
-            if(i!=j)
-            {
-                bool kill=false;
-                if(lines[i].line.p1()==lines[j].line.p1())
-                    if(lines[i].line.p2()!=lines[j].line.p2())
-                    {
-                        if(lines[i].line.p2().x()==lines[j].line.p2().x())
-                        {
-                            kill=true;
-                        }
-                        if(lines[i].line.p2().y()==lines[j].line.p2().y())
-                        {
-                            kill=true;
-                        }
-                    }
-                if(lines[i].line.p2()==lines[j].line.p2())
-                    if(lines[i].line.p1()!=lines[j].line.p1())
-                    {
-                        if(lines[i].line.p1().x()==lines[j].line.p1().x())
-                        {
-                            kill=true;
-                        }
-                        if(lines[i].line.p1().y()==lines[j].line.p1().y())
-                        {
-                            kill=true;
-                        }
-                    }
-                if(lines[i].line.p1()==lines[j].line.p2())
-                    if(lines[i].line.p2()!=lines[j].line.p1())
-                    {
-                        if(lines[i].line.p2().x()==lines[j].line.p1().x())
-                        {
-                            kill=true;
-                        }
-                        if(lines[i].line.p2().y()==lines[j].line.p1().y())
-                        {
-                            kill=true;
-                        }
-                    }
-                if(lines[i].line.p2()==lines[j].line.p1())
-                    if(lines[i].line.p1()!=lines[j].line.p2())
-                    {
-                        if(lines[i].line.p1().x()==lines[j].line.p2().x())
-                        {
-                            kill=true;
-                        }
-                        if(lines[i].line.p1().y()==lines[j].line.p2().y())
-                        {
-                            kill=true;
-                        }
-                    }
-                if(kill)
+    for(int gcnt=0;gcnt<3;gcnt++)
+    {
+        for(int i=0;i<lines.length();i++)
+            for(int j=0;j<lines.length();j++)
+                if(i!=j)
                 {
-                    line_t line;
-                    double len=0;
-                    QList<QPoint> points;
-                    points.append(lines[i].line.p1());
-                    points.append(lines[i].line.p2());
-                    points.append(lines[j].line.p1());
-                    points.append(lines[j].line.p2());
-                    line.line=QLine(points[0],points[1]);
-                    for(int k=0;k<points.length();k++)
-                        for(int l=0;l<points.length();l++)
+                    if(onLine(lines[i].line,lines[j].line.p1()))
+                        if(onLine(lines[i].line,lines[j].line.p2()))
                         {
-                            double clen=QLineF(points[k],points[l]).length();
-                            if(clen>len)
+                            lines.removeAt(i);
+                            if(j>i)
+                                j--;
+                            lines.removeAt(j);
+                            i--;
+                        }
+                }
+        for(int i=0;i<lines.length();i++)
+            for(int j=0;j<lines.length();j++)
+                if(i!=j)
+                {
+                    bool kill=false;
+                    if(lines[i].line.p1()==lines[j].line.p1())
+                        if(lines[i].line.p2()!=lines[j].line.p2())
+                        {
+                            if(lines[i].line.p2().x()==lines[j].line.p2().x())
                             {
-                                line.line=QLine(points[k],points[l]);
-                                len=clen;
+                                kill=true;
+                            }
+                            if(lines[i].line.p2().y()==lines[j].line.p2().y())
+                            {
+                                kill=true;
                             }
                         }
-                    lines.append(line);
-                    lines.removeAt(i);
-                    if(j>i)
-                        j--;
-                    i--;
-                    lines.removeAt(j);
-                    j=lines.length();
+                    if(lines[i].line.p2()==lines[j].line.p2())
+                        if(lines[i].line.p1()!=lines[j].line.p1())
+                        {
+                            if(lines[i].line.p1().x()==lines[j].line.p1().x())
+                            {
+                                kill=true;
+                            }
+                            if(lines[i].line.p1().y()==lines[j].line.p1().y())
+                            {
+                                kill=true;
+                            }
+                        }
+                    if(lines[i].line.p1()==lines[j].line.p2())
+                        if(lines[i].line.p2()!=lines[j].line.p1())
+                        {
+                            if(lines[i].line.p2().x()==lines[j].line.p1().x())
+                            {
+                                kill=true;
+                            }
+                            if(lines[i].line.p2().y()==lines[j].line.p1().y())
+                            {
+                                kill=true;
+                            }
+                        }
+                    if(lines[i].line.p2()==lines[j].line.p1())
+                        if(lines[i].line.p1()!=lines[j].line.p2())
+                        {
+                            if(lines[i].line.p1().x()==lines[j].line.p2().x())
+                            {
+                                kill=true;
+                            }
+                            if(lines[i].line.p1().y()==lines[j].line.p2().y())
+                            {
+                                kill=true;
+                            }
+                        }
+                    if(kill)
+                    {
+                        line_t line;
+                        double len=0;
+                        QList<QPoint> points;
+                        points.append(lines[i].line.p1());
+                        points.append(lines[i].line.p2());
+                        points.append(lines[j].line.p1());
+                        points.append(lines[j].line.p2());
+                        line.line=QLine(points[0],points[1]);
+                        for(int k=0;k<points.length();k++)
+                            for(int l=0;l<points.length();l++)
+                            {
+                                double clen=QLineF(points[k],points[l]).length();
+                                if(clen>len)
+                                {
+                                    line.line=QLine(points[k],points[l]);
+                                    len=clen;
+                                }
+                            }
+                        lines.append(line);
+                        lines.removeAt(i);
+                        if(j>i)
+                            j--;
+                        i--;
+                        lines.removeAt(j);
+                        j=lines.length();
+                    }
                 }
-            }
-    QList<QPoint> testVias;
-    for(int i=0;i<lines.length();i++)
-    {
-        testVias.append(lines[i].line.p1());
-        testVias.append(lines[i].line.p2());
-    }
-    testVias.append(vias);
-    vias.clear();
-    for(int i=0;i<testVias.length();i++)
-    {
-        int cnt=0;
-        int num=0;
-        QPoint point=testVias[i];
-        for(int j=0;j<lines.length();j++)
-            if(i!=j)
-            {
-                if(onLine(lines[j].line,point,true))
-                    cnt++;
-                if(onLine(lines[j].line,point))
-                {
-                    num++;
-                    cnt++;
-                }
-
-            }
+        QList<QPoint> testVias;
+        for(int i=0;i<lines.length();i++)
+        {
+            testVias.append(lines[i].line.p1());
+            testVias.append(lines[i].line.p2());
+        }
         for(int j=0;j<blocks.length();j++)
             for(int k=0;k<blocks[j].block->pins.length();k++)
-                if((blocks[j].block->pins[k].point+blocks[j].pos)==point)
+                testVias.append(blocks[j].block->pins[k].point+blocks[j].pos);
+        testVias.append(vias);
+        vias.clear();
+        for(int i=0;i<testVias.length();i++)
+        {
+            int cnt=0;
+            int num=0;
+            QPoint point=testVias[i];
+            for(int j=0;j<lines.length();j++)
+                if(i!=j)
                 {
-                    num++;
-                    cnt++;
+                    if(onLine(lines[j].line,point,true))
+                        cnt++;
+                    if(onLine(lines[j].line,point))
+                    {
+                        num++;
+                        cnt++;
+                    }
+
                 }
-        if(num>=2)
-            if(cnt>2)
-            {
-                vias.append(point);
-            }
+            for(int j=0;j<blocks.length();j++)
+                for(int k=0;k<blocks[j].block->pins.length();k++)
+                    if((blocks[j].block->pins[k].point+blocks[j].pos)==point)
+                    {
+                        num++;
+                        cnt++;
+                    }
+            if(num>=2)
+                if(cnt>2)
+                {
+                    vias.append(point);
+                }
+        }
+        for(int i=0;i<lines.length();i++)
+            for(int j=0;j<vias.length();j++)
+                if(onLine(lines[i].line,vias[j],true))
+                {
+                    line_t line=lines.takeAt(i);
+                    i--;
+                    line_t l1;
+                    l1.state=line.state;
+                    l1.line=QLine(line.line.p1(),vias[j]);
+                    lines.append(l1);
+                    line_t l2;
+                    l2.state=line.state;
+                    l2.line=QLine(line.line.p2(),vias[j]);
+                    lines.append(l2);
+                }
     }
-    for(int i=0;i<lines.length();i++)
-        for(int j=0;j<vias.length();j++)
-            if(onLine(lines[i].line,vias[j],true))
-            {
-                line_t line=lines.takeAt(i);
-                i--;
-                line_t l1;
-                l1.state=line.state;
-                l1.line=QLine(line.line.p1(),vias[j]);
-                lines.append(l1);
-                line_t l2;
-                l2.state=line.state;
-                l2.line=QLine(line.line.p2(),vias[j]);
-                lines.append(l2);
-            }
 }
 
 QList<QPoint> DigiView::allIntersect(QLine line)

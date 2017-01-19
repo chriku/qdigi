@@ -22,6 +22,6 @@ function onclick(x,y)
   end
 end
 function getState(pin)
-  return state
+  return state[pin]
 end
 return {width=2,height=16,name="Large-IN",pins={{2,1,"OUTPUT"},{2,2,"OUTPUT"},{2,3,"OUTPUT"},{2,4,"OUTPUT"},{2,5,"OUTPUT"},{2,6,"OUTPUT"},{2,7,"OUTPUT"},{2,8,"OUTPUT"},{2,9,"OUTPUT"},{2,10,"OUTPUT"},{2,11,"OUTPUT"},{2,12,"OUTPUT"},{2,13,"OUTPUT"},{2,14,"OUTPUT"},{2,15,"OUTPUT"},{2,16,"OUTPUT"}}}

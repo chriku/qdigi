@@ -29,6 +29,8 @@ void MainWindow::on_actionSpeichern_triggered()
     ui->digiView->save();
     setWindowTitle("NewDigi "+ui->digiView->fileName);
     }
+    else
+        on_actionSpeichern_Unter_triggered();
 }
 
 void MainWindow::on_actionEinstellungen_triggered()

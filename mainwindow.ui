@@ -70,7 +70,7 @@
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>2</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -101,7 +101,7 @@
      <item>
       <widget class="DragView" name="tableWidget_2">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
+        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>

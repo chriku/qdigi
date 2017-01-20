@@ -30,6 +30,12 @@ private slots:
 
     void changed();
 
+    void on_actionZoom_R_cksetzen_triggered();
+
+    void on_actionReinzoomen_triggered();
+
+    void on_actionRauszoomen_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

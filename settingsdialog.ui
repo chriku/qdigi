@@ -34,33 +34,6 @@
       </property>
       <layout class="QFormLayout" name="formLayout">
        <item row="0" column="1">
-        <widget class="QSpinBox" name="gridSize">
-         <property name="suffix">
-          <string>px</string>
-         </property>
-         <property name="minimum">
-          <number>10</number>
-         </property>
-         <property name="maximum">
-          <number>50</number>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="gridSizeLabel">
-         <property name="text">
-          <string>Standart Gitter Abstand</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="gridTypeLabel">
-         <property name="text">
-          <string>Gittertyp</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
         <widget class="QComboBox" name="gridType">
          <item>
           <property name="text">
@@ -74,17 +47,24 @@
          </item>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <widget class="QLabel" name="defaultSimuLabel">
          <property name="text">
           <string>defaultSimu</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="1" column="1">
         <widget class="QCheckBox" name="defaultSimu">
          <property name="text">
           <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="gridTypeLabel">
+         <property name="text">
+          <string>Gittertyp</string>
          </property>
         </widget>
        </item>

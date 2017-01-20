@@ -182,7 +182,16 @@
     <addaction name="separator"/>
     <addaction name="actionEinstellungen"/>
    </widget>
+   <widget class="QMenu" name="menuAnsicht">
+    <property name="title">
+     <string>Ansicht</string>
+    </property>
+    <addaction name="actionZoom_R_cksetzen"/>
+    <addaction name="actionReinzoomen"/>
+    <addaction name="actionRauszoomen"/>
+   </widget>
    <addaction name="menuDatei"/>
+   <addaction name="menuAnsicht"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSpeichern">
@@ -220,6 +229,30 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionZoom_R_cksetzen">
+   <property name="text">
+    <string>Zoom Rücksetzen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0, Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionReinzoomen">
+   <property name="text">
+    <string>Reinzoomen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl++, Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionRauszoomen">
+   <property name="text">
+    <string>Rauszoomen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-, Ctrl+-</string>
    </property>
   </action>
  </widget>

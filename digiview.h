@@ -41,6 +41,9 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void zoomReset();
+    void zoomIn();
+    void zoomOut();
     QPoint startPoint;
     QPoint curPoint;
     QList<line_t> lines;

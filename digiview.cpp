@@ -827,3 +827,39 @@ QList<QPoint> DigiView::allIntersect(QLine line)
                 ret.append(blocks[i].block->pins[j].point+blocks[i].pos);
     return ret;
 }
+
+void DigiView::zoomReset()
+{
+    double size=Settings::final()->gridSize();
+    size=20;
+    if(size<10)
+        size=10;
+    if(size>50)
+        size=50;
+    Settings::final()->setGridSize(size,true);
+    update();
+}
+
+void DigiView::zoomIn()
+{
+    double size=Settings::final()->gridSize();
+    size+=10;
+    if(size<10)
+        size=10;
+    if(size>50)
+        size=50;
+    Settings::final()->setGridSize(size,true);
+    update();
+}
+
+void DigiView::zoomOut()
+{
+    double size=Settings::final()->gridSize();
+    size-=10;
+    if(size<10)
+        size=10;
+    if(size>50)
+        size=50;
+    Settings::final()->setGridSize(size,true);
+    update();
+}

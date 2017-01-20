@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->digiView->bar=ui->statusBar;
     ui->simulation->setChecked(Settings::final()->defaultSimu());
     on_simulation_clicked();
-    ui->digiView->load(Settings::final()->lastFile());
+    //ui->digiView->load(Settings::final()->lastFile());
     setWindowTitle("NewDigi "+ui->digiView->fileName);
     connect(ui->digiView,SIGNAL(changed()),this,SLOT(changed()));
 }
@@ -76,4 +76,19 @@ void MainWindow::on_actionNeu_triggered()
 void MainWindow::changed()
 {
     setWindowTitle("NewDigi * "+ui->digiView->fileName);
+}
+
+void MainWindow::on_actionZoom_R_cksetzen_triggered()
+{
+    ui->digiView->zoomReset();
+}
+
+void MainWindow::on_actionReinzoomen_triggered()
+{
+    ui->digiView->zoomIn();
+}
+
+void MainWindow::on_actionRauszoomen_triggered()
+{
+    ui->digiView->zoomOut();
 }

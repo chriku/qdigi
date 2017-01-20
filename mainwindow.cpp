@@ -109,3 +109,13 @@ void MainWindow::on_actionRauszoomen_triggered()
 {
     ui->digiView->zoomOut();
 }
+
+void MainWindow::on_actionAls_Bild_Speichern_triggered()
+{
+    QString fileName=QFileDialog::getSaveFileName(NULL,"Exportieren nach...",QString(),"Bilder (*.png *.jpg *.jpeg *.bmp)");
+    if(!fileName.isEmpty())
+    {
+    QImage img=ui->digiView->exportImage();
+    img.save(fileName);
+    }
+}

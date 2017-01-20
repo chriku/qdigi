@@ -36,6 +36,8 @@ private slots:
 
     void on_actionRauszoomen_triggered();
 
+    void on_actionAls_Bild_Speichern_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

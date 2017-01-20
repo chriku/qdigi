@@ -863,3 +863,37 @@ void DigiView::zoomOut()
     Settings::final()->setGridSize(size,true);
     update();
 }
+
+QImage DigiView::exportImage()
+{
+    QPicture pic=exportPicture();
+    QImage ret(pic.boundingRect().size(),QImage::Format_ARGB32);
+    ret.fill(Qt::transparent);
+    QPainter painter(&ret);
+    painter.translate(-pic.boundingRect().topLeft());
+    painter.drawPicture(0,0,pic);
+    painter.end();
+    return ret;
+}
+
+QPicture DigiView::exportPicture()
+{
+    QPicture picture;
+    QPainter painter(&picture);
+    for(int i=0;i<blocks.length();i++)
+        painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock());
+    QPen line(Qt::black);
+    line.setWidth(3);
+    for(int i=0;i<lines.length();i++)
+    {
+        if(lines[i].state)
+            line.setColor(Qt::red);
+        else
+            line.setColor(Qt::black);
+        painter.setPen(line);
+        painter.drawLine(lines[i].line.p1()*Settings::final()->gridSize(),lines[i].line.p2()*Settings::final()->gridSize());
+    }
+    for(int i=0;i<vias.length();i++)
+        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),3,3);
+    return picture;
+}

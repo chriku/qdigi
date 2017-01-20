@@ -51,7 +51,7 @@
       <widget class="DigiView" name="digiView">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>-60</x>
          <y>0</y>
          <width>5000</width>
          <height>5000</height>
@@ -256,6 +256,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_other">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>144</width>
+          <height>443</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>Sonstiges</string>
         </attribute>
@@ -344,6 +352,7 @@
     <addaction name="actionNeu"/>
     <addaction name="actionSpeichern"/>
     <addaction name="actionSpeichern_Unter"/>
+    <addaction name="actionAls_Bild_Speichern"/>
     <addaction name="action_ffnen"/>
     <addaction name="separator"/>
     <addaction name="actionEinstellungen"/>
@@ -419,6 +428,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+-, Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionAls_Bild_Speichern">
+   <property name="text">
+    <string>Als Bild Speichern...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>

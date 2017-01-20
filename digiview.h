@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include "blocklist.h"
 #include <QTimer>
+#include <QPicture>
 
 struct block_t {
     QPoint pos;
@@ -56,6 +57,8 @@ public:
     bool onLine(QLine line,QPoint point,bool proper=false);
     QStatusBar* bar;
     QList<QPoint> allIntersect(QLine line);
+    QPicture exportPicture();
+    QImage exportImage();
 signals:
     void changed();
 public slots:

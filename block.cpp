@@ -210,3 +210,8 @@ QPointF Block::pointAt(QPolygonF spline, double pos, bool cyclic) {
     }
     return spline.first();
 }
+
+Block::~Block()
+{
+    lua_close(L);
+}

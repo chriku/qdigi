@@ -41,6 +41,8 @@ void onclick(QPointF where);
 void onpress(QPointF where);
 void onrelease(QPointF where);
 bool getState(int pin);
+~Block();
+
 signals:
 
 public slots:

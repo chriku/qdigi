@@ -256,6 +256,8 @@ void DigiView::save(QString where)
 void DigiView::load(QString where)
 {
     lines.clear();
+    for(int i=0;i<blocks.length();i++)
+        blocks[i].block->deleteLater();
     blocks.clear();
     vias.clear();
     QFile file(where);
@@ -543,6 +545,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         if(block>=0)
             if(act==delBlockAct)
             {
+                blocks[block].block->deleteLater();
                 blocks.removeAt(block);
                 emit changed();
             }

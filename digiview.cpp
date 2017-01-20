@@ -29,16 +29,30 @@ void DigiView::paintEvent(QPaintEvent* event)
 {
     int grid=Settings::final()->gridSize();
     QPainter painter(this);
-    painter.setPen(Qt::gray);
+    QPen lineSmall(Qt::gray);
+    QPen lineLarge(Qt::gray);
+    lineLarge.setWidth(3);
     switch(Settings::final()->gridType())
     {
     case Settings::GRID_LINES:
         for(int x=0;x<width();x+=grid)
             for(int y=0;y<height();y+=grid)
+            {
+                if(y%3==0)
+                    painter.setPen(lineLarge);
+                else
+                    painter.setPen(lineSmall);
                 painter.drawLine(x,y,x+grid,y);
+            }
         for(int x=0;x<width();x+=grid)
             for(int y=0;y<height();y+=grid)
+            {
+                if(x%3==0)
+                    painter.setPen(lineLarge);
+                else
+                    painter.setPen(lineSmall);
                 painter.drawLine(x,y,x,y+grid);
+            }
         break;
     case Settings::GRID_POINT:
     default:
@@ -649,101 +663,101 @@ void DigiView::cleanUp()
         for(int i=0;i<lines.length();i++)
             for(int j=0;j<lines.length();j++)
                 if((i>=0)&&(j>=0))
-                if(i!=j)
-                {
-                    if(onLine(lines[i].line,lines[j].line.p1()))
-                        if(onLine(lines[i].line,lines[j].line.p2()))
-                        {
-                            lines.removeAt(i);
-                            if(j>i)
-                                j--;
-                            lines.removeAt(j);
-                            i--;
-                        }
-                }
+                    if(i!=j)
+                    {
+                        if(onLine(lines[i].line,lines[j].line.p1()))
+                            if(onLine(lines[i].line,lines[j].line.p2()))
+                            {
+                                lines.removeAt(i);
+                                if(j>i)
+                                    j--;
+                                lines.removeAt(j);
+                                i--;
+                            }
+                    }
         for(int i=0;i<lines.length();i++)
             for(int j=0;j<lines.length();j++)
                 if((i>=0)&&(j>=0))
-                if(i!=j)
-                {
-                    bool kill=false;
-                    if(lines[i].line.p1()==lines[j].line.p1())
-                        if(lines[i].line.p2()!=lines[j].line.p2())
-                        {
-                            if(lines[i].line.p2().x()==lines[j].line.p2().x())
-                            {
-                                kill=true;
-                            }
-                            if(lines[i].line.p2().y()==lines[j].line.p2().y())
-                            {
-                                kill=true;
-                            }
-                        }
-                    if(lines[i].line.p2()==lines[j].line.p2())
-                        if(lines[i].line.p1()!=lines[j].line.p1())
-                        {
-                            if(lines[i].line.p1().x()==lines[j].line.p1().x())
-                            {
-                                kill=true;
-                            }
-                            if(lines[i].line.p1().y()==lines[j].line.p1().y())
-                            {
-                                kill=true;
-                            }
-                        }
-                    if(lines[i].line.p1()==lines[j].line.p2())
-                        if(lines[i].line.p2()!=lines[j].line.p1())
-                        {
-                            if(lines[i].line.p2().x()==lines[j].line.p1().x())
-                            {
-                                kill=true;
-                            }
-                            if(lines[i].line.p2().y()==lines[j].line.p1().y())
-                            {
-                                kill=true;
-                            }
-                        }
-                    if(lines[i].line.p2()==lines[j].line.p1())
-                        if(lines[i].line.p1()!=lines[j].line.p2())
-                        {
-                            if(lines[i].line.p1().x()==lines[j].line.p2().x())
-                            {
-                                kill=true;
-                            }
-                            if(lines[i].line.p1().y()==lines[j].line.p2().y())
-                            {
-                                kill=true;
-                            }
-                        }
-                    if(kill)
+                    if(i!=j)
                     {
-                        line_t line;
-                        double len=0;
-                        QList<QPoint> points;
-                        points.append(lines[i].line.p1());
-                        points.append(lines[i].line.p2());
-                        points.append(lines[j].line.p1());
-                        points.append(lines[j].line.p2());
-                        line.line=QLine(points[0],points[1]);
-                        for(int k=0;k<points.length();k++)
-                            for(int l=0;l<points.length();l++)
+                        bool kill=false;
+                        if(lines[i].line.p1()==lines[j].line.p1())
+                            if(lines[i].line.p2()!=lines[j].line.p2())
                             {
-                                double clen=QLineF(points[k],points[l]).length();
-                                if(clen>len)
+                                if(lines[i].line.p2().x()==lines[j].line.p2().x())
                                 {
-                                    line.line=QLine(points[k],points[l]);
-                                    len=clen;
+                                    kill=true;
+                                }
+                                if(lines[i].line.p2().y()==lines[j].line.p2().y())
+                                {
+                                    kill=true;
                                 }
                             }
-                        lines.append(line);
-                        lines.removeAt(i);
-                        if(j>i)
-                            j--;
-                        i--;
-                        lines.removeAt(j);
-                        j=lines.length();
+                        if(lines[i].line.p2()==lines[j].line.p2())
+                            if(lines[i].line.p1()!=lines[j].line.p1())
+                            {
+                                if(lines[i].line.p1().x()==lines[j].line.p1().x())
+                                {
+                                    kill=true;
+                                }
+                                if(lines[i].line.p1().y()==lines[j].line.p1().y())
+                                {
+                                    kill=true;
+                                }
+                            }
+                        if(lines[i].line.p1()==lines[j].line.p2())
+                            if(lines[i].line.p2()!=lines[j].line.p1())
+                            {
+                                if(lines[i].line.p2().x()==lines[j].line.p1().x())
+                                {
+                                    kill=true;
+                                }
+                                if(lines[i].line.p2().y()==lines[j].line.p1().y())
+                                {
+                                    kill=true;
+                                }
+                            }
+                        if(lines[i].line.p2()==lines[j].line.p1())
+                            if(lines[i].line.p1()!=lines[j].line.p2())
+                            {
+                                if(lines[i].line.p1().x()==lines[j].line.p2().x())
+                                {
+                                    kill=true;
+                                }
+                                if(lines[i].line.p1().y()==lines[j].line.p2().y())
+                                {
+                                    kill=true;
+                                }
+                            }
+                        if(kill)
+                        {
+                            line_t line;
+                            double len=0;
+                            QList<QPoint> points;
+                            points.append(lines[i].line.p1());
+                            points.append(lines[i].line.p2());
+                            points.append(lines[j].line.p1());
+                            points.append(lines[j].line.p2());
+                            line.line=QLine(points[0],points[1]);
+                            for(int k=0;k<points.length();k++)
+                                for(int l=0;l<points.length();l++)
+                                {
+                                    double clen=QLineF(points[k],points[l]).length();
+                                    if(clen>len)
+                                    {
+                                        line.line=QLine(points[k],points[l]);
+                                        len=clen;
+                                    }
+                                }
+                            lines.append(line);
+                            lines.removeAt(i);
+                            if(j>i)
+                                j--;
+                            i--;
+                            lines.removeAt(j);
+                            j=lines.length();
+                        }
                     }
-                }
         QList<QPoint> testVias;
         for(int i=0;i<lines.length();i++)
         {

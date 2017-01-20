@@ -30,6 +30,7 @@ public:
     QList<pin_t> pins;
     void pushGlobal(lua_State*L);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
+    QString category;
 QPixmap drawBlock();
 QString name;
 int width;

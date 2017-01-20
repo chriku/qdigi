@@ -65,4 +65,4 @@ function onclick(x,y)
     num=(num+15)%16
   end
 end
-return {width=11,height=10,name="Ampel 1",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,8,"INPUT"},{0,9,"INPUT"},{0,10,"INPUT"}}}
+return {width=11,height=10,name="Ampel 1",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,8,"INPUT"},{0,9,"INPUT"},{0,10,"INPUT"}},category="other"}

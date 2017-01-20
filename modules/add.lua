@@ -54,4 +54,4 @@ return {width=3,height=11,name="ADD",pins={
 {4,2,"OUTPUT"},
 {4,3,"OUTPUT"},
 {4,4,"OUTPUT"},
-{4,11,"OUTPUT"}}}
+{4,11,"OUTPUT"}},category="base"}

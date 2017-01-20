@@ -3,6 +3,7 @@
 #include "settingsdialog.h"
 #include <QFileDialog>
 #include "settings.h"
+#include "blocklist.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,6 +16,22 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->digiView->load(Settings::final()->lastFile());
     setWindowTitle("NewDigi "+ui->digiView->fileName);
     connect(ui->digiView,SIGNAL(changed()),this,SLOT(changed()));
+    BlockList list;
+    QList<Block*> base;
+    QList<Block*> coder;
+    QList<Block*> other;
+    for(int i=0;i<list.blocks.length();i++)
+    {
+        if(list.blocks[i]->category=="base")
+            base.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="coder")
+            coder.append(list.blocks[i]);
+        else
+            other.append(list.blocks[i]);
+    }
+    ui->base->blockList=base;
+    ui->coder->blockList=coder;
+    ui->other->blockList=other;
 }
 
 MainWindow::~MainWindow()

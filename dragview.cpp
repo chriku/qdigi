@@ -15,20 +15,18 @@ void DragView::dropEvent(QDropEvent *event)
 void DragView::makeCols()
 {
     clear();
-    BlockList list;
     int wid=floor(width()/100.0);
     setColumnCount(wid);
-    setRowCount((list.blocks.length()/wid)+1);
-    for(int i=0;i<list.blocks.length();i++)
+    setRowCount(ceil(double(blockList.length())/wid));
+    for(int i=0;i<blockList.length();i++)
     {
-        QPixmap pix=list.blocks[i]->drawBlock();
-        QTableWidgetItem* item=new QTableWidgetItem(QIcon(pix),list.blocks[i]->name);
+        QPixmap pix=blockList[i]->drawBlock();
+        QTableWidgetItem* item=new QTableWidgetItem(QIcon(pix),blockList[i]->name);
         int col=i%wid;
         int row=i/wid;
         setItem(row,col,item);
     }
-    int rwidth=width()/wid;
-    rwidth-=3;
+    int rwidth=(width()-2)/wid;
     for(int i=0;i<wid;i++)
     {
         setColumnWidth(i,rwidth);

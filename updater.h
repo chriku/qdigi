@@ -13,6 +13,7 @@ public:
 QSplashScreen screen;
 void update();
 QNetworkAccessManager manager;
+static void registerReg();
 signals:
 
 public slots:

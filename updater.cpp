@@ -122,3 +122,26 @@ void Updater::update()
     QTimer::singleShot(1000,&loop,SLOT(quit()));
     //loop.exec();
 }
+
+void Updater::registerReg()
+{
+#ifdef Q_OS_WIN
+
+    QFile file(":/qdigi.reg");
+    file.open(QFile::ReadOnly);
+    QString data=file.readAll();
+    file.close();
+    QString fp=QApplication::applicationFilePath();
+    fp.replace("/","\\");
+    fp.replace("\\","\\\\");
+    data.replace("___EXE_PATH___",fp);
+    data.replace("\r\n","\n");
+    data.replace("\n","\r\n");
+    file.setFileName("qdigiFile.reg");
+    file.open(QFile::WriteOnly|QFile::Truncate);
+    file.write(data.toUtf8());
+    file.close();
+    system("qdigiFile.reg");
+    file.remove();
+#endif
+}

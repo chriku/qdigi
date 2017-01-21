@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = newDigi
 TEMPLATE = app
 win32:LIBS += -lws2_32
-
+#CONFIG += console
 SOURCES += main.cpp\
         mainwindow.cpp \
     digiview.cpp \
@@ -150,3 +150,6 @@ win32:DEFINES += WINVER=0x0501
 #	-DMIME_API='__declspec(dllexport)'
 win32:DEFINES  += _WIN32
 #win32:CONFIG += console
+
+DISTFILES += \
+    qdigi.reg

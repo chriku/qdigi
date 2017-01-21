@@ -51,7 +51,7 @@
       <widget class="DigiView" name="digiView">
        <property name="geometry">
         <rect>
-         <x>-60</x>
+         <x>0</x>
          <y>0</y>
          <width>5000</width>
          <height>5000</height>
@@ -101,7 +101,7 @@
      <item>
       <widget class="QToolBox" name="toolBox">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page_base">
         <property name="geometry">
@@ -356,6 +356,7 @@
     <addaction name="action_ffnen"/>
     <addaction name="separator"/>
     <addaction name="actionEinstellungen"/>
+    <addaction name="actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen"/>
    </widget>
    <widget class="QMenu" name="menuAnsicht">
     <property name="title">
@@ -436,6 +437,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen">
+   <property name="text">
+    <string>Programm zum Öffnen von .qdigi Dateien eintragen</string>
    </property>
   </action>
  </widget>

@@ -38,6 +38,8 @@ private slots:
 
     void on_actionAls_Bild_Speichern_triggered();
 
+    void on_actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -217,8 +217,6 @@ void DigiView::save(QString where)
     if(where.isEmpty())
         where=fileName;
     if(where.isEmpty())
-        where=QFileDialog::getSaveFileName(NULL,"Speichern unter...",QString(),"*.json");
-    if(where.isEmpty())
         return;
     fileName=where;
     QJsonObject root;

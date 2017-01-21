@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\.qdigi\DefaultIcon]
+@="\"___EXE_PATH___\",0"
+
+[HKEY_CLASSES_ROOT\.qdigi\shell\Open\command]
+@="\"___EXE_PATH___\" \"%1\""

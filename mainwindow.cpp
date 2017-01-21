@@ -1,9 +1,11 @@
+#include "updater.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "settingsdialog.h"
 #include <QFileDialog>
 #include "settings.h"
 #include "blocklist.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +34,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->base->blockList=base;
     ui->coder->blockList=coder;
     ui->other->blockList=other;
+    QStringList args=QApplication::arguments();
+    if(args.length()>1)
+    ui->digiView->load(args[1]);
 }
 
 MainWindow::~MainWindow()
@@ -58,7 +63,7 @@ void MainWindow::on_actionEinstellungen_triggered()
 
 void MainWindow::on_actionSpeichern_Unter_triggered()
 {
-    QString fileName=QFileDialog::getSaveFileName(NULL,"Speichern unter...",QString(),"*.json");
+    QString fileName=QFileDialog::getSaveFileName(NULL,"Speichern unter...",QString(),"*.qdigi");
     if(!fileName.isEmpty())
     {
     ui->digiView->save(fileName);
@@ -68,7 +73,7 @@ void MainWindow::on_actionSpeichern_Unter_triggered()
 
 void MainWindow::on_action_ffnen_triggered()
 {
-    QString fileName=QFileDialog::getOpenFileName(NULL,"Öffnen...",QString(),"*.json");
+    QString fileName=QFileDialog::getOpenFileName(NULL,"Öffnen...",QString(),"*.qdigi");
     if(!fileName.isEmpty())
     {
     ui->digiView->load(fileName);
@@ -118,4 +123,9 @@ void MainWindow::on_actionAls_Bild_Speichern_triggered()
     QImage img=ui->digiView->exportImage();
     img.save(fileName);
     }
+}
+
+void MainWindow::on_actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen_triggered()
+{
+    Updater::registerReg();
 }

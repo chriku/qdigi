@@ -3,5 +3,6 @@
         <file>splash.png</file>
         <file>mask.png</file>
         <file>icon.png</file>
+        <file>qdigi.reg</file>
     </qresource>
 </RCC>

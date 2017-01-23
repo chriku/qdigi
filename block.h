@@ -27,6 +27,8 @@ public:
     explicit Block(QObject *parent = 0);
     void load(QString fileName);
     lua_State*L;
+    int state;
+    int mainRef;
     QList<pin_t> pins;
     void pushGlobal(lua_State*L);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
@@ -41,6 +43,7 @@ void onclick(QPointF where);
 void onpress(QPointF where);
 void onrelease(QPointF where);
 bool getState(int pin);
+static void init(Block* blk);
 ~Block();
 
 signals:

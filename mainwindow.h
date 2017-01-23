@@ -14,7 +14,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+bool isChanged;
 private slots:
     void on_actionSpeichern_triggered();
 
@@ -39,7 +39,9 @@ private slots:
     void on_actionAls_Bild_Speichern_triggered();
 
     void on_actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen_triggered();
-
+    bool askSave(bool ending);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 private:
     Ui::MainWindow *ui;
 };

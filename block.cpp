@@ -21,52 +21,8 @@ void Block::load(QString fileName) {
     // luaopen_socket_core(L);
     // lua_setglobal(L,"socket");
     if (luaL_loadstring(L, data.toUtf8().data()) == LUA_OK) {
-        if (lua_pcall(L, 0, 1, 0) == LUA_OK) {
-            lua_getfield(L, -1, "pins");
-            lua_pushnil(L);
-            while (lua_next(L, -2)) {
-                lua_geti(L, -1, 1);
-                int x = lua_tointeger(L, -1);
-                lua_pop(L, 1);
-                lua_geti(L, -1, 2);
-                int y = lua_tointeger(L, -1);
-                lua_pop(L, 1);
-                lua_geti(L, -1, 3);
-                QString type = lua_tostring(L, -1);
-                lua_pop(L, 1);
-                if (type == "INPUT") {
-                    pin_t pin;
-                    pin.point = QPoint(x, y);
-                    pin.direction = 0;
-                    pin.state = false;
-                    pin.type = false;
-                    pins.append(pin);
-                }
-                if (type == "OUTPUT") {
-                    pin_t pin;
-                    pin.point = QPoint(x, y);
-                    pin.direction = 2;
-                    pin.type = false;
-                    pins.append(pin);
-                }
-                lua_pop(L, 1);
-            }
-            lua_pop(L, 1);
-            lua_getfield(L, -1, "width");
-            width = lua_tointeger(L, -1);
-            lua_pop(L, 1);
-            lua_getfield(L, -1, "height");
-            height = lua_tointeger(L, -1);
-            lua_pop(L, 1);
-            lua_getfield(L, -1, "name");
-            name = QByteArray(lua_tostring(L, -1));
-            lua_pop(L, 1);
-            lua_getfield(L, -1, "category");
-            category = QByteArray(lua_tostring(L, -1));
-            lua_pop(L, 1);
-            lua_pop(L, 1);
-        } else
-            qDebug() << "ERR1" << lua_tostring(L, -1);
+        mainRef=luaL_ref(L,LUA_REGISTRYINDEX);
+        init(this);
     } else
         qDebug() << "ERR2" << lua_tostring(L, -1);
 }
@@ -83,11 +39,20 @@ QPixmap Block::drawBlock() {
     Painter painter(&qpainter);
     lua_pushinteger(L, QTime::currentTime().msecsSinceStartOfDay());
     lua_setglobal(L, "time");
+
+
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
+
+
+
     lua_getglobal(L, "paintEvent");
     qpainter.setRenderHint(QPainter::Antialiasing, true);
     painter.pushMe(L);
     if (lua_pcall(L, 1, 0, 0) == LUA_OK) {
         qpainter.setRenderHint(QPainter::Antialiasing, false);
+        lua_getglobal(L,"state");
+        lua_rawseti(L,LUA_REGISTRYINDEX,state);
     } else
         qDebug() << "ERR3" << lua_tostring(L, -1);
     qpainter.setPen(Qt::black);
@@ -117,63 +82,94 @@ QPixmap Block::drawBlock() {
                           (pins[i].point * Settings::final()->gridSize()) + dir);
         // qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
+
+
+
+
+
     return ret;
 }
 
 Block *Block::clone() {
     Block *nblk = new Block;
-    nblk->load(Block::fileName);
+    nblk->mainRef=mainRef;
+    nblk->L=L;
+    init(nblk);
+    lua_getglobal(L,"state");
+    nblk->state=luaL_ref(L,LUA_REGISTRYINDEX);
     return nblk;
 }
 
 void Block::onclick(QPointF where) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
+
     lua_getglobal(L, "onclick");
     if (!lua_isnil(L, -1)) {
         lua_pushnumber(L, where.x());
         lua_pushnumber(L, where.y());
         if (lua_pcall(L, 2, 0, 0) == LUA_OK) {
-
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
         } else
-            qDebug() << "ERR4" << lua_tostring(L, -1);
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     }
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 
 void Block::onpress(QPointF where) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
     lua_getglobal(L, "onpress");
     if (!lua_isnil(L, -1)) {
         lua_pushnumber(L, where.x());
         lua_pushnumber(L, where.y());
         if (lua_pcall(L, 2, 0, 0) == LUA_OK) {
-
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
         } else
-            qDebug() << "ERR4" << lua_tostring(L, -1);
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     }
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 
 void Block::onrelease(QPointF where) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
     lua_getglobal(L, "onrelease");
     if (!lua_isnil(L, -1)) {
         lua_pushnumber(L, where.x());
         lua_pushnumber(L, where.y());
         if (lua_pcall(L, 2, 0, 0) == LUA_OK) {
-
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
         } else
-            qDebug() << "ERR4" << lua_tostring(L, -1);
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     }
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 
 bool Block::getState(int pin) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
     pushGlobal(L);
     lua_getglobal(L, "getState");
     if (!lua_isnil(L, -1)) {
         lua_pushinteger(L, pin + 1);
         if (lua_pcall(L, 1, 1, 0) == LUA_OK) {
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
             return lua_toboolean(L, -1);
         } else
-            qDebug() << "ERR4" << lua_tostring(L, -1);
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     } else
         qDebug() << "Warning: "
                  << "Missing State at" << name;
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
     return false;
 }
 
@@ -213,5 +209,60 @@ QPointF Block::pointAt(QPolygonF spline, double pos, bool cyclic) {
 
 Block::~Block()
 {
-    lua_close(L);
+    luaL_unref(L,LUA_REGISTRYINDEX,state);
+    //lua_close(L);
+}
+
+void Block::init(Block *blk)
+{
+    lua_State*L=blk->L;
+    lua_rawgeti(L,LUA_REGISTRYINDEX,blk->mainRef);
+    if (lua_pcall(L, 0, 1, 0) == LUA_OK) {
+        lua_getfield(L, -1, "pins");
+        lua_pushnil(L);
+        while (lua_next(L, -2)) {
+            lua_geti(L, -1, 1);
+            int x = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+            lua_geti(L, -1, 2);
+            int y = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+            lua_geti(L, -1, 3);
+            QString type = lua_tostring(L, -1);
+            lua_pop(L, 1);
+            if (type == "INPUT") {
+                pin_t pin;
+                pin.point = QPoint(x, y);
+                pin.direction = 0;
+                pin.state = false;
+                pin.type = false;
+                blk->pins.append(pin);
+            }
+            if (type == "OUTPUT") {
+                pin_t pin;
+                pin.point = QPoint(x, y);
+                pin.direction = 2;
+                pin.type = false;
+                blk->pins.append(pin);
+            }
+            lua_pop(L, 1);
+        }
+        lua_pop(L, 1);
+        lua_getfield(L, -1, "width");
+        blk->width = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+        lua_getfield(L, -1, "height");
+        blk->height = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+        lua_getfield(L, -1, "name");
+        blk->name = QByteArray(lua_tostring(L, -1));
+        lua_pop(L, 1);
+        lua_getfield(L, -1, "category");
+        blk->category = QByteArray(lua_tostring(L, -1));
+        lua_pop(L, 1);
+        lua_pop(L, 1);
+        lua_getglobal(L,"state");
+        blk->state=luaL_ref(L,LUA_REGISTRYINDEX);
+    } else
+        qDebug() << "ERR1" << lua_tostring(L, -1);
 }

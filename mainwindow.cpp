@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "blocklist.h"
 #include <QDebug>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -36,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->other->blockList=other;
     QStringList args=QApplication::arguments();
     if(args.length()>1)
-    ui->digiView->load(args[1]);
+        ui->digiView->load(args[1]);
+    isChanged=false;
 }
 
 MainWindow::~MainWindow()
@@ -48,8 +50,9 @@ void MainWindow::on_actionSpeichern_triggered()
 {
     if(!ui->digiView->fileName.isEmpty())
     {
-    ui->digiView->save();
-    setWindowTitle("QDigi "+ui->digiView->fileName);
+        ui->digiView->save();
+        isChanged=false;
+        setWindowTitle("QDigi "+ui->digiView->fileName);
     }
     else
         on_actionSpeichern_Unter_triggered();
@@ -64,20 +67,26 @@ void MainWindow::on_actionEinstellungen_triggered()
 void MainWindow::on_actionSpeichern_Unter_triggered()
 {
     QString fileName=QFileDialog::getSaveFileName(NULL,"Speichern unter...",QString(),"*.qdigi");
+    qDebug()<<fileName;
     if(!fileName.isEmpty())
     {
-    ui->digiView->save(fileName);
-    setWindowTitle("QDigi "+ui->digiView->fileName);
+        ui->digiView->save(fileName);
+        isChanged=false;
+        setWindowTitle("QDigi "+ui->digiView->fileName);
     }
 }
 
 void MainWindow::on_action_ffnen_triggered()
 {
+    if(isChanged)
+        if(askSave(false)==false)
+            return;
     QString fileName=QFileDialog::getOpenFileName(NULL,"Öffnen...",QString(),"*.qdigi");
     if(!fileName.isEmpty())
     {
-    ui->digiView->load(fileName);
-    setWindowTitle("QDigi "+ui->digiView->fileName);
+        isChanged=false;
+        ui->digiView->load(fileName);
+        setWindowTitle("QDigi "+ui->digiView->fileName);
     }
 }
 
@@ -86,7 +95,7 @@ void MainWindow::on_simulation_clicked()
     if(ui->simulation->isChecked())
         ui->digiView->timer.start();
     else
-    ui->digiView->timer.stop();
+        ui->digiView->timer.stop();
 }
 
 void MainWindow::on_actionNeu_triggered()
@@ -97,6 +106,7 @@ void MainWindow::on_actionNeu_triggered()
 
 void MainWindow::changed()
 {
+    isChanged=true;
     setWindowTitle("QDigi * "+ui->digiView->fileName);
 }
 
@@ -117,15 +127,42 @@ void MainWindow::on_actionRauszoomen_triggered()
 
 void MainWindow::on_actionAls_Bild_Speichern_triggered()
 {
-    QString fileName=QFileDialog::getSaveFileName(NULL,"Exportieren nach...",QString(),"Bilder (*.png *.jpg *.jpeg *.bmp)");
+    QString fileName=QFileDialog::getSaveFileName(NULL,"Exportieren nach...",QString(),"*.png");
     if(!fileName.isEmpty())
     {
-    QImage img=ui->digiView->exportImage();
-    img.save(fileName);
+        if(!fileName.endsWith(".png"))
+            fileName+=".png";
+        QImage img=ui->digiView->exportImage();
+        img.save(fileName);
     }
 }
 
 void MainWindow::on_actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen_triggered()
 {
     Updater::registerReg();
+}
+
+bool MainWindow::askSave(bool ending)
+{
+    QMessageBox box;
+    box.addButton(QMessageBox::Save);
+    box.addButton(QMessageBox::Discard);
+    if(!ending)
+        box.addButton(QMessageBox::Cancel);
+    box.exec();
+    QMessageBox::StandardButton clicked=box.standardButton(box.clickedButton());
+    if(clicked==QMessageBox::Save)
+        on_actionSpeichern_triggered();
+    else if(clicked==QMessageBox::Discard);
+    else if(clicked==QMessageBox::Cancel)
+        return false;
+    else
+        qDebug()<<clicked;
+    return true;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(isChanged)
+        askSave(true);
 }

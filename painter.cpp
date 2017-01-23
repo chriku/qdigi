@@ -95,10 +95,10 @@ int Painter::lsetPen(lua_State *L)
     {
         QColor color(lua_tostring(L,2));
         pen=QPen(color);
-        pen.setWidth(3);
+        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
     }
     if(lua_isnumber(L,3))
-        pen.setWidth(lua_tonumber(L,3));
+        pen.setWidth(lua_tonumber(L,3)*Settings::final()->gridSize());
     painter->setPen(pen);
     return 0;
 }

@@ -100,7 +100,7 @@ QPixmap Block::drawBlock() {
             if (pins[i].state)
                 pen.setColor(Qt::red);
         }
-        pen.setWidth(3);
+        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
         qpainter.setPen(pen);
         QPoint dir(Settings::final()->gridSize() / 2.0, 0);
         if (pins[i].direction == 2)

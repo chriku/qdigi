@@ -2,6 +2,8 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <QAbstractButton>
+#include <QDebug>
 
 namespace Ui {
 class SettingsDialog;
@@ -21,6 +23,11 @@ private slots:
     void on_defaultSimu_clicked(bool checked);
 
     void on_rasterSize_valueChanged(int arg1);
+
+    void on_penWidth_valueChanged(double arg1);
+    void load();
+
+    void on_buttonBox_clicked(QAbstractButton *button);
 
 private:
     Ui::SettingsDialog *ui;

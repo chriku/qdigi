@@ -7,9 +7,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
-    ui->gridType->setCurrentIndex(Settings::final()->gridType());
-    ui->defaultSimu->setChecked(Settings::final()->defaultSimu());
-    ui->rasterSize->setValue(Settings::final()->rasterSize());
+    load();
 }
 
 SettingsDialog::~SettingsDialog()
@@ -30,4 +28,27 @@ void SettingsDialog::on_defaultSimu_clicked(bool checked)
 void SettingsDialog::on_rasterSize_valueChanged(int arg1)
 {
     Settings::final()->setRasterSize(arg1);
+}
+
+void SettingsDialog::on_penWidth_valueChanged(double arg1)
+{
+    Settings::final()->setPenWidth(arg1);
+    qDebug()<<arg1;
+}
+
+void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
+{
+    if(ui->buttonBox->standardButton(button)==QDialogButtonBox::RestoreDefaults)
+    {
+        Settings::final()->clear();
+        load();
+    }
+}
+
+void SettingsDialog::load()
+{
+    ui->gridType->setCurrentIndex(Settings::final()->gridType());
+    ui->defaultSimu->setChecked(Settings::final()->defaultSimu());
+    ui->rasterSize->setValue(Settings::final()->rasterSize());
+    ui->penWidth->setValue(Settings::final()->penWidth());
 }

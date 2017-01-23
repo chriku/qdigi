@@ -11,6 +11,7 @@ Settings::Settings(QObject *parent) : QObject(parent),
     m_applicationDir=saveFile.value("applicationDir",QApplication::applicationDirPath()).toString();
     m_lastFile=saveFile.value("lastFile","").toString();
     m_rasterSize=saveFile.value("rasterSize",5).toInt();
+    m_penWidth=saveFile.value("penWidth",0.1).toDouble();
 }
 
 Settings* Settings::final()
@@ -23,6 +24,11 @@ Settings* Settings::final()
 double Settings::gridSize()
 {
     return m_gridSize;
+}
+
+double Settings::penWidth()
+{
+    return m_penWidth;
 }
 
 QString Settings::lastFile()
@@ -54,6 +60,13 @@ void Settings::setGridSize(double size, bool session)
     if(!session)
         saveFile.setValue("gridSize",QVariant((int)round(size)));
     m_gridSize=size;
+}
+
+void Settings::setPenWidth(double wid, bool session)
+{
+    if(!session)
+        saveFile.setValue("penWidth",QVariant(wid));
+    m_penWidth=wid;
 }
 
 void Settings::setRasterSize(int size, bool session)
@@ -89,4 +102,11 @@ void Settings::setApplicationDir(QString dir, bool session)
     if(!session)
         saveFile.setValue("applicationDir",dir);
     m_applicationDir=dir;
+}
+
+void Settings::clear()
+{
+    saveFile.clear();
+    settings->deleteLater();
+    settings=NULL;
 }

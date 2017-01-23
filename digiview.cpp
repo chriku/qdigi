@@ -85,11 +85,11 @@ void DigiView::paintEvent(QPaintEvent* event)
     for(int i=0;i<blocks.length();i++)
         painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock());
     QPen line(Qt::black);
-    line.setWidth(5);
+    line.setWidth(3);
     painter.setPen(line);
     if(curPoint!=QPoint(-1,-1))
         painter.drawLine(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
-    line.setWidth(3);
+    line.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<lines.length();i++)
     {
         if(lines[i].state)
@@ -99,8 +99,10 @@ void DigiView::paintEvent(QPaintEvent* event)
         painter.setPen(line);
         painter.drawLine(lines[i].line.p1()*Settings::final()->gridSize(),lines[i].line.p2()*Settings::final()->gridSize());
     }
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::black);
     for(int i=0;i<vias.length();i++)
-        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),3,3);
+        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),int(0.15*Settings::final()->gridSize()),int(0.15*Settings::final()->gridSize()));
 }
 void DigiView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -957,7 +959,7 @@ QPicture DigiView::exportPicture()
     for(int i=0;i<blocks.length();i++)
         painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock());
     QPen line(Qt::black);
-    line.setWidth(3);
+    line.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<lines.length();i++)
     {
         if(lines[i].state)
@@ -967,7 +969,9 @@ QPicture DigiView::exportPicture()
         painter.setPen(line);
         painter.drawLine(lines[i].line.p1()*Settings::final()->gridSize(),lines[i].line.p2()*Settings::final()->gridSize());
     }
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::black);
     for(int i=0;i<vias.length();i++)
-        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),3,3);
+        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),int(0.25*Settings::final()->gridSize()),int(0.25*Settings::final()->gridSize()));
     return picture;
 }

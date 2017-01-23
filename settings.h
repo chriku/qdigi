@@ -14,6 +14,7 @@ public:
         GRID_LINES
     } m_gridType;
     Q_PROPERTY(double gridSize READ gridSize WRITE setGridSize)
+    Q_PROPERTY(int rasterSize READ rasterSize WRITE setRasterSize)
     Q_PROPERTY(QString lastFile READ lastFile WRITE setLastFile)
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
@@ -22,13 +23,16 @@ public:
     double m_gridSize;
     QString m_lastFile;
     bool m_defaultSimu;
+    int m_rasterSize;
     double gridSize();
+    int rasterSize();
     QString lastFile();
     QString applicationDir();
     bool defaultSimu();
     static Settings* final();
 GRID gridType();
 void setApplicationDir(QString dir,bool session=false);
+void setRasterSize(int size,bool session=false);
 void setLastFile(QString file,bool session=false);
 void setGridSize(double size,bool session=false);
 void setDefaultSimu(bool on, bool session=false);

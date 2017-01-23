@@ -16,7 +16,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>NewDigi</string>
+   <string>QDigi</string>
   </property>
   <property name="windowIcon">
    <iconset resource="images.qrc">

@@ -10,6 +10,7 @@ Settings::Settings(QObject *parent) : QObject(parent),
     m_defaultSimu=saveFile.value("defaultSimu",false).toBool();
     m_applicationDir=saveFile.value("applicationDir",QApplication::applicationDirPath()).toString();
     m_lastFile=saveFile.value("lastFile","").toString();
+    m_rasterSize=saveFile.value("rasterSize",5).toInt();
 }
 
 Settings* Settings::final()
@@ -38,6 +39,10 @@ bool Settings::defaultSimu()
 {
     return m_defaultSimu;
 }
+int Settings::rasterSize()
+{
+    return m_rasterSize;
+}
 
 QString Settings::applicationDir()
 {
@@ -49,6 +54,13 @@ void Settings::setGridSize(double size, bool session)
     if(!session)
         saveFile.setValue("gridSize",QVariant((int)round(size)));
     m_gridSize=size;
+}
+
+void Settings::setRasterSize(int size, bool session)
+{
+    if(!session)
+        saveFile.setValue("rasterSize",QVariant(size));
+    m_rasterSize=size;
 }
 
 void Settings::setGridType(GRID type, bool session)

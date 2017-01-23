@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->simulation->setChecked(Settings::final()->defaultSimu());
     on_simulation_clicked();
     //ui->digiView->load(Settings::final()->lastFile());
-    setWindowTitle("NewDigi "+ui->digiView->fileName);
+    setWindowTitle("QDigi "+ui->digiView->fileName);
     connect(ui->digiView,SIGNAL(changed()),this,SLOT(changed()));
     BlockList list;
     QList<Block*> base;
@@ -49,7 +49,7 @@ void MainWindow::on_actionSpeichern_triggered()
     if(!ui->digiView->fileName.isEmpty())
     {
     ui->digiView->save();
-    setWindowTitle("NewDigi "+ui->digiView->fileName);
+    setWindowTitle("QDigi "+ui->digiView->fileName);
     }
     else
         on_actionSpeichern_Unter_triggered();
@@ -67,7 +67,7 @@ void MainWindow::on_actionSpeichern_Unter_triggered()
     if(!fileName.isEmpty())
     {
     ui->digiView->save(fileName);
-    setWindowTitle("NewDigi "+ui->digiView->fileName);
+    setWindowTitle("QDigi "+ui->digiView->fileName);
     }
 }
 
@@ -77,7 +77,7 @@ void MainWindow::on_action_ffnen_triggered()
     if(!fileName.isEmpty())
     {
     ui->digiView->load(fileName);
-    setWindowTitle("NewDigi "+ui->digiView->fileName);
+    setWindowTitle("QDigi "+ui->digiView->fileName);
     }
 }
 
@@ -92,12 +92,12 @@ void MainWindow::on_simulation_clicked()
 void MainWindow::on_actionNeu_triggered()
 {
     ui->digiView->load("");
-    setWindowTitle("NewDigi");
+    setWindowTitle("QDigi");
 }
 
 void MainWindow::changed()
 {
-    setWindowTitle("NewDigi * "+ui->digiView->fileName);
+    setWindowTitle("QDigi * "+ui->digiView->fileName);
 }
 
 void MainWindow::on_actionZoom_R_cksetzen_triggered()

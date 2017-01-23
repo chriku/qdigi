@@ -20,6 +20,8 @@ private slots:
 
     void on_defaultSimu_clicked(bool checked);
 
+    void on_rasterSize_valueChanged(int arg1);
+
 private:
     Ui::SettingsDialog *ui;
 };

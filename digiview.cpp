@@ -21,7 +21,7 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
     BlockList list;
     setAcceptDrops(true);
     connect(&timer,SIGNAL(timeout()),this,SLOT(timeout()));
-    timer.setInterval(10);
+    timer.setInterval(100);
     setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
@@ -38,7 +38,7 @@ void DigiView::paintEvent(QPaintEvent* event)
         for(int x=0;x<width();x+=grid)
             for(int y=0;y<height();y+=grid)
             {
-                if(y%3==0)
+                if(((y/grid)%Settings::final()->rasterSize())==0)
                     painter.setPen(lineLarge);
                 else
                     painter.setPen(lineSmall);
@@ -47,7 +47,7 @@ void DigiView::paintEvent(QPaintEvent* event)
         for(int x=0;x<width();x+=grid)
             for(int y=0;y<height();y+=grid)
             {
-                if(x%3==0)
+                if(((x/grid)%Settings::final()->rasterSize())==0)
                     painter.setPen(lineLarge);
                 else
                     painter.setPen(lineSmall);
@@ -56,9 +56,20 @@ void DigiView::paintEvent(QPaintEvent* event)
         break;
     case Settings::GRID_POINT:
     default:
+        painter.setPen(Qt::gray);
         for(int x=0;x<width();x+=grid)
             for(int y=0;y<height();y+=grid)
                 painter.drawPoint(x,y);
+        for(int x=0;x<width();x+=(grid*Settings::final()->rasterSize()))
+            for(int y=0;y<height();y+=(grid*Settings::final()->rasterSize()))
+            {
+                painter.drawLine(x,y,x+(grid*Settings::final()->rasterSize()),y);
+            }
+        for(int x=0;x<width();x+=(grid*Settings::final()->rasterSize()))
+            for(int y=0;y<height();y+=(grid*Settings::final()->rasterSize()))
+            {
+                painter.drawLine(x,y,x,y+(grid*Settings::final()->rasterSize()));
+            }
     }
     if(!dragGate.isEmpty())
     {

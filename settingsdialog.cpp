@@ -9,6 +9,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->gridType->setCurrentIndex(Settings::final()->gridType());
     ui->defaultSimu->setChecked(Settings::final()->defaultSimu());
+    ui->rasterSize->setValue(Settings::final()->rasterSize());
 }
 
 SettingsDialog::~SettingsDialog()
@@ -24,4 +25,9 @@ void SettingsDialog::on_gridType_currentIndexChanged(int index)
 void SettingsDialog::on_defaultSimu_clicked(bool checked)
 {
     Settings().final()->setDefaultSimu(checked);
+}
+
+void SettingsDialog::on_rasterSize_valueChanged(int arg1)
+{
+    Settings::final()->setRasterSize(arg1);
 }

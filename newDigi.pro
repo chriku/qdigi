@@ -79,6 +79,7 @@ SOURCES += main.cpp\
 #    compat.c \
 #    buffer.c \
 #    auxiliar.c
+    kvdiagram.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -135,12 +136,14 @@ HEADERS  += mainwindow.h \
     compat.h \
     buffer.h \
     auxiliar.h \
-    passworddialog.h
+    passworddialog.h \
+    kvdiagram.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
     settingsdialog.ui \
-    passworddialog.ui
+    passworddialog.ui \
+    kvdiagram.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"

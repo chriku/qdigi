@@ -11,6 +11,7 @@ public:
     explicit DragView(QWidget *parent = 0);
 void dropEvent(QDropEvent *event);
 void resizeEvent(QResizeEvent *event);
+void startDrag(Qt::DropActions supportedActions);
 void makeCols();
 QString category;
 QList<Block*> blockList;

@@ -1,5 +1,8 @@
 #include "dragview.h"
 #include "blocklist.h"
+#include <QDrag>
+#include <QMimeData>
+#include <QDragLeaveEvent>
 
 DragView::DragView(QWidget *parent) : QTableWidget(parent)
 {
@@ -37,4 +40,15 @@ void DragView::resizeEvent(QResizeEvent *event)
 {
     QTableWidget::resizeEvent(event);
     makeCols();
+}
+
+void DragView::startDrag(Qt::DropActions supportedActions)
+{
+    QDrag *drag = new QDrag(this);
+    QPixmap map(1,1);
+    map.fill(Qt::transparent);
+    drag->setPixmap(map);
+    const QModelIndexList indexes = selectedIndexes();
+    drag->setMimeData( model()->mimeData( indexes ) );
+    drag->exec(supportedActions);
 }

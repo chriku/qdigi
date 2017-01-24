@@ -248,6 +248,16 @@ void Block::init(Block *blk)
             lua_pop(L, 1);
         }
         lua_pop(L, 1);
+        lua_getfield(L, -1, "alt");
+        if(lua_istable(L,-1))
+        {
+            lua_pushnil(L);
+            while (lua_next(L, -2)) {
+                blk->alt.append(lua_tostring(L,-1));
+                lua_pop(L, 1);
+            }
+        }
+        lua_pop(L, 1);
         lua_getfield(L, -1, "width");
         blk->width = lua_tointeger(L, -1);
         lua_pop(L, 1);

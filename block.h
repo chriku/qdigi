@@ -24,6 +24,7 @@ class Block : public QObject
 {
     Q_OBJECT
 public:
+    QStringList alt;
     explicit Block(QObject *parent = 0);
     void load(QString fileName);
     lua_State*L;

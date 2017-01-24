@@ -69,7 +69,16 @@ void Updater::update()
             for(int i=0;i<files.size();i++)
             {
                 QJsonObject curFile=files[i].toObject();
-                QFile file(curFile["name"].toString());
+                QStringList parts=curFile["name"].toString().split('/');
+                QDir dir(Settings::final()->applicationDir());
+                for(int i=0;i<parts.length()-1;i++)
+                {
+                    if(!dir.entryList().contains(parts[i]))
+                        dir.mkdir(parts[i]);
+                    dir.cd(parts[i]);
+                }
+                QString name=dir.absoluteFilePath(parts.last());
+                QFile file(name);
                 if(file.exists())
                 {
                     QFileInfo info(file);
@@ -86,7 +95,7 @@ void Updater::update()
             if(requestFiles.length()==0)
                 return;
             screen.showMessage(""+QString::number(requestFiles.length())+" Dateien werden heruntergeladen",Qt::AlignCenter);
-            for(int i=0;i<requestFiles.length();i++)
+                for(int i=0;i<requestFiles.length();i++)
             {
                 QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+requestFiles[i]));
                 QNetworkReply* rep=manager.get(req);

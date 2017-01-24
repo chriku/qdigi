@@ -9,4 +9,4 @@ end
 function getState()
   return pins[1] or pins[2] or pins[3]
 end
-return {width=3,height=3,name="OR3",pins={{0,1,"INPUT"},{0,3,"INPUT"},{0,2,"INPUT"},{4,2,"OUTPUT"}},category="base"}
+return {width=3,height=3,name="OR3",pins={{0,1,"INPUT"},{0,3,"INPUT"},{0,2,"INPUT"},{4,2,"OUTPUT"}},category="base",alt={"AND3"}}

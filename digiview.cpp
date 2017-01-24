@@ -455,6 +455,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if((blocks[i].pos.y()<=p.y())&&((blocks[i].pos.y()+blocks[i].block->height)>=p.y()))
                 block=i;
     int pin=-1;
+    QStringList alt;
     if(block>=0)
     {
         for(int i=0;i<blocks[block].block->pins.length();i++)
@@ -468,6 +469,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(-1,0)==p)
                     pin=i;
         }
+        alt=blocks[block].block->alt;
     }
     int line=-1;
     double dist=1.1;
@@ -540,6 +542,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QAction* delLineNetAct=NULL;
     QAction* delViaAct=NULL;
     QAction* changePinAct=NULL;
+    QList<QAction*> altAction;
     if(lcnt==2)
     {
         addViaAct=menu.addAction("Knotenpunkt hinzufügen");
@@ -548,6 +551,14 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     if(block>=0)
     {
         delBlockAct=menu.addAction("Block Löschen");
+        if(alt.length()>0)
+        {
+            QMenu* subMenu=menu.addMenu("Umwandeln in");
+            for(int i=0;i<alt.length();i++)
+            {
+                altAction.append(subMenu->addAction(alt[i]));
+            }
+        }
         ok=true;
     }
     if(via>=0)
@@ -574,12 +585,21 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     {
         QAction* act=menu.exec(event->globalPos());
         if(block>=0)
+        {
             if(act==delBlockAct)
             {
                 blocks[block].block->deleteLater();
                 blocks.removeAt(block);
                 emit changed();
             }
+            for(int i=0;i<alt.length();i++)
+                if(altAction[i]==act)
+                {
+                    blocks[block].block->deleteLater();
+                    blocks[block].block=BlockList::newBlock(alt[i]);
+                    emit changed();
+                }
+        }
         if(via>=0)
             if(act==delViaAct)
             {

@@ -59,6 +59,7 @@ public:
     QList<QPoint> allIntersect(QLine line);
     QPicture exportPicture();
     QImage exportImage();
+    void loadJson(QByteArray json);
 signals:
     void changed();
 public slots:

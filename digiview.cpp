@@ -1,3 +1,4 @@
+#include <QMessageBox>
 #include <QFileDialog>
 #include <QMenu>
 #include "settings.h"
@@ -13,6 +14,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QDebug>
+#include <zip.h>
 
 DigiView::DigiView(QWidget *parent) : QWidget(parent)
 {
@@ -271,10 +273,15 @@ void DigiView::save(QString where)
         v.append(c);
     }
     root.insert("vias",v);
-    QFile file(where);
-    file.open(QFile::WriteOnly|QFile::Truncate);
-    file.write(QJsonDocument(root).toJson());
-    file.close();
+    int err=0;
+    zip_t* arch=zip_open(where.toStdString().data(),ZIP_CREATE|ZIP_TRUNCATE,&err);
+    QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
+    zip_source_t * source=zip_source_buffer(arch,data.data(),data.length(),0);
+    zip_file_add(arch,"data.json",source,ZIP_FL_OVERWRITE);
+    QByteArray version="0.1";
+    source=zip_source_buffer(arch,version.data(),version.length(),0);
+    zip_file_add(arch,"version.txt",source,ZIP_FL_OVERWRITE);
+    zip_close(arch);
     Settings::final()->setLastFile(fileName);
 }
 
@@ -287,55 +294,57 @@ void DigiView::load(QString where)
     vias.clear();
     QFile file(where);
     file.open(QFile::ReadOnly);
-    QJsonObject root=QJsonDocument::fromJson(file.readAll()).object();
-    file.close();
-    QJsonArray l=root["lines"].toArray();
-    for(int i=0;i<l.size();i++)
-    {
-        line_t c;
-        c.line.setP1(QPoint(l[i].toObject()["x1"].toInt(),l[i].toObject()["y1"].toInt()));
-        c.line.setP2(QPoint(l[i].toObject()["x2"].toInt(),l[i].toObject()["y2"].toInt()));
-        lines.append(c);
-    }
-    QJsonArray v=root["vias"].toArray();
-    for(int i=0;i<v.size();i++)
-    {
-        vias.append(QPoint(v[i].toObject()["x"].toInt(),v[i].toObject()["y"].toInt()));
-    }
-    QJsonArray g=root["blocks"].toArray();
-    for(int i=0;i<g.size();i++)
-    {
-        block_t c;
-        c.pos=QPoint(g[i].toObject()["x"].toInt(),g[i].toObject()["y"].toInt());
-        c.block=0;
-        BlockList list;
-        for(int j=0;j<list.blocks.length();j++)
-            if(list.blocks[j]->name==g[i].toObject()["name"].toString())
-            {
-                c.block=list.blocks[j]->clone();
-            }
-        QJsonArray pins=g[i].toObject()["pins"].toArray();
-        for(int j=0;j<pins.size();j++)
-        {
-            QJsonObject pin=pins[j].toObject();
-            if(c.block->pins.length()>j)
-                c.block->pins[j].type=pin["type"].toBool();
-        }
-        if(c.block!=0)
-            blocks.append(c);
-    }
-    for(int i=0;i<blocks.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",blocks[i].pos.x());
-        c.insert("y",blocks[i].pos.y());
-        c.insert("name",blocks[i].block->name);
-        g.append(c);
-    }
+    QByteArray header=file.read(4);
+    bool isZip=false;
+    if(header.at(0)==0x50)
+        if(header.at(1)==0x4B)
+            if(header.at(2)==0x03)
+                if(header.at(3)==0x04)
+                {
+                    isZip=true;
+                }
+    qDebug()<<header.toHex();
+    file.seek(0);
     fileName=where;
     Settings::final()->setLastFile(fileName);
-    update();
-    cleanUp();
+    if(!isZip)
+    {
+        loadJson(file.readAll());
+        file.close();
+    }
+    else
+    {
+        int err;
+        zip_t *arch=zip_fdopen(file.handle(),0,&err);
+        qDebug()<<err<<ZIP_ER_INCONS<<ZIP_ER_INCONS<<ZIP_ER_MEMORY<<ZIP_ER_NOZIP<<ZIP_ER_OPEN<<ZIP_ER_READ<<ZIP_ER_SEEK;
+        zip_file_t* vfile=zip_fopen(arch,"version.txt",0);
+        QByteArray version(128,0);
+        int len=zip_fread(vfile,version.data(),version.length());
+        version=version.left(len);
+        qDebug()<<version;
+        version=version.replace("\r","");
+        version=version.replace("\n","");
+        zip_fclose(vfile);
+        if(version=="0.1")
+        {
+            QByteArray data;
+            zip_file_t* dfile=zip_fopen(arch,"data.json",0);
+            int len;
+            do {
+                QByteArray buf(1024,0);
+                len=zip_fread(dfile,buf.data(),buf.length());
+                buf=buf.left(len);
+                data+=buf;
+            }while(len>0);
+            loadJson(data);
+        }
+        else
+        {
+            QMessageBox::warning(NULL,"QDigi Fehler","Unbekanntes Dateiformat");
+        }
+        zip_close(arch);
+        file.close();
+    }
 }
 
 QPoint DigiView::toGrid(QPoint in)
@@ -994,4 +1003,54 @@ QPicture DigiView::exportPicture()
     for(int i=0;i<vias.length();i++)
         painter.drawEllipse(vias[i]*Settings::final()->gridSize(),int(0.25*Settings::final()->gridSize()),int(0.25*Settings::final()->gridSize()));
     return picture;
+}
+
+void DigiView::loadJson(QByteArray json)
+{
+    QJsonObject root=QJsonDocument::fromJson(json).object();
+    QJsonArray l=root["lines"].toArray();
+    for(int i=0;i<l.size();i++)
+    {
+        line_t c;
+        c.line.setP1(QPoint(l[i].toObject()["x1"].toInt(),l[i].toObject()["y1"].toInt()));
+        c.line.setP2(QPoint(l[i].toObject()["x2"].toInt(),l[i].toObject()["y2"].toInt()));
+        lines.append(c);
+    }
+    QJsonArray v=root["vias"].toArray();
+    for(int i=0;i<v.size();i++)
+    {
+        vias.append(QPoint(v[i].toObject()["x"].toInt(),v[i].toObject()["y"].toInt()));
+    }
+    QJsonArray g=root["blocks"].toArray();
+    for(int i=0;i<g.size();i++)
+    {
+        block_t c;
+        c.pos=QPoint(g[i].toObject()["x"].toInt(),g[i].toObject()["y"].toInt());
+        c.block=0;
+        BlockList list;
+        for(int j=0;j<list.blocks.length();j++)
+            if(list.blocks[j]->name==g[i].toObject()["name"].toString())
+            {
+                c.block=list.blocks[j]->clone();
+            }
+        QJsonArray pins=g[i].toObject()["pins"].toArray();
+        for(int j=0;j<pins.size();j++)
+        {
+            QJsonObject pin=pins[j].toObject();
+            if(c.block->pins.length()>j)
+                c.block->pins[j].type=pin["type"].toBool();
+        }
+        if(c.block!=0)
+            blocks.append(c);
+    }
+    for(int i=0;i<blocks.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x",blocks[i].pos.x());
+        c.insert("y",blocks[i].pos.y());
+        c.insert("name",blocks[i].block->name);
+        g.append(c);
+    }
+    cleanUp();
+    update();
 }

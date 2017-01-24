@@ -1,10 +1,9 @@
-state=false
-old=false
+state={false,old=false}
 function paintEvent(painter)
-  if pins[2]==false and old==true then
-    state=pins[1]
+  if pins[2]==false and state.old==true then
+    state[1]=pins[1]
   end
-  old=pins[2]
+  state.old=pins[2]
   painter:setPen("black")
   painter:setBrush()
   painter:drawRect(0.5,0.5,3,3)
@@ -15,9 +14,9 @@ function paintEvent(painter)
 end
 function getState(pin)
   if pin==3 then
-    return state
+    return state[1]
   else
-    return not state
+    return not state[1]
   end
 end
 return {width=3,height=3,name="DC-FlipFlop",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="base"}

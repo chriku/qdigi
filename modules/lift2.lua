@@ -1,11 +1,13 @@
-pos=0.0
-otime=0
+state={}
+state.pos=0.0
+state.otime=0
 function paintEvent(painter)
-  if otime==0 then
-    otime=time
+  pos=state.pos
+  if state.otime==0 then
+    state.otime=time
   end
-  passed=time-otime
-  otime=time
+  passed=time-state.otime
+  state.otime=time
   if pins[1] and not pins[2] then
     pos=pos+(passed/2000.0)
   elseif pins[2] and not pins[1] then
@@ -23,22 +25,23 @@ function paintEvent(painter)
   painter:drawLine(1.5,8,2.5,8)
   painter:drawLine(1.5,5,2.5,5)
   painter:drawEllipse(1.5,2+(6.0*pos),0.5)
+  state.pos=pos
 end
 function getState(pin)
   if pin==3 then
-    if pos<0.001 then
+    if state.pos<0.001 then
       return true
     end
   end
   if pin==4 then
-    if pos>0.49 then
-      if pos<0.51 then
+    if state.pos>0.49 then
+      if state.pos<0.51 then
         return true
       end
     end
   end
   if pin==5 then
-    if pos>0.999 then
+    if state.pos>0.999 then
       return true
     end
   end

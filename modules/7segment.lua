@@ -1,5 +1,4 @@
 state=false
-num=0
 text={"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"}
 text[0]="0"
 function paintEvent(painter)

@@ -1,16 +1,21 @@
 state={}
+text={"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"}
+text[0]="0"
 for i=1,16 do
   state[i]=false
 end
 function paintEvent(painter)
-  painter:setPen()
   for i=1,16 do
     if state[i] then
       painter:setBrush("red")
     else
       painter:setBrush("black")
     end
+    painter:setPen()
     painter:drawRect(0.5,0.5+(i-1),1,1)
+    painter:setPen("white")
+    txt=""
+    painter:drawText(text[i-1],0.5,0.5+(i-1),1,1)
   end
 end
 function onclick(x,y)

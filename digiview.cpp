@@ -959,6 +959,7 @@ void DigiView::cleanUp()
             if(num>=2)
                 if(cnt>2)
                 {
+                    if(!vias.contains(point))
                     vias.append(point);
                 }
         }

@@ -1,21 +1,22 @@
 state=false
-text={"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"}
-text[0]="0"
 function paintEvent(painter)
   num=0
-  for i=1,4 do
-    num=num<<1
-    if pins[5-i] then
-      num=num|1
-    end
-  end
-  painter:setPen("black")
-  painter:setBrush(nil)
-  painter:setFont(nil,3)
-  painter:drawText(text[num],0.5,0.5,2,4)
-  painter:drawRect(0.5,0.5,2,4)
+  painter:drawRect(0.5,0.5,4,7)
+  w=0.2
+  if pins[1] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(1.5,1,3.5,1)--a
+  if pins[2] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(3.5,1,3.5,4)--b
+  if pins[3] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(3.5,7,3.5,4)--c
+  if pins[4] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(1.5,7,3.5,7)--d
+  if pins[5] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(1.5,7,1.5,4)--e
+  if pins[6] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(1.5,1,1.5,4)--f
+  if pins[7] then painter:setPen("black",w) else painter:setPen("transparent",w) end
+  painter:drawLine(1.5,4,3.5,4)--g
+  --painter:drawLine(2.1,3,2.9,3)
 end
-function getState(pin)
-
-end
-return {width=2,height=4,name="Anzeige",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="base"}
+return {width=4,height=7,name="7 Segment",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"}},category="base"}

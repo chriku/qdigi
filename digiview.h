@@ -26,6 +26,8 @@ class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    QList<int> selectedBlocks;
+    void clearSelection();
     QString fileName;
     void cleanUp();
     explicit DigiView(QWidget *parent = 0);

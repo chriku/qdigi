@@ -19,6 +19,7 @@ void Updater::update()
     rfile.remove();
     screen.showMessage("Auf Updates prüfen...",Qt::AlignCenter);
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/index.cgi"));
+    req.setRawHeader("LICENSE","LicenseText");
     QNetworkReply*rep=manager.get(req);
     QEventLoop loop;
     connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));

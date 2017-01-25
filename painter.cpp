@@ -5,6 +5,8 @@
 Painter::Painter(QPainter *painter, QObject *parent) : QObject(parent)
 {
     Painter::painter=painter;
+    QFont font("Arial",Settings::final()->gridSize()*0.5);
+painter->setFont(font);
 }
 void Painter::drawSpline(QPainter *painter, QPolygonF spline,bool cyclic)
 {
@@ -105,6 +107,7 @@ int Painter::lsetPen(lua_State *L)
 
 int Painter::lsetFont(lua_State *L)
 {
+
     luaL_checktype(L,1,LUA_TLIGHTUSERDATA);
     QPainter*painter=(QPainter*)lua_touserdata(L,1);
     QFont font("Arial",Settings::final()->gridSize());

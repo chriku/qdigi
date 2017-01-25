@@ -294,6 +294,8 @@ void DigiView::load(QString where)
     vias.clear();
     QFile file(where);
     file.open(QFile::ReadOnly);
+    if(!file.isOpen())
+        return;
     QByteArray header=file.read(4);
     bool isZip=false;
     if(header.at(0)==0x50)
@@ -303,7 +305,6 @@ void DigiView::load(QString where)
                 {
                     isZip=true;
                 }
-    qDebug()<<header.toHex();
     file.seek(0);
     fileName=where;
     Settings::final()->setLastFile(fileName);
@@ -316,12 +317,10 @@ void DigiView::load(QString where)
     {
         int err;
         zip_t *arch=zip_fdopen(file.handle(),0,&err);
-        qDebug()<<err<<ZIP_ER_INCONS<<ZIP_ER_INCONS<<ZIP_ER_MEMORY<<ZIP_ER_NOZIP<<ZIP_ER_OPEN<<ZIP_ER_READ<<ZIP_ER_SEEK;
         zip_file_t* vfile=zip_fopen(arch,"version.txt",0);
         QByteArray version(128,0);
         int len=zip_fread(vfile,version.data(),version.length());
         version=version.left(len);
-        qDebug()<<version;
         version=version.replace("\r","");
         version=version.replace("\n","");
         zip_fclose(vfile);
@@ -460,8 +459,8 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QPoint p=toGrid(event->pos());
     QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
     for(int i=0;i<blocks.length();i++)
-        if((blocks[i].pos.x()<=p.x())&&((blocks[i].pos.x()+blocks[i].block->width)>=p.x()))
-            if((blocks[i].pos.y()<=p.y())&&((blocks[i].pos.y()+blocks[i].block->height)>=p.y()))
+        if((blocks[i].pos.x()<=p.x())&&((blocks[i].pos.x()+blocks[i].block->width)>=(p.x()-1)))
+            if((blocks[i].pos.y()<=p.y())&&((blocks[i].pos.y()+blocks[i].block->height)>=(p.y()-1)))
                 block=i;
     int pin=-1;
     QStringList alt;

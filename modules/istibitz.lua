@@ -6,7 +6,7 @@ function paintEvent(painter)
   painter:setPen("black")
   painter:setBrush(nil)
   painter:setFont(nil,0.8)
-  painter:drawText(text[state].."\nStibitz",0.5,0.5,2,4)
+  painter:drawText(text[state].."\nR\nStibitz",0.5,0.5,2,4)
   painter:drawRect(0.5,0.5,2,4)
 end
 function getStateOrig(pin)

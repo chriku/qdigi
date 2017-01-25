@@ -14,6 +14,11 @@ class KVDiagram : public QDialog
 public:
     explicit KVDiagram(QWidget *parent = 0);
     ~KVDiagram();
+void redoTable();
+private slots:
+    void on_inputs_valueChanged(int arg1);
+
+    void on_buttonBox_accepted();
 
 private:
     Ui::KVDiagram *ui;

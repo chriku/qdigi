@@ -10,7 +10,7 @@ RC_FILE = app.rc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = newDigi
+TARGET = qdigi
 TEMPLATE = app
 win32:LIBS += -lws2_32
 #CONFIG += console

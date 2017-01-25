@@ -58,14 +58,20 @@ QPixmap Block::drawBlock() {
     qpainter.setPen(Qt::black);
     for (int i = 0; i < pins.length(); i++) {
         QPen pen(Qt::black);
+        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
+        bool err=false;
         if (pins[i].direction == 2) {
             if (getState(i))
                 pen.setColor(Qt::red);
         } else {
-            if (pins[i].state)
+            if (pins[i].state==2)
+            {
+                err=true;
+                pen.setColor(QColor::fromRgbF(1,0.5,0));
+            }
+            else if (pins[i].state)
                 pen.setColor(Qt::red);
         }
-        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
         qpainter.setPen(pen);
         QPoint dir(Settings::final()->gridSize() / 2.0, 0);
         if (pins[i].direction == 2)
@@ -179,6 +185,8 @@ void Block::pushGlobal(lua_State *L) {
         bool cur = pins[i].state;
         if (pins[i].type)
             cur = !cur;
+        if(pins[i].state==2)
+            cur=false;
         lua_pushboolean(L, cur);
         lua_seti(L, -2, i + 1);
     }

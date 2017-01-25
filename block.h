@@ -12,7 +12,7 @@ extern "C" {
 struct pin_t {
     QPoint point;
     int direction;
-    bool state;
+    int state;
     bool type;
     pin_t()
     {

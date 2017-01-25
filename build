@@ -11,4 +11,4 @@ docker build -t qt .
 ####  docker run -it qt bash
 
 # Now extract the generated binary
-docker run qt cat release/newDigi.exe >newDigi.exe
+docker run qt cat release/qdigi.exe >qdigi.exe

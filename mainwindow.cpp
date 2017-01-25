@@ -66,10 +66,16 @@ void MainWindow::on_actionEinstellungen_triggered()
 
 void MainWindow::on_actionSpeichern_Unter_triggered()
 {
-    QString fileName=QFileDialog::getSaveFileName(NULL,"Speichern unter...",QString(),"*.qdigi");
-    qDebug()<<fileName;
-    if(!fileName.isEmpty())
+    QFileDialog fd;
+    fd.setDefaultSuffix(".qdigi");
+    fd.setAcceptMode(QFileDialog::AcceptSave);
+    fd.setWindowTitle("Speichern Unter...");
+    fd.setNameFilter("QDigi (*.qdigi)");
+    fd.exec();
+    if(fd.selectedFiles().length()>0)
     {
+        QString fileName=fd.selectedFiles().first();
+        qDebug()<<fileName;
         ui->digiView->save(fileName);
         isChanged=false;
         setWindowTitle("QDigi "+ui->digiView->fileName);

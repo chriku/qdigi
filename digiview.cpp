@@ -115,7 +115,18 @@ void DigiView::paintEvent(QPaintEvent* event)
             painter.drawRect(rect);
         }
     for(int i=0;i<blocks.length();i++)
+    {
         painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock());
+        for(int j=0;j<blocks[i].block->pins.length();j++)
+            if(blocks[i].block->pins[j].state==2)
+            {
+                QPen pen(QColor::fromRgbF(1,0.5,0));
+                pen.setWidth(0);
+                painter.setPen(pen);
+                for(int r=5;r<(Settings::final()->gridSize());r+=5)
+                    painter.drawEllipse(((blocks[i].pos+blocks[i].block->pins[j].point) * Settings::final()->gridSize()),r,r);
+            }
+    }
     QPen line(Qt::black);
     line.setWidth(3);
     painter.setPen(line);
@@ -301,6 +312,8 @@ void DigiView::save(QString where)
     if(where.isEmpty())
         return;
     fileName=where;
+    if(!where.endsWith(".qdigi"))
+        where+=".qdigi";
     QJsonObject root;
     QJsonArray l;
     for(int i=0;i<lines.length();i++)
@@ -482,7 +495,7 @@ void DigiView::timeout()
                             }
                 }
             }
-    QPair<int,int> offen;
+    QList<QPair<int,int>> offen;
     for(int i=0;i<done.length();i++)
     {
         bool roundOk=true;
@@ -491,7 +504,7 @@ void DigiView::timeout()
             {
                 ok=false;
                 roundOk=false;
-                offen=QPair<int,int>(i,j);
+                offen.append(QPair<int,int>(i,j));
             }
         if(!roundOk)
             bar->showMessage("Offene Eingänge",1000);
@@ -512,7 +525,8 @@ void DigiView::timeout()
                     blocks[i].block->pins[j].state=false;
         for(int i=0;i<lines.length();i++)
             lines[i].state=false;
-        blocks[offen.first].block->pins[offen.second].state=true;
+        for(int i=0;i<offen.length();i++)
+        blocks[offen[i].first].block->pins[offen[i].second].state=2;
     }
     update();
 }

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include "updater.h"
+#include "kvdiagram.h"
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <winreg.h>
@@ -9,6 +10,12 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    if(a.arguments().contains("kv"))
+    {
+        KVDiagram diag;
+        diag.exec();
+        return 0;
+    }
     Updater updater;
     updater.update();
 /*    long unsigned int len=1024*1024;

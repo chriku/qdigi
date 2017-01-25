@@ -166,3 +166,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(isChanged)
         askSave(true);
 }
+
+void MainWindow::on_actionL_schen_triggered()
+{
+    ui->digiView->deleteSelection();
+}

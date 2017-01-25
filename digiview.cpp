@@ -97,6 +97,17 @@ void DigiView::paintEvent(QPaintEvent* event)
         rect.setHeight((blocks[selectedBlocks[i]].block->height+1)*Settings::final()->gridSize());
         painter.drawRect(rect);
     }
+    for(int i=0;i<selectedLines.length();i++)
+    {
+        QRect rect(lines[selectedLines[i]].line.p1()*Settings::final()->gridSize(),lines[selectedLines[i]].line.p2()*Settings::final()->gridSize());
+        rect.setWidth(fmax(1,rect.width()));
+        rect.setHeight(fmax(1,rect.height()));
+        rect.setX(rect.x()-4);
+        rect.setY(rect.y()-4);
+        rect.setWidth(rect.width()+8);
+        rect.setHeight(rect.height()+8);
+        painter.drawRect(rect);
+    }
     if(curPoint!=QPoint(-1,-1))
         if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
         {
@@ -245,6 +256,14 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                 QRect blk(blocks[i].pos,QSize(blocks[i].block->width+1,blocks[i].block->height+1));
                 if(sel.intersects(blk))
                     selectedBlocks.append(i);
+            }
+            for(int i=0;i<lines.length();i++)
+            {
+                QRect line(lines[i].line.p1(),lines[i].line.p2());
+                line.setWidth(fmax(1,line.width()));
+                line.setHeight(fmax(1,line.height()));
+                if(sel.intersects(line))
+                    selectedLines.append(i);
             }
         }
         if(curPoint==startPoint)
@@ -666,18 +685,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         {
             if(act==delSelAct)
             {
-                for(int i=0;i<selectedBlocks.length();i++)
-                    blocks[selectedBlocks[i]].block->deleteLater();
-                for(int i=0;i<selectedBlocks.length();i++)
-                {
-                    int at=selectedBlocks[i];
-                    blocks.removeAt(at);
-                    for(int j=0;j<selectedBlocks.length();j++)
-                        if(selectedBlocks[j]>at)
-                            selectedBlocks[j]--;
-                }
-                emit changed();
-                clearSelection();
+                deleteSelection();
             }
         }
         if(via>=0)
@@ -1135,5 +1143,30 @@ void DigiView::loadJson(QByteArray json)
 void DigiView::clearSelection()
 {
     selectedBlocks.clear();
+    selectedLines.clear();
     update();
+}
+
+void DigiView::deleteSelection()
+{
+    for(int i=0;i<selectedBlocks.length();i++)
+        blocks[selectedBlocks[i]].block->deleteLater();
+    for(int i=0;i<selectedBlocks.length();i++)
+    {
+        int at=selectedBlocks[i];
+        blocks.removeAt(at);
+        for(int j=0;j<selectedBlocks.length();j++)
+            if(selectedBlocks[j]>at)
+                selectedBlocks[j]--;
+    }
+    for(int i=0;i<selectedLines.length();i++)
+    {
+        int at=selectedLines[i];
+        lines.removeAt(at);
+        for(int j=0;j<selectedLines.length();j++)
+            if(selectedLines[j]>at)
+                selectedLines[j]--;
+    }
+    emit changed();
+    clearSelection();
 }

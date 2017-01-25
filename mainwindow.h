@@ -40,6 +40,8 @@ private slots:
 
     void on_actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen_triggered();
     bool askSave(bool ending);
+    void on_actionL_schen_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

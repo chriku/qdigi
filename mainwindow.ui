@@ -366,8 +366,15 @@
     <addaction name="actionReinzoomen"/>
     <addaction name="actionRauszoomen"/>
    </widget>
+   <widget class="QMenu" name="menuAuswahl">
+    <property name="title">
+     <string>Auswahl</string>
+    </property>
+    <addaction name="actionL_schen"/>
+   </widget>
    <addaction name="menuDatei"/>
    <addaction name="menuAnsicht"/>
+   <addaction name="menuAuswahl"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSpeichern">
@@ -442,6 +449,14 @@
   <action name="actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen">
    <property name="text">
     <string>Programm zum Öffnen von .qdigi Dateien eintragen</string>
+   </property>
+  </action>
+  <action name="actionL_schen">
+   <property name="text">
+    <string>Löschen</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>

@@ -19,4 +19,4 @@ function getState(pin)
   end
   return state[pin-2]
 end
-return {width=3,height=3,name="Compare",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"}},category="base"}
+return {width=3,height=3,name="Compare4",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"}},category="base"}

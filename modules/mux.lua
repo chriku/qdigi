@@ -1,6 +1,7 @@
 function paintEvent(painter)
   painter:setPen("black")
   painter:setBrush()
+  painter:setFont(nil,0.5)
   painter:drawLine(0.5,0.5,3.5,0.5)
   painter:drawLine(0.5,0.5,0.5,2.5)
   painter:drawLine(3.5,0.5,3.5,2.5)

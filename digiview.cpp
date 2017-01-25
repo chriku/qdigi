@@ -134,8 +134,9 @@ void DigiView::paintEvent(QPaintEvent* event)
     }
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::black);
+    int d=(2.0*Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<vias.length();i++)
-        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),int(0.15*Settings::final()->gridSize()),int(0.15*Settings::final()->gridSize()));
+        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),d,d);
 }
 void DigiView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -248,6 +249,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                 cleanUp();
                 emit changed();
             }
+        if(curPoint!=startPoint)
         if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
         {
             QRect sel(curPoint,startPoint);
@@ -1169,4 +1171,5 @@ void DigiView::deleteSelection()
     }
     emit changed();
     clearSelection();
+    cleanUp();
 }

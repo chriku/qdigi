@@ -46,6 +46,7 @@ void Updater::update()
                     if(chash!=nhash)
                         if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
                         {
+                            screen.showMessage("Herunterladen...",Qt::AlignCenter);
                             QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+root["exeName"].toString()));
                             QNetworkReply* rep=manager.get(req);
                             connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
@@ -53,7 +54,7 @@ void Updater::update()
                             if(rep->error()==QNetworkReply::NoError)
                             {
                                 QByteArray newExe=rep->readAll();
-                                QString path=QApplication::applicationFilePath();
+                                QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
                                 QDir dir(QApplication::applicationDirPath());
                                 dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
                                 QFile file(path);

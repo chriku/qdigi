@@ -10,9 +10,10 @@ extern "C" {
 #include "luasocket.h"
 }
 
-Block::Block(QObject *parent) : QObject(parent) { L = luaL_newstate(); }
+Block::Block(QObject *parent) : QObject(parent) { L = luaL_newstate(); connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));}
 
 void Block::load(QString fileName) {
+    watcher.addPath(fileName);
     Block::fileName = fileName;
     QFile file(fileName);
     file.open(QFile::ReadOnly);
@@ -273,6 +274,10 @@ void Block::init(Block *blk)
         lua_getfield(L, -1, "height");
         blk->height = lua_tointeger(L, -1);
         lua_pop(L, 1);
+        lua_getfield(L, -1, "description");
+        if(lua_isstring(L,-1))
+        blk->description = QByteArray(lua_tostring(L, -1));
+        lua_pop(L, 1);
         lua_getfield(L, -1, "name");
         blk->name = QByteArray(lua_tostring(L, -1));
         lua_pop(L, 1);
@@ -284,4 +289,9 @@ void Block::init(Block *blk)
         blk->state=luaL_ref(L,LUA_REGISTRYINDEX);
     } else
         qDebug() << "ERR1" << lua_tostring(L, -1);
+}
+
+void Block::fileChanged(const QString &path)
+{
+    //load(path);
 }

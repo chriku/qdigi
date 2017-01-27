@@ -1,4 +1,5 @@
 #include "dragview.h"
+#include <QDebug>
 #include <QApplication>
 #include "blocklist.h"
 #include <QDrag>
@@ -26,6 +27,7 @@ void DragView::makeCols()
     {
         QPixmap pix=blockList[i]->drawBlock(Qt::black);
         QTableWidgetItem* item=new QTableWidgetItem(QIcon(pix),blockList[i]->name);
+        item->setToolTip(blockList[i]->description);
         int col=i%wid;
         int row=i/wid;
         setItem(row,col,item);

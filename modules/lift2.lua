@@ -48,4 +48,4 @@ function getState(pin)
   end
   return false
 end
-return {width=3,height=9,name="Lift 2",pins={{0,1,"INPUT"},{0,2,"INPUT"},{3,2,"OUTPUT"},{3,5,"OUTPUT"},{3,8,"OUTPUT"}},category="other"}
+return {width=3,height=9,name="Lift 2",pins={{0,1,"INPUT"},{0,2,"INPUT"},{3,2,"OUTPUT"},{3,5,"OUTPUT"},{3,8,"OUTPUT"}},category="other",description="Lift mit 3 Haltestellen"}

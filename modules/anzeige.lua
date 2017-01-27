@@ -19,4 +19,4 @@ end
 function getState(pin)
 
 end
-return {width=2,height=4,name="Anzeige",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="base"}
+return {width=2,height=4,name="Anzeige",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="base",description="HEX-Ausgabe"}

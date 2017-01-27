@@ -48,4 +48,4 @@ function makeState()
     state=state|(cstate<<(i-1))
   end
 end
-return {width=2,height=7,name="7-Segment Coder",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"},{3,5,"OUTPUT"},{3,6,"OUTPUT"},{3,7,"OUTPUT"},{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="coder"}
+return {width=2,height=7,name="7-Segment Coder",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"},{3,5,"OUTPUT"},{3,6,"OUTPUT"},{3,7,"OUTPUT"},{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="coder",description="Binär nach 7-Segment-Kodierer"}

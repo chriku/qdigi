@@ -21,4 +21,4 @@ function getState(pin)
     return not state[1]
   end
 end
-return {width=3,height=3,name="DC-FlipFlop",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="base"}
+return {width=3,height=3,name="DC-FlipFlop",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="base",description="FlipFlop mit Daten und Clock"}

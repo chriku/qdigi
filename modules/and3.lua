@@ -8,4 +8,4 @@ end
 function getState()
   return pins[1] and pins[2] and pins[3]
 end
-return {width=3,height=3,name="AND3",pins={{0,1,"INPUT"},{0,3,"INPUT"},{0,2,"INPUT"},{4,2,"OUTPUT"}},category="base",alt={"OR3"}}
+return {width=3,height=3,name="AND3",pins={{0,1,"INPUT"},{0,3,"INPUT"},{0,2,"INPUT"},{4,2,"OUTPUT"}},category="base",alt={"OR3"},description="Und-Gatter mit 3 Eingängen"}

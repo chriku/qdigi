@@ -8,6 +8,7 @@ function paintEvent(painter,color)
   else
     painter:setBrush("black")
   end
+  painter:setPen(color)
   painter:drawEllipse(1,1,0.5,0.5)
 end
 function onpress()
@@ -19,4 +20,4 @@ end
 function getState(pin)
   return state
 end
-return {width=2,height=1,name="Taster",pins={{2,1,"OUTPUT"}},category="base"}
+return {width=2,height=1,name="Taster",pins={{2,1,"OUTPUT"}},category="base",description="Taster"}

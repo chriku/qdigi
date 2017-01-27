@@ -1,6 +1,6 @@
 #ifndef BLOCK_H
 #define BLOCK_H
-
+#include <QFileSystemWatcher>
 #include <QPainter>
 #include <QObject>
 extern "C" {
@@ -24,6 +24,7 @@ class Block : public QObject
 {
     Q_OBJECT
 public:
+    QString description;
     QStringList alt;
     explicit Block(QObject *parent = 0);
     void load(QString fileName);
@@ -46,10 +47,12 @@ void onrelease(QPointF where);
 bool getState(int pin);
 static void init(Block* blk);
 ~Block();
+QFileSystemWatcher watcher;
 
 signals:
 
 public slots:
+void fileChanged(const QString &path);
 };
 
 #endif // BLOCK_H

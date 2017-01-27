@@ -13,4 +13,4 @@ function paintEvent(painter)
 end
 function getState(pin)
 end
-return {width=2,height=1,name="Minus",pins={{0,1,"INPUT"}},category="math"}
+return {width=2,height=1,name="Minus",pins={{0,1,"INPUT"}},category="math",description="Minus LED"}

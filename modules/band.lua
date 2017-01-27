@@ -68,4 +68,4 @@ function getState(pin)
   end
   return false
 end
-return {width=9,height=9,name="Band",pins={{0,1,"INPUT"},{10,1,"OUTPUT"},{10,3,"OUTPUT"}},category="other"}
+return {width=9,height=9,name="Band",pins={{0,1,"INPUT"},{10,1,"OUTPUT"},{10,3,"OUTPUT"}},category="other",description="Band-Simulation"}

@@ -43,4 +43,4 @@ return {width=3,height=5,name="ADD1",pins={
 {0,5,"INPUT"},
 
 {4,1,"OUTPUT"},
-{4,5,"OUTPUT"}},category="base"}
+{4,5,"OUTPUT"}},category="base",description="1 Bit Volladdierer"}

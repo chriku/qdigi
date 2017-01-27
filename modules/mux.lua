@@ -28,4 +28,4 @@ function getState()
   ins={pins[3],pins[4],pins[5],pins[6]}
   return ins[dialed+1]
 end
-return {width=3,height=7,name="MUX",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"},{4,5,"OUTPUT"}},category="multi"}
+return {width=3,height=7,name="MUX",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"},{4,5,"OUTPUT"}},category="multi",description="Multiplexer"}

@@ -22,4 +22,4 @@ function onclick(x,y)
     state=(state+15)%16
   end
 end
-return {width=2,height=4,name="Zaehler",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"}},category="base"}
+return {width=2,height=4,name="Zaehler",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"}},category="base",description="HEX-Eingabe"}

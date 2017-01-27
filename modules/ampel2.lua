@@ -81,4 +81,4 @@ function onclick(x,y)
     num=(num+15)%16
   end
 end
-return {width=10,height=6,name="Ampel 2",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"}},category="other"}
+return {width=10,height=6,name="Ampel 2",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"}},category="other",description="Ampel mit Fußgängerüberweg"}

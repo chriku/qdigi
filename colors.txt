@@ -1,0 +1,7 @@
+Rot,red
+Grün,green
+Blau,blue
+Türkis,#00ffff
+Violett,#8b00ff
+Orange,#ff8800
+Schwarz,#000000

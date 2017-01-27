@@ -683,14 +683,14 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     }
     if(block>=0)
     {
-        QList<QColor> colors=Settings::final()->colors();
+        QList<QPair<QColor,QString> > colors=loadColorProfile();
         QMenu* cm=menu.addMenu("Blockfarbe ändern");
         for(int i=0;i<colors.length();i++)
         {
             QPixmap map(24,24);
-            map.fill(colors[i]);
-            QAction* act=cm->addAction(QIcon(map),colors[i].name());
-            setBlockColorAction.insert(act,colors[i]);
+            map.fill(colors[i].first);
+            QAction* act=cm->addAction(QIcon(map),colors[i].second);
+            setBlockColorAction.insert(act,colors[i].first);
         }
         ok=true;
     }
@@ -706,14 +706,14 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     }
     if(line>=0)
     {
-        QList<QColor> colors=Settings::final()->colors();
+        QList<QPair<QColor,QString> > colors=loadColorProfile();
         QMenu* cm=menu.addMenu("Linienfarbe ändern");
         for(int i=0;i<colors.length();i++)
         {
             QPixmap map(24,24);
-            map.fill(colors[i]);
-            QAction* act=cm->addAction(QIcon(map),colors[i].name());
-            setLineColorAction.insert(act,colors[i]);
+            map.fill(colors[i].first);
+            QAction* act=cm->addAction(QIcon(map),colors[i].second);
+            setLineColorAction.insert(act,colors[i].first);
         }
         ok=true;
     }
@@ -1287,6 +1287,34 @@ QList<int> DigiView::getNet(QLine in)
                     points.append(lines[i].line.p2());
                 }
             }
+    }
+    return ret;
+}
+
+QList<QPair<QColor,QString> > DigiView::loadColorProfile()
+{
+    QList<QPair<QColor,QString> > ret;
+    QFile file("colors.txt");
+    if(!file.exists())
+    file.setFileName(":/colors.txt");
+    file.open(QFile::ReadOnly);
+    while(!file.atEnd())
+    {
+        QString line=file.readLine();
+        line.replace("\r","");
+        line.replace("\n","");
+        QString name=line.left(line.indexOf(","));
+        QString code=line.mid(line.indexOf(",")+1);
+        if(QColor::isValidColor(code))
+        {
+            QPair<QColor,QString> round;
+            QColor color(code);
+            round.first=color;
+            round.second=name;
+            ret.append(round);
+        }
+        else
+            qDebug()<<"Error Not Found: "<<code;
     }
     return ret;
 }

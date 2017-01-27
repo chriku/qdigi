@@ -147,7 +147,8 @@ FORMS    += mainwindow.ui \
     passworddialog.ui \
     kvdiagram.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
-RESOURCES += images.qrc
+RESOURCES += images.qrc \
+    misc.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"
 win32:DEFINES += LUASOCKET_INET_PTON
 win32:DEFINES += WINVER=0x0501

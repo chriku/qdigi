@@ -27,7 +27,7 @@ void Block::load(QString fileName) {
         qDebug() << "ERR2" << lua_tostring(L, -1);
 }
 
-QPixmap Block::drawBlock() {
+QPixmap Block::drawBlock(QColor color) {
     QPixmap ret((width * Settings::final()->gridSize()) +
                 Settings::final()->gridSize() + 1,
                 (height * Settings::final()->gridSize()) + 1 +
@@ -49,7 +49,8 @@ QPixmap Block::drawBlock() {
     lua_getglobal(L, "paintEvent");
     qpainter.setRenderHint(QPainter::Antialiasing, true);
     painter.pushMe(L);
-    if (lua_pcall(L, 1, 0, 0) == LUA_OK) {
+    lua_pushstring(L,color.name().toUtf8().data());
+    if (lua_pcall(L, 2, 0, 0) == LUA_OK) {
         qpainter.setRenderHint(QPainter::Antialiasing, false);
         lua_getglobal(L,"state");
         lua_rawseti(L,LUA_REGISTRYINDEX,state);

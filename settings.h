@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <QObject>
+#include <QColor>
 #include <QSettings>
 
 class Settings : public QObject
@@ -20,11 +21,13 @@ public:
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
+    Q_PROPERTY(QList<QColor> colors READ colors WRITE setColors)
     QStringList lastChanged();
     void addLastChanged(QString what);
     explicit Settings(QObject *parent = 0);
     double m_gridSize;
     double m_penWidth;
+    QList<QColor> m_colors;
     QString m_lastFile;
     bool m_defaultSimu;
     int m_rasterSize;
@@ -36,6 +39,8 @@ public:
     bool defaultSimu();
     static Settings* final();
 GRID gridType();
+QList<QColor> colors();
+void setColors(QList<QColor> col,bool session=false);
 void setApplicationDir(QString dir,bool session=false);
 void setPenWidth(double wid,bool session=false);
 void setRasterSize(int size,bool session=false);

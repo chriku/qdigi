@@ -34,7 +34,7 @@ public:
     void pushGlobal(lua_State*L);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
     QString category;
-QPixmap drawBlock();
+QPixmap drawBlock(QColor color);
 QString name;
 int width;
 int height;

@@ -10,22 +10,30 @@
 struct block_t {
     QPoint pos;
     Block* block;
+    QColor color;
+    block_t()
+    {
+        color=Qt::black;
+    }
 };
 
 struct line_t {
     line_t()
     {
         state=false;
+        color=Qt::black;
     }
 
     QLine line;
     bool state;
+    QColor color;
 };
 
 class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    QList<int> getNet(QLine in);
     QList<int> selectedBlocks;
     QList<int> selectedLines;
     void clearSelection();

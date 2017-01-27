@@ -122,3 +122,18 @@ QStringList Settings::lastChanged()
 {
     return saveFile.value("lastChanged").toStringList();
 }
+
+void Settings::setColors(QList<QColor> col, bool session)
+{
+
+}
+
+QList<QColor> Settings::colors()
+{
+    QList<QColor> ret;
+    ret.append(Qt::black);
+    ret.append(Qt::red);
+    ret.append(Qt::green);
+    ret.append(Qt::blue);
+    return ret;
+}

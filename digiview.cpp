@@ -29,8 +29,18 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
 
 void DigiView::paintEvent(QPaintEvent* event)
 {
+    if(!timer.isActive())
+        error=false;
     int grid=Settings::final()->gridSize();
     QPainter painter(this);
+    if(error)
+    {
+        painter.setPen(Qt::NoPen);
+        QBrush brush(Qt::red);
+        brush.setStyle(Qt::Dense7Pattern);
+        painter.setBrush(brush);
+        painter.drawRect(0,0,width(),height());
+    }
     QPen lineSmall(Qt::gray);
     QPen lineLarge(Qt::gray);
     lineLarge.setWidth(3);
@@ -446,6 +456,7 @@ QPoint DigiView::toGrid(QPoint in)
 
 void DigiView::timeout()
 {
+    error=false;
     QList<QList<bool> > done;
     bool ok=true;
     for(int i=0;i<blocks.length();i++)
@@ -530,12 +541,13 @@ void DigiView::timeout()
     }
     if(!ok)
     {
-        for(int i=0;i<blocks.length();i++)
+        error=true;
+        /*for(int i=0;i<blocks.length();i++)
             for(int j=0;j<blocks[i].block->pins.length();j++)
                 if(blocks[i].block->pins[j].direction==0)
                     blocks[i].block->pins[j].state=false;
         for(int i=0;i<lines.length();i++)
-            lines[i].state=false;
+            lines[i].state=false;*/
         for(int i=0;i<offen.length();i++)
             blocks[offen[i].first].block->pins[offen[i].second].state=2;
     }

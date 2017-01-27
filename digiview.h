@@ -33,6 +33,7 @@ class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    bool error;
     QList<int> getNet(QLine in);
     QList<int> selectedBlocks;
     QList<int> selectedLines;

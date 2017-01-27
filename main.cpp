@@ -17,9 +17,11 @@ int main(int argc, char *argv[])
         QInputDialog dialog;
         dialog.setInputMode(QInputDialog::TextInput);
         dialog.setWindowTitle("QDigi");
-        dialog.setLabelText("Lizenzschlüssel eingeben\nAbbrechen für Offline-Arbeiten");
+        dialog.setLabelText("Lizenzschlüssel eingeben");
         dialog.exec();
         QString lic=dialog.textValue();
+        if(lic.isEmpty())
+            return 0;
         Settings::final()->setLicense(lic);
     }
     Updater updater;

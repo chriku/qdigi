@@ -13,7 +13,7 @@ extern "C" {
 Block::Block(QObject *parent) : QObject(parent) { L = luaL_newstate(); connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));}
 
 void Block::load(QString fileName) {
-    watcher.addPath(fileName);
+    //watcher.addPath(fileName);
     Block::fileName = fileName;
     QFile file(fileName);
     file.open(QFile::ReadOnly);

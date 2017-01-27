@@ -92,9 +92,9 @@ void DigiView::paintEvent(QPaintEvent* event)
     painter.setBrush(brush);
     for(int i=0;i<selectedBlocks.length();i++)
     {
-        QRect rect(blocks[selectedBlocks[i]].pos*Settings::final()->gridSize(),QSize(1,1));
+        QRect rect(((QPointF(blocks[selectedBlocks[i]].pos)+QPointF(0,0.5))*Settings::final()->gridSize()).toPoint(),QSize(1,1));
         rect.setWidth((blocks[selectedBlocks[i]].block->width+1)*Settings::final()->gridSize());
-        rect.setHeight((blocks[selectedBlocks[i]].block->height+1)*Settings::final()->gridSize());
+        rect.setHeight((blocks[selectedBlocks[i]].block->height)*Settings::final()->gridSize());
         painter.drawRect(rect);
     }
     for(int i=0;i<selectedLines.length();i++)
@@ -551,8 +551,8 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QPoint p=toGrid(event->pos());
     QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
     for(int i=0;i<blocks.length();i++)
-        if((blocks[i].pos.x()<=p.x())&&((blocks[i].pos.x()+blocks[i].block->width)>=(p.x()-1)))
-            if((blocks[i].pos.y()<=p.y())&&((blocks[i].pos.y()+blocks[i].block->height)>=(p.y()-1)))
+        if((blocks[i].pos.x()<=(pf.x()-0.5))&&((blocks[i].pos.x()+blocks[i].block->width)>=(pf.x()-0.5)))
+            if((blocks[i].pos.y()<=(pf.y()-0.5))&&((blocks[i].pos.y()+blocks[i].block->height)>=(pf.y()-0.5)))
                 block=i;
     int pin=-1;
     QStringList alt;

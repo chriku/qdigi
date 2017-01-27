@@ -1,12 +1,10 @@
 state={false,false,false,false}
-function paintEvent(painter)
+function paintEvent(painter,color)
   makeState()
-  painter:setPen("black")
   painter:setBrush()
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,3,4)
-  painter:setFont(nil,0.3)
-  painter:drawText("DeMUX\nFlipFlop",0.5,0.5,3,4)
-  painter:setFont(nil,0.5)
+  painter:setPen("black")
   painter:drawText("G",0.5,0.5,1,2)
   painter:drawText("IN",0.5,3.5,1,1)
   painter:drawText("OUT0",1.5,0.5,2,1)
@@ -28,4 +26,4 @@ function makeState()
   end
   state[dialed+1]=pins[3]
 end
-return {width=3,height=4,name="DeMUX-FlipFlop",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"},{4,4,"OUTPUT"}},category="base",alt={"DeMUX"}}
+return {width=3,height=4,name="DeMUX-FlipFlop",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"},{4,4,"OUTPUT"}},category="multi"}

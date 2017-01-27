@@ -17,12 +17,13 @@ digits={{1,1,1,1,1,1,0},--0
 {0,1,1,1,1,0,1},--D
 {1,0,0,1,1,1,1},--E
         {1,0,0,0,1,1,1}}--F
-function paintEvent(painter)
+function paintEvent(painter,color)
   makeState()
   painter:setPen("black")
   painter:setBrush(nil)
   painter:setFont(nil,0.8)
   painter:drawText(text[state].."\n7",0.5,0.5,2,4)
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,2,7)
 end
 function getStateOrig(pin)

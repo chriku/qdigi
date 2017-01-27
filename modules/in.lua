@@ -1,5 +1,5 @@
 state=false
-function paintEvent(painter)
+function paintEvent(painter,color)
   painter:setPen()
   if state then
     painter:setBrush("red")

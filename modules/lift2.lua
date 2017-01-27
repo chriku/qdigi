@@ -1,7 +1,7 @@
 state={}
 state.pos=0.0
 state.otime=0
-function paintEvent(painter)
+function paintEvent(painter,color)
   pos=state.pos
   if state.otime==0 then
     state.otime=time
@@ -18,9 +18,10 @@ function paintEvent(painter)
   elseif pos<0 then
     pos=0.0
   end
-  painter:setPen("balck")
   painter:setBrush(nil)
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,2,9)
+  painter:setPen("black")
   painter:drawLine(1.5,2,2.5,2)
   painter:drawLine(1.5,8,2.5,8)
   painter:drawLine(1.5,5,2.5,5)

@@ -4,7 +4,7 @@ text[0]="0"
 for i=1,16 do
   state[i]=false
 end
-function paintEvent(painter)
+function paintEvent(painter,color)
   for i=1,16 do
     if state[i] then
       painter:setBrush("red")

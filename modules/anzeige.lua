@@ -1,7 +1,7 @@
 state=false
 text={"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"}
 text[0]="0"
-function paintEvent(painter)
+function paintEvent(painter,color)
   num=0
   for i=1,4 do
     num=num<<1
@@ -13,6 +13,7 @@ function paintEvent(painter)
   painter:setBrush(nil)
   painter:setFont(nil,3)
   painter:drawText(text[num],0.5,0.5,2,4)
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,2,4)
 end
 function getState(pin)

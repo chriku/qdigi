@@ -1,14 +1,15 @@
 state=false
-function paintEvent(painter)
+function paintEvent(painter,color)
   if pins[1] and not pins[2] then
     state=true
   end
   if pins[2] and not pins[1] then
     state=false
   end
-  painter:setPen("black")
+  painter:setPen(color)
   painter:setBrush()
   painter:drawRect(0.5,0.5,3,3)
+  painter:setPen("black")
   painter:setFont(nil,1)
   painter:drawText("S",0.5,0.5,1,1)
   painter:drawText("R",0.5,2.5,1,1)

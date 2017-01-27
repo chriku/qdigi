@@ -43,7 +43,7 @@ function drawAmpelFus(painter,x,y,offset)
   end
   painter:drawEllipse(x,y+0.1,0.075)
 end
-function paintEvent(painter)
+function paintEvent(painter,color)
   painter:setPen(nil)
   painter:setBrush("#333333")
   painter:drawRect(0.5,0.5,10,6)

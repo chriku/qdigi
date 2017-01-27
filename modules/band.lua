@@ -2,7 +2,7 @@ pos=0.0
 otime=0
 state=nil
 type=0
-function paintEvent(painter)
+function paintEvent(painter,color)
   if otime==0 then
     otime=time
   end
@@ -56,7 +56,7 @@ function paintEvent(painter)
   painter:setBrush("white")
   painter:drawRect(-1,0,1.5,10)
   painter:drawRect(9.5,0,5,10)
-  painter:setPen("black")
+  painter:setPen(color)
   painter:setBrush()
   painter:drawRect(0.5,0.5,9,9)
 end

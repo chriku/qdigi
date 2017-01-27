@@ -1,8 +1,10 @@
-function paintEvent(painter)
+function paintEvent(painter,color)
   painter:setPen("black")
   painter:setBrush()
   painter:setFont(nil,2)
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,3,2)
+  painter:setPen("black")
   painter:drawText("=",0.5,0.5,3,2)
 end
 

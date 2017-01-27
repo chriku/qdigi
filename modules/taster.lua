@@ -1,5 +1,5 @@
 state=false
-function paintEvent(painter)
+function paintEvent(painter,color)
   painter:setPen()
   painter:setBrush("transparent")
   painter:drawRect(0.5,0.5,1,1)

@@ -1,5 +1,5 @@
 state=false
-function paintEvent(painter)
+function paintEvent(painter,color)
   painter:setPen("black")
   painter:setBrush()
   painter:setFont(nil,0.75)

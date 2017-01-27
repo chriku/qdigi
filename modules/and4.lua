@@ -1,7 +1,8 @@
-function paintEvent(painter)
-  painter:setPen("black")
+function paintEvent(painter,color)
   painter:setBrush()
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,3,4)
+  painter:setPen("black")
   painter:drawSpline({{2.5,3.5},{1.5,1.7},{2.5,1.7},{1.5,3},{1.5,3.5},{2.5,3}})
 end
 function getState()

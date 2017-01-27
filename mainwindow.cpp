@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     BlockList list;
     QList<Block*> base;
     QList<Block*> coder;
+    QList<Block*> math;
+    QList<Block*> multi;
     QList<Block*> other;
     for(int i=0;i<list.blocks.length();i++)
     {
@@ -29,18 +31,25 @@ MainWindow::MainWindow(QWidget *parent) :
             base.append(list.blocks[i]);
         else if(list.blocks[i]->category=="coder")
             coder.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="multi")
+            multi.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="math")
+            math.append(list.blocks[i]);
         else
             other.append(list.blocks[i]);
     }
     ui->base->blockList=base;
     ui->coder->blockList=coder;
     ui->other->blockList=other;
+    ui->multi->blockList=multi;
+    ui->math->blockList=math;
     QStringList args=QApplication::arguments();
     if(args.length()>1)
     {
         ui->digiView->load(args[1]);
         Settings::final()->addLastChanged(QDir().absoluteFilePath(args[1]));
     }
+    ui->toolBox->setCurrentWidget(ui->page_base);
     isChanged=false;
     updateLc();
 }

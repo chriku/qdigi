@@ -1,12 +1,13 @@
 state=0
 text={"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"}
 text[0]="0"
-function paintEvent(painter)
+function paintEvent(painter,color)
   makeState()
   painter:setPen("black")
   painter:setBrush(nil)
   painter:setFont(nil,0.8)
   painter:drawText(text[state].."\nR\nWhite",0.5,0.5,2,4)
+  painter:setPen(color)
   painter:drawRect(0.5,0.5,2,4)
 end
 function getStateOrig(pin)

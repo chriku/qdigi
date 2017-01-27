@@ -1,7 +1,6 @@
-function paintEvent(painter)
-  painter:setPen("black")
+function paintEvent(painter,color)
   painter:setBrush()
-  painter:setFont(nil,0.5)
+  painter:setPen(color)
   painter:drawLine(0.5,0.5,3.5,0.5)
   painter:drawLine(0.5,0.5,0.5,2.5)
   painter:drawLine(3.5,0.5,3.5,2.5)
@@ -10,6 +9,7 @@ function paintEvent(painter)
   painter:drawLine(3,3.5,3,2.5)
   painter:drawLine(1,3.5,1,2.5)
   painter:drawRect(0.5,3.5,3,4)
+  painter:setPen("black")
   painter:drawText("G",0.5,0.5,1,2)
   painter:drawText("I0",0.5,3.5,1,1)
   painter:drawText("I1",0.5,4.5,1,1)
@@ -28,4 +28,4 @@ function getState()
   ins={pins[3],pins[4],pins[5],pins[6]}
   return ins[dialed+1]
 end
-return {width=3,height=7,name="MUX",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"},{4,5,"OUTPUT"}},category="base"}
+return {width=3,height=7,name="MUX",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"},{4,5,"OUTPUT"}},category="multi"}

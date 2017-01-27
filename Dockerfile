@@ -91,6 +91,6 @@ COPY . /src
 WORKDIR /src
 
 # Now build the project
-RUN qmake newDigi.pro && make -j 3
+RUN qmake qdigi.pro && make -j 3
 
 #RUN make

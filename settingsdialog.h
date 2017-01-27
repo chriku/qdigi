@@ -31,6 +31,8 @@ private slots:
 
     void on_changeLicense_clicked();
 
+    void on_background_clicked();
+
 private:
     Ui::SettingsDialog *ui;
 };

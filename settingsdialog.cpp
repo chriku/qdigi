@@ -1,4 +1,5 @@
 #include "settingsdialog.h"
+#include <QColorDialog>
 #include "ui_settingsdialog.h"
 #include "settings.h"
 #include <QInputDialog>
@@ -63,4 +64,9 @@ void SettingsDialog::on_changeLicense_clicked()
     dialog.exec();
     QString lic=dialog.textValue();
     Settings::final()->setLicense(lic);
+}
+
+void SettingsDialog::on_background_clicked()
+{
+    Settings::final()->setBackground(QColorDialog::getColor(Settings::final()->background(),NULL,"QDigi"));
 }

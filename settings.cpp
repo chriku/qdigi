@@ -13,6 +13,7 @@ Settings::Settings(QObject *parent) : QObject(parent),
     m_rasterSize=saveFile.value("rasterSize",5).toInt();
     m_penWidth=saveFile.value("penWidth",0.1).toDouble();
     m_license=saveFile.value("licenseKey","").toString();
+    m_background=saveFile.value("background",QColor(Qt::lightGray)).value<QColor>();
 }
 
 Settings* Settings::final()
@@ -56,11 +57,24 @@ QString Settings::applicationDir()
     return m_applicationDir;
 }
 
+QColor Settings::background()
+{
+    return m_background;
+}
+
+
 void Settings::setGridSize(double size, bool session)
 {
     if(!session)
         saveFile.setValue("gridSize",QVariant((int)round(size)));
     m_gridSize=size;
+}
+
+void Settings::setBackground(QColor back, bool session)
+{
+    if(!session)
+        saveFile.setValue("background",QVariant(back));
+    m_background=back;
 }
 
 void Settings::setPenWidth(double wid, bool session)

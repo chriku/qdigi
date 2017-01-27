@@ -116,6 +116,20 @@
          </property>
         </widget>
        </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="background">
+         <property name="text">
+          <string>Ändern</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="backgroundLabel">
+         <property name="text">
+          <string>Hintergrund</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>

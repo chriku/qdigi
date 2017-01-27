@@ -22,12 +22,14 @@ public:
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
+    Q_PROPERTY(QColor background READ background WRITE setBackground)
     Q_PROPERTY(QList<QColor> colors READ colors WRITE setColors)
     QStringList lastChanged();
     void addLastChanged(QString what);
     explicit Settings(QObject *parent = 0);
     double m_gridSize;
     double m_penWidth;
+    QColor m_background;
     QList<QColor> m_colors;
     QString m_lastFile;
     QString m_license;
@@ -41,8 +43,10 @@ public:
     bool defaultSimu();
     static Settings* final();
     QString license();
+    QColor background();
 GRID gridType();
 QList<QColor> colors();
+void setBackground(QColor back,bool session=false);
 void setColors(QList<QColor> col,bool session=false);
 void setApplicationDir(QString dir,bool session=false);
 void setLicense(QString lic,bool session=false);

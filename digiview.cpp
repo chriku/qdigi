@@ -34,6 +34,8 @@ void DigiView::paintEvent(QPaintEvent* event)
         error=false;
     int grid=Settings::final()->gridSize();
     QPainter painter(this);
+    painter.setBrush(Settings::final()->background());
+    painter.drawRect(0,0,width(),height());
     if(error)
     {
         painter.setPen(Qt::NoPen);
@@ -102,7 +104,16 @@ void DigiView::paintEvent(QPaintEvent* event)
         font.setPixelSize(Settings::final()->gridSize());
         painter.setFont(font);
         text_t cur=texts[i];
-        painter.drawText(QRect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),500,Settings::final()->gridSize()),Qt::AlignBottom|Qt::AlignLeft,cur.text);
+        QRect rect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),500,Settings::final()->gridSize());
+        painter.drawText(rect,Qt::AlignBottom|Qt::AlignLeft,cur.text);
+        QPen pen(Qt::green);
+        QBrush brush(Qt::green);
+        painter.setPen(pen);
+        brush.setStyle(Qt::Dense6Pattern);
+        brush.setColor(QColor::fromRgbF(0.0,1.0,0.0,0.5));
+        painter.setBrush(brush);
+        if(selectedTexts.contains(i))
+            painter.drawRect(rect);
     }
     QPen pen(Qt::green);
     QBrush brush(Qt::green);
@@ -277,6 +288,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
     QWidget::mouseReleaseEvent(event);
     if(event->button()==Qt::LeftButton)
     {
+        QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
         clearSelection();
         curPoint=toGrid(event->pos());
         if((startPoint.x()==curPoint.x())||(startPoint.y()==curPoint.y()))
@@ -295,12 +307,20 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
             if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
             {
                 QRect sel(curPoint,startPoint);
+                for(int i=0;i<texts.length();i++)
+                {
+                    text_t cur=texts[i];
+                    QRectF rect(cur.pos.x(),cur.pos.y()-1.0,500/Settings::final()->gridSize(),1.0);
+                    if(rect.intersects(QRectF(sel)))
+                        selectedTexts.append(i);
+                }
                 for(int i=0;i<blocks.length();i++)
                 {
                     QRect blk(blocks[i].pos,QSize(blocks[i].block->width+1,blocks[i].block->height+1));
                     if(sel.intersects(blk))
                         selectedBlocks.append(i);
                 }
+
                 for(int i=0;i<lines.length();i++)
                 {
                     QRect line(lines[i].line.p1(),lines[i].line.p2());
@@ -1304,6 +1324,7 @@ void DigiView::clearSelection()
 {
     selectedBlocks.clear();
     selectedLines.clear();
+    selectedTexts.clear();
     update();
 }
 
@@ -1326,6 +1347,15 @@ void DigiView::deleteSelection()
         for(int j=0;j<selectedLines.length();j++)
             if(selectedLines[j]>at)
                 selectedLines[j]--;
+    }
+
+    for(int i=0;i<selectedTexts.length();i++)
+    {
+        int at=selectedTexts[i];
+        texts.removeAt(at);
+        for(int j=0;j<selectedTexts.length();j++)
+            if(selectedTexts[j]>at)
+                selectedTexts[j]--;
     }
     emit changed();
     clearSelection();

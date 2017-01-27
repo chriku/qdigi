@@ -43,6 +43,7 @@ public:
     QList<int> getNet(QLine in);
     QList<int> selectedBlocks;
     QList<int> selectedLines;
+    QList<int> selectedTexts;
     void clearSelection();
     void deleteSelection();
     QString fileName;

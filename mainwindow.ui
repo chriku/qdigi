@@ -355,6 +355,7 @@
     <addaction name="actionAls_Bild_Speichern"/>
     <addaction name="action_ffnen"/>
     <addaction name="separator"/>
+    <addaction name="actionZuletzt_ge_ndert"/>
     <addaction name="actionEinstellungen"/>
     <addaction name="actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen"/>
    </widget>
@@ -457,6 +458,11 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+  </action>
+  <action name="actionZuletzt_ge_ndert">
+   <property name="text">
+    <string>Zuletzt geändert</string>
    </property>
   </action>
  </widget>

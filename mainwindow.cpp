@@ -37,8 +37,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->other->blockList=other;
     QStringList args=QApplication::arguments();
     if(args.length()>1)
+    {
         ui->digiView->load(args[1]);
+        Settings::final()->addLastChanged(QDir().absoluteFilePath(args[1]));
+    }
     isChanged=false;
+    updateLc();
 }
 
 MainWindow::~MainWindow()
@@ -50,9 +54,11 @@ void MainWindow::on_actionSpeichern_triggered()
 {
     if(!ui->digiView->fileName.isEmpty())
     {
-        ui->digiView->save();
-        isChanged=false;
-        setWindowTitle("QDigi "+ui->digiView->fileName);
+        if(ui->digiView->save())
+        {
+            setWindowTitle("QDigi "+ui->digiView->fileName);
+            isChanged=false;
+        }
     }
     else
         on_actionSpeichern_Unter_triggered();
@@ -79,6 +85,8 @@ void MainWindow::on_actionSpeichern_Unter_triggered()
         ui->digiView->save(fileName);
         isChanged=false;
         setWindowTitle("QDigi "+ui->digiView->fileName);
+        Settings::final()->addLastChanged(fileName);
+        updateLc();
     }
 }
 
@@ -92,7 +100,9 @@ void MainWindow::on_action_ffnen_triggered()
     {
         isChanged=false;
         ui->digiView->load(fileName);
+        Settings::final()->addLastChanged(fileName);
         setWindowTitle("QDigi "+ui->digiView->fileName);
+        updateLc();
     }
 }
 
@@ -176,4 +186,33 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::on_actionL_schen_triggered()
 {
     ui->digiView->deleteSelection();
+}
+
+void MainWindow::openRecent()
+{
+    QAction* send=(QAction*)sender();
+    ui->digiView->load(lastChangedActions[send]);
+}
+
+void MainWindow::updateLc()
+{
+    QList<QAction*> lacts=lastChangedActions.keys();
+    for(int i=0;i<lacts.length();i++)
+        lacts[i]->deleteLater();
+    lastChangedActions.clear();
+    if(ui->actionZuletzt_ge_ndert->menu()!=NULL)
+        ui->actionZuletzt_ge_ndert->menu()->deleteLater();
+    QMenu *lastChanged=new QMenu;
+    QStringList lc2=Settings::final()->lastChanged();
+    QStringList lc;
+    for(int i=0;i<lc2.length();i++)
+        lc.prepend(lc2[i]);
+    for(int i=0;i<fmin(lc.length(),10);i++)
+    {
+        QString name=lc[i];
+        QAction* act=lastChanged->addAction(QDir(name).dirName());
+        lastChangedActions.insert(act,name);
+        connect(act,SIGNAL(triggered()),this,SLOT(openRecent()));
+    }
+    ui->actionZuletzt_ge_ndert->setMenu(lastChanged);
 }

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QMap>
 namespace Ui {
 class MainWindow;
 }
@@ -15,6 +15,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 bool isChanged;
+QMap<QAction*,QString> lastChangedActions;
+
 private slots:
     void on_actionSpeichern_triggered();
 
@@ -41,6 +43,8 @@ private slots:
     void on_actionProgramm_zum_ffnen_von_qdigi_Dateien_eintragen_triggered();
     bool askSave(bool ending);
     void on_actionL_schen_triggered();
+    void openRecent();
+    void updateLc();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

@@ -305,12 +305,12 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
     update();
 }
 
-void DigiView::save(QString where)
+bool DigiView::save(QString where)
 {
     if(where.isEmpty())
         where=fileName;
     if(where.isEmpty())
-        return;
+        return false;
     fileName=where;
     if(!where.endsWith(".qdigi"))
         where+=".qdigi";
@@ -363,6 +363,7 @@ void DigiView::save(QString where)
     zip_file_add(arch,"version.txt",source,ZIP_FL_OVERWRITE);
     zip_close(arch);
     Settings::final()->setLastFile(fileName);
+    return true;
 }
 
 void DigiView::load(QString where)

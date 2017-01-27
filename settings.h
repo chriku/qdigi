@@ -20,6 +20,8 @@ public:
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
+    QStringList lastChanged();
+    void addLastChanged(QString what);
     explicit Settings(QObject *parent = 0);
     double m_gridSize;
     double m_penWidth;

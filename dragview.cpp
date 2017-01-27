@@ -1,4 +1,5 @@
 #include "dragview.h"
+#include <QApplication>
 #include "blocklist.h"
 #include <QDrag>
 #include <QMimeData>
@@ -29,7 +30,9 @@ void DragView::makeCols()
         int row=i/wid;
         setItem(row,col,item);
     }
-    int rwidth=(width()-2)/wid;
+    int w=width();
+    w-=QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+        int rwidth=(w-2)/wid;
     for(int i=0;i<wid;i++)
     {
         setColumnWidth(i,rwidth);

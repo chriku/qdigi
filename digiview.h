@@ -52,7 +52,7 @@ public:
     QPoint startPoint;
     QPoint curPoint;
     QList<line_t> lines;
-    void save(QString where=QString());
+    bool save(QString where=QString());
     void load(QString where);
     QPoint toGrid(QPoint in);
     void contextMenuEvent(QContextMenuEvent *event);

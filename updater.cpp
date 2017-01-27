@@ -18,7 +18,7 @@ void Updater::update()
     if(rfile.exists())
     rfile.remove();
     screen.showMessage("Auf Updates prüfen...",Qt::AlignCenter);
-    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/index.cgi"));
+    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update"));
     req.setRawHeader("LICENSE","LicenseText");
     QNetworkReply*rep=manager.get(req);
     QEventLoop loop;
@@ -47,7 +47,7 @@ void Updater::update()
                         if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
                         {
                             screen.showMessage("Herunterladen...",Qt::AlignCenter);
-                            QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+root["exeName"].toString()));
+                            QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
                             QNetworkReply* rep=manager.get(req);
                             connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
                             loop.exec();
@@ -99,7 +99,7 @@ void Updater::update()
             screen.showMessage(""+QString::number(requestFiles.length())+" Dateien werden heruntergeladen",Qt::AlignCenter);
                 for(int i=0;i<requestFiles.length();i++)
             {
-                QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/newDigi/"+requestFiles[i]));
+                QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
                 QNetworkReply* rep=manager.get(req);
                 connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
                 loop.exec();

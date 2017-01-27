@@ -110,3 +110,15 @@ void Settings::clear()
     settings->deleteLater();
     settings=NULL;
 }
+
+void Settings::addLastChanged(QString what)
+{
+    QStringList list=saveFile.value("lastChanged").toStringList();
+    list.append(what);
+    saveFile.setValue("lastChanged",list);
+}
+
+QStringList Settings::lastChanged()
+{
+    return saveFile.value("lastChanged").toStringList();
+}

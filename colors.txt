@@ -1,6 +1,6 @@
-Rot,red
-Grün,green
-Blau,blue
+Rot,#ff0000
+Grün,#00ff00
+Blau,#0000ff
 Türkis,#00ffff
 Violett,#8b00ff
 Orange,#ff8800

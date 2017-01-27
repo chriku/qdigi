@@ -274,6 +274,9 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
             {
                 line_t line;
                 line.line=QLine(startPoint,curPoint);
+                for(int i=0;i<lines.length();i++)
+                    if(onLine(lines[i].line,startPoint)||onLine(lines[i].line,curPoint))
+                        line.color=lines[i].color;
                 lines.append(line);
                 cleanUp();
                 emit changed();
@@ -1296,7 +1299,7 @@ QList<QPair<QColor,QString> > DigiView::loadColorProfile()
     QList<QPair<QColor,QString> > ret;
     QFile file("colors.txt");
     if(!file.exists())
-    file.setFileName(":/colors.txt");
+        file.setFileName(":/colors.txt");
     file.open(QFile::ReadOnly);
     while(!file.atEnd())
     {

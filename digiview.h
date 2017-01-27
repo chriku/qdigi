@@ -17,6 +17,11 @@ struct block_t {
     }
 };
 
+struct text_t {
+    QPoint pos;
+    QString text;
+};
+
 struct line_t {
     line_t()
     {
@@ -62,6 +67,7 @@ public:
     QPoint startPoint;
     QPoint curPoint;
     QList<line_t> lines;
+    QList<text_t> texts;
     bool save(QString where=QString());
     void load(QString where);
     QPoint toGrid(QPoint in);

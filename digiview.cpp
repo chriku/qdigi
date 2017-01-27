@@ -1,3 +1,4 @@
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QMenu>
@@ -93,6 +94,15 @@ void DigiView::paintEvent(QPaintEvent* event)
         {
             painter.drawPixmap(dragPos.x()*Settings::final()->gridSize(),dragPos.y()*Settings::final()->gridSize(),block->drawBlock(Qt::black));
         }
+    }
+    painter.setPen(Qt::black);
+    for(int i=0;i<texts.length();i++)
+    {
+        QFont font("Arial");
+        font.setPixelSize(Settings::final()->gridSize());
+        painter.setFont(font);
+        text_t cur=texts[i];
+        painter.drawText(QRect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),500,Settings::final()->gridSize()),Qt::AlignBottom|Qt::AlignLeft,cur.text);
     }
     QPen pen(Qt::green);
     QBrush brush(Qt::green);
@@ -348,6 +358,16 @@ bool DigiView::save(QString where)
         l.append(c);
     }
     root.insert("lines",l);
+    QJsonArray t;
+    for(int i=0;i<texts.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x",texts[i].pos.x());
+        c.insert("y",texts[i].pos.y());
+        c.insert("text",texts[i].text);
+        t.append(c);
+    }
+    root.insert("texts",t);
     QJsonArray g;
     for(int i=0;i<blocks.length();i++)
     {
@@ -651,13 +671,25 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     for(int i=0;i<lines.length();i++)
         if(onLine(lines[i].line,p,true))
             lcnt++;
+    int text=-1;
+    for(int i=0;i<texts.length();i++)
+    {
+        text_t cur=texts[i];
+        QRectF rect(cur.pos.x(),cur.pos.y()-1.0,500/Settings::final()->gridSize(),1.0);
+        if(rect.contains(pf))
+        {
+            text=i;
+        }
+    }
     QAction* delBlockAct=NULL;
     QAction* addViaAct=NULL;
     QAction* delLineAct=NULL;
     QAction* delSelAct=NULL;
     QAction* delLineNetAct=NULL;
     QAction* delViaAct=NULL;
+    QAction* delTextAct=NULL;
     QAction* changePinAct=NULL;
+    QAction* addTextAct=NULL;
     QMap<QAction*,QColor> setLineColorAction;
     QMap<QAction*,QColor> setBlockColorAction;
     QList<QAction*> altAction;
@@ -671,6 +703,8 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         delSelAct=menu.addAction("Auswahl löschen");
         ok=true;
     }
+    addTextAct=menu.addAction("Text hinzufügen");
+    ok=true;
     if(block>=0)
     {
         delBlockAct=menu.addAction("Block Löschen");
@@ -700,6 +734,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     if(via>=0)
     {
         delViaAct=menu.addAction("Knotenpunkt Löschen");
+        ok=true;
+    }
+    if(text>=0)
+    {
+        delTextAct=menu.addAction("Text Löschen");
         ok=true;
     }
     if(line>=0)
@@ -758,6 +797,19 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 deleteSelection();
             }
         }
+        if(act==addTextAct)
+        {
+            bool ok;
+            QString message=QInputDialog::getText(NULL,"QDigi","Text Einfügen",QLineEdit::Normal,QString(),&ok);
+            if(ok)
+            {
+                text_t text;
+                text.pos=p;
+                text.text=message;
+                texts.append(text);
+            }
+            deleteSelection();
+        }
         if(via>=0)
             if(act==delViaAct)
             {
@@ -769,6 +821,13 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if(act==changePinAct)
             {
                 blocks[block].block->pins[pin].type=!blocks[block].block->pins[pin].type;
+                emit changed();
+                clearSelection();
+            }
+        if(text>=0)
+            if(act==delTextAct)
+            {
+                texts.removeAt(text);
                 emit changed();
                 clearSelection();
             }
@@ -1192,6 +1251,14 @@ void DigiView::loadJson(QByteArray json)
         c.line.setP2(QPoint(l[i].toObject()["x2"].toInt(),l[i].toObject()["y2"].toInt()));
         c.color=QColor(l[i].toObject()["color"].toString());
         lines.append(c);
+    }
+    QJsonArray t=root["texts"].toArray();
+    for(int i=0;i<t.size();i++)
+    {
+        text_t c;
+        c.pos=QPoint(t[i].toObject()["x"].toInt(),t[i].toObject()["y"].toInt());
+        c.text=t[i].toObject()["text"].toString();
+        texts.append(c);
     }
     QJsonArray v=root["vias"].toArray();
     for(int i=0;i<v.size();i++)

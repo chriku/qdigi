@@ -1,6 +1,7 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 #include "settings.h"
+#include <QInputDialog>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -51,4 +52,15 @@ void SettingsDialog::load()
     ui->defaultSimu->setChecked(Settings::final()->defaultSimu());
     ui->rasterSize->setValue(Settings::final()->rasterSize());
     ui->penWidth->setValue(Settings::final()->penWidth());
+}
+
+void SettingsDialog::on_changeLicense_clicked()
+{
+    QInputDialog dialog;
+    dialog.setInputMode(QInputDialog::TextInput);
+    dialog.setWindowTitle("QDigi");
+    dialog.setLabelText("Lizenzschlüssel eingeben\nAbbrechen für Offline-Arbeiten");
+    dialog.exec();
+    QString lic=dialog.textValue();
+    Settings::final()->setLicense(lic);
 }

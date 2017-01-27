@@ -29,6 +29,8 @@ private slots:
 
     void on_buttonBox_clicked(QAbstractButton *button);
 
+    void on_changeLicense_clicked();
+
 private:
     Ui::SettingsDialog *ui;
 };

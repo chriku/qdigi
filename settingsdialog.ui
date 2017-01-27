@@ -102,6 +102,20 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="changeLicenseLabel">
+         <property name="text">
+          <string>Lizenzschlüssel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="changeLicense">
+         <property name="text">
+          <string>Ändern</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>

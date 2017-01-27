@@ -14,12 +14,14 @@ Updater::Updater(QObject *parent) : QObject(parent),
 
 void Updater::update()
 {
+    if(Settings::final()->license().isEmpty())
+        return;
     QFile rfile(QApplication::applicationFilePath()+".old");
     if(rfile.exists())
-    rfile.remove();
+        rfile.remove();
     screen.showMessage("Auf Updates prüfen...",Qt::AlignCenter);
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update"));
-    req.setRawHeader("LICENSE","LicenseText");
+    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
     QNetworkReply*rep=manager.get(req);
     QEventLoop loop;
     connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
@@ -27,6 +29,7 @@ void Updater::update()
     if(rep->error()==QNetworkReply::NoError)
     {
         QByteArray resp=rep->readAll();
+        qDebug()<<resp;
         QJsonParseError error;
         QJsonDocument doc=QJsonDocument::fromJson(resp,&error);
         if(error.error==error.NoError)
@@ -48,6 +51,7 @@ void Updater::update()
                         {
                             screen.showMessage("Herunterladen...",Qt::AlignCenter);
                             QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
+                            req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
                             QNetworkReply* rep=manager.get(req);
                             connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
                             loop.exec();
@@ -97,9 +101,10 @@ void Updater::update()
             if(requestFiles.length()==0)
                 return;
             screen.showMessage(""+QString::number(requestFiles.length())+" Dateien werden heruntergeladen",Qt::AlignCenter);
-                for(int i=0;i<requestFiles.length();i++)
+            for(int i=0;i<requestFiles.length();i++)
             {
                 QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
+                req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
                 QNetworkReply* rep=manager.get(req);
                 connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
                 loop.exec();
@@ -127,9 +132,16 @@ void Updater::update()
             }
         }else
             screen.showMessage("Internal Error",Qt::AlignCenter);
+    }else if(rep->error()==QNetworkReply::AuthenticationRequiredError){
+        Settings::final()->setLicense("");
+        QMessageBox::warning(NULL,"QDigi","Falscher Lizenzschlüssel\nBitte beim nächsten Start Gültigen Schlüssel eingeben");
+        exit(0);
     }
     else
+    {
+        qDebug()<<rep->errorString();
         screen.showMessage("Kein Netzwerk?",Qt::AlignCenter);
+    }
     QTimer::singleShot(1000,&loop,SLOT(quit()));
     //loop.exec();
 }

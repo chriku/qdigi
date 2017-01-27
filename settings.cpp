@@ -12,6 +12,7 @@ Settings::Settings(QObject *parent) : QObject(parent),
     m_lastFile=saveFile.value("lastFile","").toString();
     m_rasterSize=saveFile.value("rasterSize",5).toInt();
     m_penWidth=saveFile.value("penWidth",0.1).toDouble();
+    m_license=saveFile.value("licenseKey","").toString();
 }
 
 Settings* Settings::final()
@@ -136,4 +137,16 @@ QList<QColor> Settings::colors()
     ret.append(Qt::green);
     ret.append(Qt::blue);
     return ret;
+}
+
+void Settings::setLicense(QString lic, bool session)
+{
+    if(!session)
+        saveFile.setValue("licenseKey",lic);
+    m_license=lic;
+}
+
+QString Settings::license()
+{
+    return m_license;
 }

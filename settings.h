@@ -18,6 +18,7 @@ public:
     Q_PROPERTY(double penWidth READ penWidth WRITE setPenWidth)
     Q_PROPERTY(int rasterSize READ rasterSize WRITE setRasterSize)
     Q_PROPERTY(QString lastFile READ lastFile WRITE setLastFile)
+    Q_PROPERTY(QString license READ license WRITE setLicense)
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
@@ -29,6 +30,7 @@ public:
     double m_penWidth;
     QList<QColor> m_colors;
     QString m_lastFile;
+    QString m_license;
     bool m_defaultSimu;
     int m_rasterSize;
     double gridSize();
@@ -38,10 +40,12 @@ public:
     QString applicationDir();
     bool defaultSimu();
     static Settings* final();
+    QString license();
 GRID gridType();
 QList<QColor> colors();
 void setColors(QList<QColor> col,bool session=false);
 void setApplicationDir(QString dir,bool session=false);
+void setLicense(QString lic,bool session=false);
 void setPenWidth(double wid,bool session=false);
 void setRasterSize(int size,bool session=false);
 void setLastFile(QString file,bool session=false);

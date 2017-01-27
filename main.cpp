@@ -1,7 +1,9 @@
+#include <QInputDialog>
 #include "mainwindow.h"
 #include <QApplication>
 #include "updater.h"
 #include "kvdiagram.h"
+#include "settings.h"
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <winreg.h>
@@ -10,11 +12,15 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    if(a.arguments().contains("kv"))
+    if(Settings::final()->license().isEmpty())
     {
-        KVDiagram diag;
-        diag.exec();
-        return 0;
+        QInputDialog dialog;
+        dialog.setInputMode(QInputDialog::TextInput);
+        dialog.setWindowTitle("QDigi");
+        dialog.setLabelText("Lizenzschlüssel eingeben\nAbbrechen für Offline-Arbeiten");
+        dialog.exec();
+        QString lic=dialog.textValue();
+        Settings::final()->setLicense(lic);
     }
     Updater updater;
     updater.update();

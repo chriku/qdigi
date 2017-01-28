@@ -20,6 +20,7 @@ struct block_t {
 struct text_t {
     QPoint pos;
     QString text;
+    double len;
 };
 
 struct line_t {

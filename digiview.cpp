@@ -104,8 +104,10 @@ void DigiView::paintEvent(QPaintEvent* event)
         font.setPixelSize(Settings::final()->gridSize());
         painter.setFont(font);
         text_t cur=texts[i];
-        QRect rect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),500,Settings::final()->gridSize());
-        painter.drawText(rect,Qt::AlignBottom|Qt::AlignLeft,cur.text);
+        QRectF br;
+        QRect rect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),texts[i].len*Settings::final()->gridSize(),Settings::final()->gridSize());
+        painter.drawText(rect,Qt::AlignBottom|Qt::AlignLeft,cur.text,&br);
+        texts[i].len=br.width()/Settings::final()->gridSize();
         QPen pen(Qt::green);
         QBrush brush(Qt::green);
         painter.setPen(pen);
@@ -310,7 +312,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                 for(int i=0;i<texts.length();i++)
                 {
                     text_t cur=texts[i];
-                    QRectF rect(cur.pos.x(),cur.pos.y()-1.0,500/Settings::final()->gridSize(),1.0);
+                    QRectF rect(cur.pos.x(),cur.pos.y()-1.0,cur.len,1.0);
                     if(rect.intersects(QRectF(sel)))
                         selectedTexts.append(i);
                 }
@@ -719,7 +721,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     for(int i=0;i<texts.length();i++)
     {
         text_t cur=texts[i];
-        QRectF rect(cur.pos.x(),cur.pos.y()-1.0,500/Settings::final()->gridSize(),1.0);
+        QRectF rect(cur.pos.x(),cur.pos.y()-1.0,cur.len,1.0);
         if(rect.contains(pf))
         {
             text=i;
@@ -849,6 +851,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             {
                 text_t text;
                 text.pos=p;
+                text.len=1000.0;
                 text.text=message;
                 texts.append(text);
             }

@@ -49,20 +49,80 @@ void KVDiagram::redoTable()
             ui->wahreitstabelle->setItem(y,x,item);
         }
     QString vals[16]={"0","1","0","1","0","1","0","1","0","1","0","1","0","1","0","1"};
+    //QString vals[16]={"1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"};
     for(int y=0;y<rowCount;y++)
     {
         QTableWidgetItem*item=new QTableWidgetItem;
         item->setText(vals[y]);
         ui->wahreitstabelle->setItem(y,columnCount,item);
     }
-    on_buttonBox_accepted();
-    exit(0);
+    //on_buttonBox_accepted();
 }
 
 void KVDiagram::on_buttonBox_accepted()
 {
+    QList<int*> values;
     int columnCount=ui->inputs->value();
     int rowCount=pow(2,columnCount);
+    for(int i=0;i<rowCount;i++)
+    {
+        int val=0;
+        if(ui->wahreitstabelle->item(i,4)->text()=="0")
+            val=0;
+        if(ui->wahreitstabelle->item(i,4)->text()=="1")
+            val=1;
+        if(val==1)
+        {
+            values.append((int*)malloc(sizeof(int)*columnCount));
+            for(int j=0;j<4;j++)
+            {
+                values.last()[j]=(i>>(3-j))%2==1;
+            }
+        }
+    }
+    for(int round=0;round<100;round++)
+    {
+        for(int i=0;i<values.length();i++)
+            for(int j=i+1;j<values.length();j++)
+                {
+                    int diff=0;
+                    for(int k=0;k<4;k++)
+                    {
+                        int v1=values[i][k];
+                        int v2=values[j][k];
+                        if(v1==2)
+                            continue;
+                        if(v2==2)
+                            continue;
+                        if(v1!=v2)
+                            diff++;
+                    }
+                    if(diff==1)
+                    {
+                        int *same=(int*)malloc(4);
+                        for(int k=0;k<4;k++)
+                        {
+                            same[k]=2;
+                            int v1=values[i][k];
+                            int v2=values[j][k];
+                            same[k]=2;
+                            if(v1==2)
+                                continue;
+                            if(v2==2)
+                                continue;
+                            if(v1==v2)
+                                same[k]=v1;
+                        }
+                        values[i]=same;
+                        values.removeAt(j);
+                    }
+                    if(diff==0)
+                        values.removeAt(j);
+                }
+    }
+    for(int i=0;i<values.length();i++)
+        qDebug()<<values[i][0]<<values[i][1]<<values[i][2]<<values[i][3];
+    /*
     QList<QString> cells;
     for(int i=0;i<rowCount;i++)
         cells.append(ui->wahreitstabelle->item(i,columnCount)->text());
@@ -122,5 +182,5 @@ void KVDiagram::on_buttonBox_accepted()
             painter.drawText((x+1)*100,(y+1)*100,100,100,Qt::AlignCenter,map[x][y]);
         }
     painter.end();
-    img.save("kv2.png");
+    img.save("kv2.png");*/
 }

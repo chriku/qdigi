@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList args=QApplication::arguments();
     if(args.length()>1)
     {
-        ui->digiView->load(args[1]);
+        ui->digiView->load(QDir().absoluteFilePath(args[1]));
         Settings::final()->addLastChanged(QDir().absoluteFilePath(args[1]));
     }
     ui->toolBox->setCurrentWidget(ui->page_base);
@@ -61,10 +61,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionSpeichern_triggered()
 {
+    qDebug()<<"SAVING N"<<ui->digiView->fileName;
     if(!ui->digiView->fileName.isEmpty())
     {
         if(ui->digiView->save())
         {
+            qDebug()<<"SAVING GOOD";
             setWindowTitle("QDigi "+ui->digiView->fileName);
             isChanged=false;
         }
@@ -81,6 +83,7 @@ void MainWindow::on_actionEinstellungen_triggered()
 
 void MainWindow::on_actionSpeichern_Unter_triggered()
 {
+    qDebug()<<"SAVING A"<<ui->digiView->fileName;
     QFileDialog fd;
     fd.setDefaultSuffix(".qdigi");
     fd.setAcceptMode(QFileDialog::AcceptSave);
@@ -91,11 +94,14 @@ void MainWindow::on_actionSpeichern_Unter_triggered()
     {
         QString fileName=fd.selectedFiles().first();
         qDebug()<<fileName;
-        ui->digiView->save(fileName);
+        if(ui->digiView->save(fileName))
+        {
+            qDebug()<<"SAVING GOOD";
         isChanged=false;
         setWindowTitle("QDigi "+ui->digiView->fileName);
         Settings::final()->addLastChanged(fileName);
         updateLc();
+        }
     }
 }
 

@@ -358,8 +358,10 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
 
 bool DigiView::save(QString where)
 {
+    qDebug()<<"WHERE1"<<where;
     if(where.isEmpty())
         where=fileName;
+    qDebug()<<"WHERE2"<<where;
     if(where.isEmpty())
         return false;
     fileName=where;
@@ -417,15 +419,37 @@ bool DigiView::save(QString where)
     }
     root.insert("vias",v);
     int err=0;
-    zip_t* arch=zip_open(where.toStdString().data(),ZIP_CREATE|ZIP_TRUNCATE,&err);
+    QFile file(where);
+    file.open(QFile::WriteOnly|QFile::Truncate);
     QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
+    file.write(data);
+    file.close();
+    /*qDebug()<<"PA"<<file.exists();
+    /*qDebug()<<"A"<<file.exists();
+    file.remove();
+    qDebug()<<"POA"<<file.isOpen();
+    if(file.isOpen())
+        file.close();
+    file.remove();
+    qDebug()<<"A"<<file.exists();
+    qDebug()<<where;
+    zip_t* arch=zip_open(where.toStdString().data(),ZIP_CREATE|ZIP_TRUNCATE,&err);
+    qDebug()<<"Open"<<err;
+    qDebug()<<"Saving"<<data.left(100)<<"...";
     zip_source_t * source=zip_source_buffer(arch,data.data(),data.length(),0);
-    zip_file_add(arch,"data.json",source,ZIP_FL_OVERWRITE);
+    qDebug()<<"src_bfr1"<<source;
+    qDebug()<<"ADD1"<<zip_file_add(arch,"data.json",source,ZIP_FL_OVERWRITE);
     QByteArray version="0.1";
     source=zip_source_buffer(arch,version.data(),version.length(),0);
-    zip_file_add(arch,"version.txt",source,ZIP_FL_OVERWRITE);
-    zip_close(arch);
-    Settings::final()->setLastFile(fileName);
+    qDebug()<<"src_bfr2"<<source;
+    qDebug()<<"ADD2"<<zip_file_add(arch,"version.txt",source,ZIP_FL_OVERWRITE);
+    if(zip_strerror(arch)!=NULL)
+        qDebug()<<"STRERROR"<<zip_strerror(arch);
+    if(zip_close(arch)!=0)
+    {
+        qDebug()<<"STRERRORCLOSE"<<zip_strerror(arch);
+    }*/
+    Settings::final()->setLastFile(where);
     return true;
 }
 

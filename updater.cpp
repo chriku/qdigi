@@ -29,7 +29,6 @@ void Updater::update()
     if(rep->error()==QNetworkReply::NoError)
     {
         QByteArray resp=rep->readAll();
-        qDebug()<<resp;
         QJsonParseError error;
         QJsonDocument doc=QJsonDocument::fromJson(resp,&error);
         if(error.error==error.NoError)

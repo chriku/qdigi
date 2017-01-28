@@ -106,6 +106,7 @@ void DigiView::paintEvent(QPaintEvent* event)
         text_t cur=texts[i];
         QRectF br;
         QRect rect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),texts[i].len*Settings::final()->gridSize(),Settings::final()->gridSize());
+        painter.setPen(cur.color);
         painter.drawText(rect,Qt::AlignBottom|Qt::AlignLeft,cur.text,&br);
         texts[i].len=br.width()/Settings::final()->gridSize();
         QPen pen(Qt::green);
@@ -389,6 +390,7 @@ bool DigiView::save(QString where)
         c.insert("x",texts[i].pos.x());
         c.insert("y",texts[i].pos.y());
         c.insert("text",texts[i].text);
+        c.insert("color",texts[i].color.name());
         t.append(c);
     }
     root.insert("texts",t);
@@ -736,6 +738,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QAction* delTextAct=NULL;
     QAction* changePinAct=NULL;
     QAction* addTextAct=NULL;
+    QMap<QAction*,QColor> setTextColorAction;
     QMap<QAction*,QColor> setLineColorAction;
     QMap<QAction*,QColor> setBlockColorAction;
     QList<QAction*> altAction;
@@ -774,6 +777,19 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             map.fill(colors[i].first);
             QAction* act=cm->addAction(QIcon(map),colors[i].second);
             setBlockColorAction.insert(act,colors[i].first);
+        }
+        ok=true;
+    }
+    if(text>=0)
+    {
+        QList<QPair<QColor,QString> > colors=loadColorProfile();
+        QMenu* cm=menu.addMenu("Textfarbe ändern");
+        for(int i=0;i<colors.length();i++)
+        {
+            QPixmap map(24,24);
+            map.fill(colors[i].first);
+            QAction* act=cm->addAction(QIcon(map),colors[i].second);
+            setTextColorAction.insert(act,colors[i].first);
         }
         ok=true;
     }
@@ -891,17 +907,26 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 lines.removeAt(line);
                 emit changed();
                 clearSelection();
-            }        if(line>=0)
-            if(line>=0)
-                if(setLineColorAction.contains(act))
-                {
-                    QList<int> net=getNet(lines[line].line);
-                    QColor c=setLineColorAction[act];
-                    for(int i=0;i<net.length();i++)
-                        lines[net[i]].color=c;
-                    emit changed();
-                    clearSelection();
-                }
+            }
+        if(line>=0)
+            if(setLineColorAction.contains(act))
+            {
+                QList<int> net=getNet(lines[line].line);
+                QColor c=setLineColorAction[act];
+                for(int i=0;i<net.length();i++)
+                    lines[net[i]].color=c;
+                emit changed();
+                clearSelection();
+            }
+        if(text>=0)
+            if(setTextColorAction.contains(act))
+            {
+                QColor c=setTextColorAction[act];
+                qDebug()<<c;
+                texts[text].color=c;
+                emit changed();
+                clearSelection();
+            }
         if(block>=0)
             if(setBlockColorAction.contains(act))
             {
@@ -1305,6 +1330,7 @@ void DigiView::loadJson(QByteArray json)
         text_t c;
         c.pos=QPoint(t[i].toObject()["x"].toInt(),t[i].toObject()["y"].toInt());
         c.text=t[i].toObject()["text"].toString();
+        c.color=QColor(t[i].toObject()["color"].toString());
         texts.append(c);
     }
     QJsonArray v=root["vias"].toArray();

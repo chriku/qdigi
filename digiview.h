@@ -21,6 +21,7 @@ struct text_t {
     QPoint pos;
     QString text;
     double len;
+    QColor color;
 };
 
 struct line_t {

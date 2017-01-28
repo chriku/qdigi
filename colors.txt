@@ -2,7 +2,7 @@ Gelb,#ffff00
 Orange,#ff5500
 Rot,#ff0000
 Rosa,#ff1199
-Lila,#551188
+Lila,#7722bb
 Blau,#2200ff
 Türkise,#00ffff
 Grün,#00ff00

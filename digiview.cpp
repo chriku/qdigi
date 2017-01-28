@@ -1471,3 +1471,97 @@ QList<QPair<QColor,QString> > DigiView::loadColorProfile()
     }
     return ret;
 }
+
+void DigiView::createTable()
+{
+    QPoint pos(-1,-1);
+    for(int i=0;i<blocks.length();i++)
+    {
+        if(blocks[i].block->name=="Large-IN")
+        {
+            pos=blocks[i].pos;
+            blocks.removeAt(i);
+            i=blocks.length();
+        }
+    }
+    QList<QPair<QList<bool>,QList<bool> > > table;
+    qDebug()<<pos;
+    if(pos.x()==-1)
+    {
+        QMessageBox::warning(NULL,"QDigi","No Block Found");
+    }
+    else
+    {
+        int cnt=0;
+        QList<QLine> pins;
+        QMap<int,int> fakeGates;
+        QList<int> outputs;
+        for(int i=0;i<blocks.length();i++)
+            if(blocks[i].block->name=="OUT")
+                outputs.append(i);
+        while(cnt<16)
+        {
+            QPoint pin(pos+QPoint(2,cnt+1));
+            if(getNet(QLine(QPoint(-1,-1),pin)).length()==0)
+                break;
+            pins.append(QLine(QPoint(-1,-1),pin));
+            cnt++;
+        }
+        for(int i=0;i<pins.length();i++)
+        {
+            block_t blk;
+            blk.block=BlockList::newBlock("NULL");
+            blk.pos=pins[i].p2()+QPoint(-2,-1);
+            blocks.append(blk);
+            cleanUp();
+            fakeGates.insert((pins.length()-1)-i,blocks.length()-1);
+        }
+        for(int i=0;i<pow(pins.length(),2);i++)
+        {
+            QPair<QList<bool>,QList<bool> > row;
+            QList<bool> values;
+            for(int j=0;j<pins.length();j++)
+            {
+                values.prepend((i>>j)%2==1);
+            }
+            row.first=values;
+            for(int j=0;j<pins.length();j++)
+                blocks[fakeGates[j]].block->pins[0].type=values[j]==1;
+            for(int j=0;j<5;j++)
+                timeout();
+            QList<bool> res;
+            for(int j=0;j<outputs.length();j++)
+                res.append(blocks[outputs[j]].block->pins[0].state);
+            row.second=res;
+            table.append(row);
+        }
+        QFile out("logic.html");
+        out.open(QFile::WriteOnly|QFile::Truncate);
+        out.write("<html><body><table border=1><tr>");
+        for(int i=0;i<cnt;i++)
+            out.write("<th>IN"+QString::number((cnt-1)-i).toUtf8()+"</th>");
+        for(int i=0;i<outputs.length();i++)
+            out.write("<th>OUT"+QString::number(i).toUtf8()+"</th>");
+        out.write("</tr>");
+        for(int i=0;i<table.length();i++)
+        {
+            out.write("<tr>");
+            for(int j=0;j<cnt;j++)
+            {
+                QString c="0";
+                if(table[i].first[j])
+                    c="1";
+                out.write("<td>"+c.toUtf8()+"</td>");
+            }
+            for(int j=0;j<outputs.length();j++)
+            {
+                QString c="0";
+                if(table[i].second[j])
+                    c="1";
+                out.write("<td>"+c.toUtf8()+"</td>");
+            }
+            out.write("</tr>");
+        }
+        out.write("</tr></body></html>");
+    }
+}

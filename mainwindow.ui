@@ -256,6 +256,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_multi">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>144</width>
+          <height>387</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>Multiplexer</string>
         </attribute>
@@ -324,6 +332,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_math">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>144</width>
+          <height>387</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>Mathe</string>
         </attribute>
@@ -509,9 +525,16 @@
     </property>
     <addaction name="actionL_schen"/>
    </widget>
+   <widget class="QMenu" name="menuAnderes">
+    <property name="title">
+     <string>Anderes</string>
+    </property>
+    <addaction name="actionLogiktabelle"/>
+   </widget>
    <addaction name="menuDatei"/>
    <addaction name="menuAnsicht"/>
    <addaction name="menuAuswahl"/>
+   <addaction name="menuAnderes"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSpeichern">
@@ -599,6 +622,11 @@
   <action name="actionZuletzt_ge_ndert">
    <property name="text">
     <string>Zuletzt geändert</string>
+   </property>
+  </action>
+  <action name="actionLogiktabelle">
+   <property name="text">
+    <string>Logiktabelle</string>
    </property>
   </action>
  </widget>

@@ -57,13 +57,13 @@ int main(int argc, char *argv[])
         Settings::final()->setLicense(lic);
     }
     QString lic=Settings::final()->license();
-    if(lic.left(lic.indexOf(":"))=="1")
+    /*if(lic.left(lic.indexOf(":"))=="1")
         if(QMessageBox::question(NULL,"QDigi","KV-Map")==QMessageBox::Yes)
         {
             KVDiagram diagram;
             diagram.exec();
             exit(0);
-        }
+        }*/
     Updater updater;
     updater.update();
     MainWindow w;

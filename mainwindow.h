@@ -46,6 +46,8 @@ private slots:
     void openRecent();
     void updateLc();
 
+    void on_actionLogiktabelle_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

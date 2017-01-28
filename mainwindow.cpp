@@ -231,3 +231,8 @@ void MainWindow::updateLc()
     }
     ui->actionZuletzt_ge_ndert->setMenu(lastChanged);
 }
+
+void MainWindow::on_actionLogiktabelle_triggered()
+{
+    ui->digiView->createTable();
+}

@@ -3,17 +3,18 @@
 
 Settings* settings=NULL;
 Settings::Settings(QObject *parent) : QObject(parent),
-    saveFile(QSettings::IniFormat,QSettings::UserScope,"Christian Kurz","btd")
+    saveFile(QSettings::IniFormat,QSettings::UserScope,"Christian Kurz","qdigi")
 {
-    m_gridSize=saveFile.value("gridSize",20).toInt();
-    m_gridType=(GRID)saveFile.value("gridType",GRID_LINES).toInt();
-    m_defaultSimu=saveFile.value("defaultSimu",false).toBool();
+    QSettings orig(QSettings::IniFormat,QSettings::UserScope,"Christian Kurz","btd");
+    m_gridSize=saveFile.value("gridSize",orig.value("gridSize",20)).toInt();
+    m_gridType=(GRID)saveFile.value("gridType",orig.value("gridType",GRID_LINES)).toInt();
+    m_defaultSimu=saveFile.value("defaultSimu",orig.value("defaultSimu",false)).toBool();
     m_applicationDir=saveFile.value("applicationDir",QApplication::applicationDirPath()).toString();
     m_lastFile=saveFile.value("lastFile","").toString();
-    m_rasterSize=saveFile.value("rasterSize",5).toInt();
-    m_penWidth=saveFile.value("penWidth",0.1).toDouble();
-    m_license=saveFile.value("licenseKey","").toString();
-    m_background=saveFile.value("background",QColor(Qt::lightGray)).value<QColor>();
+    m_rasterSize=saveFile.value("rasterSize",orig.value("rasterSize",5)).toInt();
+    m_penWidth=saveFile.value("penWidth",orig.value("penWidth",0.1)).toDouble();
+    m_license=saveFile.value("licenseKey",orig.value("licenseKey","")).toString();
+    m_background=saveFile.value("background",QColor(Qt::white)).value<QColor>();
 }
 
 Settings* Settings::final()

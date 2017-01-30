@@ -356,6 +356,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
         startPoint=QPoint(-1,-1);
         curPoint=QPoint(-1,-1);
     }
+    cleanUp();
     update();
 }
 
@@ -541,20 +542,22 @@ void DigiView::timeout()
                 done[i].append(false);
         }
     }
-    QMap<QPair<int,int>,bool> states;
+    QMap<QPair<int,int>,QPair<bool,QColor> > states;
     for(int i=0;i<blocks.length();i++)
         for(int j=0;j<blocks[i].block->pins.length();j++)
             if(blocks[i].block->pins[j].direction==2)
             {
-                QList<QPoint> points;
-                points.append(blocks[i].block->pins[j].point+blocks[i].pos);
+                QList<QPair<QPoint,QColor> > points;
+                points.append(QPair<QPoint,QColor> (blocks[i].block->pins[j].point+blocks[i].pos,Qt::black));
+                QPoint sp=blocks[i].block->pins[j].point+blocks[i].pos;
                 bool state=blocks[i].block->getState(j);
                 if(blocks[i].block->pins[j].type)
                     state=!state;
                 QList<int> linesVisited;
                 while(points.length()>0)
                 {
-                    QPoint p=points.takeFirst();
+                    QPair<QPoint,QColor> pp=points.takeFirst();
+                    QPoint p=pp.first;
                     for(int k=0;k<lines.length();k++)
                     {
                         if((lines[k].line.p1()==p)||(lines[k].line.p2()==p))
@@ -562,12 +565,19 @@ void DigiView::timeout()
                             {
                                 linesVisited.append(k);
                                 lines[k].state=state;
-                                points.append(lines[k].line.p1());
-                                points.append(lines[k].line.p2());
+                                points.append(QPair<QPoint,QColor>(lines[k].line.p1(),lines[k].color));
+                                points.append(QPair<QPoint,QColor>(lines[k].line.p2(),lines[k].color));
+                                if((lines[k].line.p1()==sp)||(lines[k].line.p2()==sp))
+                                    blocks[i].block->pins[j].color=lines[k].color;
+                                QPoint dp=lines[k].line.p2();
                                 if(lines[k].line.p1()==p)
-                                    points.removeAll(lines[k].line.p1());
-                                else
-                                    points.removeAll(lines[k].line.p2());
+                                    dp=lines[k].line.p1();
+                                for(int l=0;l<points.length();l++)
+                                    if(points[l].first==dp)
+                                    {
+                                        points.removeAt(l);
+                                        l--;
+                                    }
                             }
                     }
                     for(int k=0;k<blocks.length();k++)
@@ -577,14 +587,16 @@ void DigiView::timeout()
                                 if(blocks[k].block->pins[l].direction==0)
                                 {
                                     done[k][l]=true;
-                                    states.insert(QPair<int,int>(k,l),state);
+                                    states.insert(QPair<int,int>(k,l),QPair<bool,QColor>(state,pp.second));
                                 }
                                 if(blocks[k].block->pins[l].direction==2)
+                                {
                                     if(!((i==k)&&(j==l)))
                                     {
                                         ok=false;
                                         bar->showMessage("Zwei Ausgänge",1000);
                                     }
+                                }
                             }
                 }
             }
@@ -607,8 +619,11 @@ void DigiView::timeout()
     {
         int k=keys[i].first;
         int l=keys[i].second;
-        bool state=states[keys[i]];
+        bool state=states[keys[i]].first;
+        QColor col=states[keys[i]].second;
         blocks[k].block->pins[l].state=state;
+        qDebug()<<col;
+        blocks[k].block->pins[l].color=col;
     }
     if(!ok)
     {
@@ -742,7 +757,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QMap<QAction*,QColor> setLineColorAction;
     QMap<QAction*,QColor> setBlockColorAction;
     QList<QAction*> altAction;
-    if(lcnt==2)
+    if(lcnt>=2)
     {
         addViaAct=menu.addAction("Knotenpunkt hinzufügen");
         ok=true;
@@ -912,9 +927,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if(setLineColorAction.contains(act))
             {
                 QList<int> net=getNet(lines[line].line);
+                net.append(line);
                 QColor c=setLineColorAction[act];
                 for(int i=0;i<net.length();i++)
                     lines[net[i]].color=c;
+                lines[line].color=c;
                 emit changed();
                 clearSelection();
             }
@@ -1425,21 +1442,22 @@ QList<int> DigiView::getNet(QLine in)
     while(points.length()>0)
     {
         QPoint p=points.takeFirst();
-        for(int i=0;i<lines.length();i++)
-            if((lines[i].line.p1()==p)||(lines[i].line.p2()==p))
-            {
-                ret.append(i);
-                if(!visited.contains(lines[i].line.p1()))
+        if(!vias.contains(p))
+            for(int i=0;i<lines.length();i++)
+                if((lines[i].line.p1()==p)||(lines[i].line.p2()==p))
                 {
-                    visited.append(lines[i].line.p1());
-                    points.append(lines[i].line.p1());
+                    ret.append(i);
+                    if(!visited.contains(lines[i].line.p1()))
+                    {
+                        visited.append(lines[i].line.p1());
+                        points.append(lines[i].line.p1());
+                    }
+                    if(!visited.contains(lines[i].line.p2()))
+                    {
+                        visited.append(lines[i].line.p2());
+                        points.append(lines[i].line.p2());
+                    }
                 }
-                if(!visited.contains(lines[i].line.p2()))
-                {
-                    visited.append(lines[i].line.p2());
-                    points.append(lines[i].line.p2());
-                }
-            }
     }
     return ret;
 }

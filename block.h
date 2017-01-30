@@ -14,6 +14,7 @@ struct pin_t {
     int direction;
     int state;
     bool type;
+    QColor color;
     pin_t()
     {
         state=false;

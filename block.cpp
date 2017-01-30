@@ -59,7 +59,24 @@ QPixmap Block::drawBlock(QColor color) {
         qDebug() << "ERR3" << lua_tostring(L, -1);
     qpainter.setPen(Qt::black);
     for (int i = 0; i < pins.length(); i++) {
-        QPen pen(Qt::black);
+        QPoint dir(Settings::final()->gridSize() / 2.0, 0);
+        if (pins[i].direction == 2)
+            dir = QPoint(-Settings::final()->gridSize() / 2.0, 0);
+        if (pins[i].type == true) {
+            double rad = abs(dir.x()) / 4.0;
+            qpainter.drawEllipse(
+                        (QPointF(pins[i].point * Settings::final()->gridSize())) +
+                        ((dir / 4.0) * 3.0),
+                        rad, rad);
+            dir /= 2.0;
+        }
+        QPen pen(pins[i].color);
+        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
+        qpainter.setPen(pen);
+        qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
+                          (pins[i].point * Settings::final()->gridSize()) + dir);
+        pen.setColor(Qt::black);
+        pen.setStyle(Qt::DotLine);
         pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
         bool err=false;
         if (pins[i].direction == 2) {
@@ -75,19 +92,8 @@ QPixmap Block::drawBlock(QColor color) {
                 pen.setColor(Qt::red);
         }
         qpainter.setPen(pen);
-        QPoint dir(Settings::final()->gridSize() / 2.0, 0);
-        if (pins[i].direction == 2)
-            dir = QPoint(-Settings::final()->gridSize() / 2.0, 0);
-        if (pins[i].type == true) {
-            double rad = abs(dir.x()) / 4.0;
-            qpainter.drawEllipse(
-                        (QPointF(pins[i].point * Settings::final()->gridSize())) +
-                        ((dir / 4.0) * 3.0),
-                        rad, rad);
-            dir /= 2.0;
-        }
-        qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
-                          (pins[i].point * Settings::final()->gridSize()) + dir);
+        //qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
+        //                  (pins[i].point * Settings::final()->gridSize()) + dir);
         // qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
 

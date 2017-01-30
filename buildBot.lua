@@ -9,6 +9,7 @@ function urlencode(str)
    end
    return str    
 end
+os.execute("cd .. &&  sshfs root@a20-olimex:/media/usb-stick/site/q/downloads mnt")
 os.execute("sudo ./build; cp qdigi.exe ~/mnt/")
 os.execute("nano /tmp/message")
 U=io.open("/tmp/message")

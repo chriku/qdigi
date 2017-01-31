@@ -41,6 +41,7 @@ class DigiView : public QWidget
     Q_OBJECT
 public:
     bool error;
+    QList<int> linesAtPoint(QPoint point);
     QList<QPair<QColor,QString> > loadColorProfile();
     QList<int> getNet(QLine in);
     QList<int> selectedBlocks;

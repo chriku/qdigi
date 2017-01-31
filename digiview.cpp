@@ -186,10 +186,43 @@ void DigiView::paintEvent(QPaintEvent* event)
         }
     }
     painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::black);
-    int d=(2.0*Settings::final()->penWidth()*Settings::final()->gridSize());
+    int d=(4.0*Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<vias.length();i++)
-        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),d,d);
+    {
+        painter.setBrush(Qt::black);
+        painter.drawEllipse(vias[i]*Settings::final()->gridSize(),d-1,d-1);
+        QList<int> linei=linesAtPoint(vias[i]);
+        for(int j=0;j<linei.length();j++)
+        {
+            line_t c=lines[linei[j]];
+            QPoint cp;
+            QPoint op;
+            if(c.line.p1()==vias[i])
+            {
+                cp=c.line.p1();
+                op=c.line.p2();
+            }
+            else
+            {
+                cp=c.line.p2();
+                op=c.line.p1();
+            }
+            painter.setBrush(c.color);
+            if(cp.x()==op.x())//Senkrecht
+            {
+                if(cp.y()<op.y())//Unten
+                    painter.drawPie((cp.x()*Settings::final()->gridSize())-d,(cp.y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,-16*45,-16*90);
+                else
+                    painter.drawPie((cp.x()*Settings::final()->gridSize())-d,(cp.y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,16*45,16*90);
+            }else//Waaagrecht
+            {
+                if(cp.x()<op.x())//Rechts
+                    painter.drawPie((cp.x()*Settings::final()->gridSize())-d,(cp.y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,-16*45,16*90);
+                else
+                    painter.drawPie((cp.x()*Settings::final()->gridSize())-d,(cp.y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,16*135,16*90);
+            }
+        }
+    }
 }
 void DigiView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -1582,4 +1615,17 @@ void DigiView::createTable()
         }
         out.write("</tr></body></html>");
     }
+}
+
+QList<int> DigiView::linesAtPoint(QPoint point)
+{
+    QList<int> ret;
+    for(int i=0;i<lines.length();i++)
+    {
+        if(lines[i].line.p1()==point)
+            ret.append(i);
+        if(lines[i].line.p2()==point)
+            ret.append(i);
+    }
+    return ret;
 }

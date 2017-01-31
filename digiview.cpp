@@ -186,7 +186,7 @@ void DigiView::paintEvent(QPaintEvent* event)
         }
     }
     painter.setPen(Qt::NoPen);
-    int d=(4.0*Settings::final()->penWidth()*Settings::final()->gridSize());
+    int d=(2.0*Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<vias.length();i++)
     {
         painter.setBrush(Qt::black);

@@ -1121,15 +1121,18 @@ void DigiView::cleanUp()
                         if(i!=j)
                         {
                             bool kill=false;
+                            QPoint kp;
                             if(lines[i].line.p1()==lines[j].line.p1())
                                 if(lines[i].line.p2()!=lines[j].line.p2())
                                 {
                                     if(lines[i].line.p2().x()==lines[j].line.p2().x())
                                     {
                                         kill=true;
+                                        kp=lines[i].line.p1();
                                     }
                                     if(lines[i].line.p2().y()==lines[j].line.p2().y())
                                     {
+                                        kp=lines[i].line.p1();
                                         kill=true;
                                     }
                                 }
@@ -1138,10 +1141,12 @@ void DigiView::cleanUp()
                                 {
                                     if(lines[i].line.p1().x()==lines[j].line.p1().x())
                                     {
+                                        kp=lines[i].line.p2();
                                         kill=true;
                                     }
                                     if(lines[i].line.p1().y()==lines[j].line.p1().y())
                                     {
+                                        kp=lines[i].line.p2();
                                         kill=true;
                                     }
                                 }
@@ -1150,10 +1155,12 @@ void DigiView::cleanUp()
                                 {
                                     if(lines[i].line.p2().x()==lines[j].line.p1().x())
                                     {
+                                        kp=lines[i].line.p1();
                                         kill=true;
                                     }
                                     if(lines[i].line.p2().y()==lines[j].line.p1().y())
                                     {
+                                        kp=lines[i].line.p1();
                                         kill=true;
                                     }
                                 }
@@ -1162,13 +1169,20 @@ void DigiView::cleanUp()
                                 {
                                     if(lines[i].line.p1().x()==lines[j].line.p2().x())
                                     {
+                                        kp=lines[i].line.p2();
                                         kill=true;
                                     }
                                     if(lines[i].line.p1().y()==lines[j].line.p2().y())
                                     {
+                                        kp=lines[i].line.p2();
                                         kill=true;
                                     }
                                 }
+                            if(kill)
+                            {
+                                if(vias.contains(kp))
+                                    kill=false;
+                            }
                             if(kill)
                             {
                                 line_t line;

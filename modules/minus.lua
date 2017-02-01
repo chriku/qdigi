@@ -1,6 +1,6 @@
 state=false
-function paintEvent(painter)
-  painter:setPen()
+function paintEvent(painter,color)
+  painter:setPen(color)
   painter:setFont(nil,1.0)
   painter:setBrush("black")
   painter:drawEllipse(1,1,0.5)
@@ -13,4 +13,4 @@ function paintEvent(painter)
 end
 function getState(pin)
 end
-return {width=2,height=1,name="Minus",pins={{0,1,"INPUT"}},category="math",description="Minus LED"}
+return {width=1,height=1,name="Minus",pins={{0,1,"INPUT"}},category="math",description="Minus LED"}

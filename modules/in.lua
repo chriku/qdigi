@@ -14,4 +14,4 @@ end
 function getState(pin)
   return state
 end
-return {width=2,height=1,name="IN",pins={{2,1,"OUTPUT"}},category="base",description="1 Bit Eingang"}
+return {width=1,height=1,name="IN",pins={{2,1,"OUTPUT"}},category="base",description="1 Bit Eingang"}

@@ -25,7 +25,12 @@ void DragView::makeCols()
     setRowCount(ceil(double(blockList.length())/wid));
     for(int i=0;i<blockList.length();i++)
     {
-        QPixmap pix=blockList[i]->drawBlock(Qt::black);
+        QPicture pic=blockList[i]->drawBlock(Qt::black);;
+        QPixmap pix(pic.boundingRect().size());
+        pix.fill(Qt::transparent);
+        QPainter painter(&pix);
+        painter.drawPicture(0,0,pic);
+        painter.end();
         QTableWidgetItem* item=new QTableWidgetItem(QIcon(pix),blockList[i]->name);
         item->setToolTip(blockList[i]->description);
         int col=i%wid;

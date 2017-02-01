@@ -1,6 +1,6 @@
 state=false
 function paintEvent(painter,color)
-  painter:setPen()
+  painter:setPen(color)
   if pins[1] then
     painter:setBrush("red")
   else
@@ -11,4 +11,4 @@ function paintEvent(painter,color)
 end
 function getState(pin)
 end
-return {width=2,height=1,name="OUT",pins={{0,1,"INPUT"}},category="base",description="LED"}
+return {width=1,height=1,name="OUT",pins={{0,1,"INPUT"}},category="base",description="LED"}

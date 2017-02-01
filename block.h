@@ -3,6 +3,7 @@
 #include <QFileSystemWatcher>
 #include <QPainter>
 #include <QObject>
+#include <QPicture>
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -18,6 +19,7 @@ struct pin_t {
     pin_t()
     {
         state=false;
+        color=Qt::black;
     }
 };
 
@@ -38,7 +40,7 @@ public:
     void pushGlobal(lua_State*L);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
     QString category;
-QPixmap drawBlock(QColor color);
+QPicture drawBlock(QColor color,bool plain=false);
 QString name;
 int width;
 int height;

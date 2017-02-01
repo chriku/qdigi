@@ -95,7 +95,7 @@ void DigiView::paintEvent(QPaintEvent* event)
                 block=BlockList::blocks[i];
         if(block!=NULL)
         {
-            painter.drawPixmap(dragPos.x()*Settings::final()->gridSize(),dragPos.y()*Settings::final()->gridSize(),block->drawBlock(Qt::black));
+            painter.drawPicture(dragPos.x()*Settings::final()->gridSize(),dragPos.y()*Settings::final()->gridSize(),block->drawBlock(Qt::black));
         }
     }
     painter.setPen(Qt::black);
@@ -151,7 +151,7 @@ void DigiView::paintEvent(QPaintEvent* event)
         }
     for(int i=0;i<blocks.length();i++)
     {
-        painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color));
+        painter.drawPicture(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color));
         for(int j=0;j<blocks[i].block->pins.length();j++)
             if(blocks[i].block->pins[j].state==2)
             {
@@ -271,6 +271,15 @@ void DigiView::dropEvent(QDropEvent *event)
     block_t blk;
     blk.block=BlockList::newBlock(dragGate);
     blk.pos=dragPos.toPoint();
+    if(dragGate=="Large-IN")
+    {
+        for(int i=0;i<blocks.length();i++)
+            if(blocks[i].block->name=="Large-IN")
+            {
+                dragGate="";
+                return;
+            }
+    }
     dragGate="";
     for(int i=0;i<blocks.length();i++)
         if(QRect(blocks[i].pos.x(),blocks[i].pos.y(),blocks[i].block->width,blocks[i].block->height).intersects(QRect(blk.pos.x(),blk.pos.y(),blk.block->width,blk.block->height)))
@@ -682,7 +691,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QPoint p=toGrid(event->pos());
     QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
     for(int i=0;i<blocks.length();i++)
-        if((blocks[i].pos.x()<=(pf.x()-0.5))&&((blocks[i].pos.x()+blocks[i].block->width)>=(pf.x()-0.5)))
+        if((blocks[i].pos.x()<=(pf.x()))&&((blocks[i].pos.x()+blocks[i].block->width)>=(pf.x()-1)))
             if((blocks[i].pos.y()<=(pf.y()-0.5))&&((blocks[i].pos.y()+blocks[i].block->height)>=(pf.y()-0.5)))
                 block=i;
     int pin=-1;
@@ -1342,13 +1351,17 @@ void DigiView::zoomOut()
 
 QImage DigiView::exportImage()
 {
+    double grid=Settings::final()->gridSize();
+    Settings::final()->setGridSize(10);
     QPicture pic=exportPicture();
-    QImage ret(pic.boundingRect().size(),QImage::Format_ARGB32);
+    QImage ret(pic.boundingRect().size()*10,QImage::Format_ARGB32);
     ret.fill(Qt::transparent);
     QPainter painter(&ret);
-    painter.translate(-pic.boundingRect().topLeft());
+    painter.setWorldTransform(QTransform().translate(-pic.boundingRect().topLeft().x(),-pic.boundingRect().topLeft().y()));
+    painter.scale(10,10);
     painter.drawPicture(0,0,pic);
     painter.end();
+    Settings::final()->setGridSize(grid);
     return ret;
 }
 
@@ -1357,15 +1370,12 @@ QPicture DigiView::exportPicture()
     QPicture picture;
     QPainter painter(&picture);
     for(int i=0;i<blocks.length();i++)
-        painter.drawPixmap(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color));
+        painter.drawPicture(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color,true));
     QPen line(Qt::black);
     line.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<lines.length();i++)
     {
-        if(lines[i].state)
-            line.setColor(Qt::red);
-        else
-            line.setColor(Qt::black);
+        line.setColor(lines[i].color);
         painter.setPen(line);
         painter.drawLine(lines[i].line.p1()*Settings::final()->gridSize(),lines[i].line.p2()*Settings::final()->gridSize());
     }

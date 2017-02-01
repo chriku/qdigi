@@ -28,12 +28,12 @@ void Block::load(QString fileName) {
         qDebug() << "ERR2" << lua_tostring(L, -1);
 }
 
-QPixmap Block::drawBlock(QColor color) {
-    QPixmap ret((width * Settings::final()->gridSize()) +
+QPicture Block::drawBlock(QColor color, bool plain) {
+    QPicture ret;
+    ret.setBoundingRect(QRect(0,0,(width * Settings::final()->gridSize()) +
                 Settings::final()->gridSize() + 1,
                 (height * Settings::final()->gridSize()) + 1 +
-                Settings::final()->gridSize());
-    ret.fill(Qt::transparent);
+                Settings::final()->gridSize()));
     QPainter qpainter(&ret);
     qpainter.setPen(Qt::black);
     pushGlobal(L);
@@ -60,6 +60,8 @@ QPixmap Block::drawBlock(QColor color) {
     qpainter.setPen(Qt::black);
     for (int i = 0; i < pins.length(); i++) {
         QPen pen(pins[i].color);
+        if(pen.color()==Qt::transparent)
+            pen.setColor(Qt::black);
         pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
         qpainter.setPen(pen);
         QPoint dir(Settings::final()->gridSize() / 2.0, 0);
@@ -73,27 +75,30 @@ QPixmap Block::drawBlock(QColor color) {
                         rad, rad);
             dir /= 2.0;
         }
-        qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
-                          (pins[i].point * Settings::final()->gridSize()) + dir);
-        pen.setColor(Qt::black);
-        pen.setStyle(Qt::DotLine);
-        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
-        bool err=false;
-        if (pins[i].direction == 2) {
-            if (getState(i))
-                pen.setColor(Qt::red);
-        } else {
-            if (pins[i].state==2)
-            {
-                err=true;
-                pen.setColor(QColor::fromRgbF(1,0.5,0));
+        if(!plain)
+        {
+            qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
+                              (pins[i].point * Settings::final()->gridSize()) + dir);
+            pen.setColor(Qt::black);
+            pen.setStyle(Qt::DotLine);
+            pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
+            bool err=false;
+            if (pins[i].direction == 2) {
+                if (getState(i))
+                    pen.setColor(Qt::red);
+            } else {
+                if (pins[i].state==2)
+                {
+                    err=true;
+                    pen.setColor(QColor::fromRgbF(1,0.5,0));
+                }
+                else if (pins[i].state)
+                    pen.setColor(Qt::red);
             }
-            else if (pins[i].state)
-                pen.setColor(Qt::red);
         }
         qpainter.setPen(pen);
-        //qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
-        //                  (pins[i].point * Settings::final()->gridSize()) + dir);
+        qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
+                          (pins[i].point * Settings::final()->gridSize()) + dir);
         // qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
 

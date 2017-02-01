@@ -153,6 +153,21 @@ void Block::onpress(QPointF where) {
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
+void Block::keyPress(int pos) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
+    lua_getglobal(L, "onkey");
+    if (!lua_isnil(L, -1)) {
+        lua_pushinteger(L, pos);
+        if (lua_pcall(L, 1, 0, 0) == LUA_OK) {
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
+        } else
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
+    }
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
+}
 
 void Block::onrelease(QPointF where) {
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);

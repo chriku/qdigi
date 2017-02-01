@@ -20,6 +20,7 @@
 
 DigiView::DigiView(QWidget *parent) : QWidget(parent)
 {
+    setFocus();
     startPoint=QPoint(-1,-1);
     curPoint=QPoint(-1,-1);
     BlockList list;
@@ -571,6 +572,8 @@ QPoint DigiView::toGrid(QPoint in)
 
 void DigiView::timeout()
 {
+    setFocus();
+
     error=false;
     QList<QList<bool> > done;
     bool ok=true;
@@ -1659,4 +1662,75 @@ QList<int> DigiView::linesAtPoint(QPoint point)
             ret.append(i);
     }
     return ret;
+}
+
+void DigiView::keyPressEvent(QKeyEvent *event)
+{
+    if(event->modifiers()==0)
+    {
+        switch(event->key())
+        {
+        case Qt::Key_A:
+            largeIn(0);
+            break;
+        case Qt::Key_B:
+            largeIn(1);
+            break;
+        case Qt::Key_C:
+            largeIn(2);
+            break;
+        case Qt::Key_D:
+            largeIn(3);
+            break;
+        case Qt::Key_E:
+            largeIn(4);
+            break;
+        case Qt::Key_F:
+            largeIn(5);
+            break;
+        case Qt::Key_G:
+            largeIn(6);
+            break;
+        case Qt::Key_H:
+            largeIn(7);
+            break;
+        case Qt::Key_I:
+            largeIn(8);
+            break;
+        case Qt::Key_J:
+            largeIn(9);
+            break;
+        case Qt::Key_K:
+            largeIn(10);
+            break;
+        case Qt::Key_L:
+            largeIn(11);
+            break;
+        case Qt::Key_M:
+            largeIn(12);
+            break;
+        case Qt::Key_N:
+            largeIn(13);
+            break;
+        case Qt::Key_O:
+            largeIn(14);
+            break;
+        case Qt::Key_P:
+            largeIn(15);
+            break;
+        default:
+            return;
+        }
+        event->accept();
+    }
+}
+
+void DigiView::largeIn(int o)
+{
+    qDebug()<<o;
+    for(int i=0;i<blocks.length();i++)
+        if(blocks[i].block->name=="Large-IN")
+    {
+            blocks[i].block->keyPress(o);
+    }
 }

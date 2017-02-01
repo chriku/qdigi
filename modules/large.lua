@@ -1,6 +1,6 @@
 state={}
-text={"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"}
-text[0]="0"
+text={"B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"}
+text[0]="A"
 for i=1,16 do
   state[i]=false
 end
@@ -22,6 +22,12 @@ function onclick(x,y)
   y=y-0.5
   y=y+1
   pos=math.floor(y)
+  if state[pos]~=nil then
+    state[pos]=not state[pos]
+  end
+end
+function onkey(pos)
+  pos=pos+1
   if state[pos]~=nil then
     state[pos]=not state[pos]
   end

@@ -35,6 +35,7 @@ public:
     void load(QString fileName);
     lua_State*L;
     int state;
+    void keyPress(int pos);
     int mainRef;
     QList<pin_t> pins;
     void pushGlobal(lua_State*L);

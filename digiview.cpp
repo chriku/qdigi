@@ -1727,7 +1727,6 @@ void DigiView::keyPressEvent(QKeyEvent *event)
 
 void DigiView::largeIn(int o)
 {
-    qDebug()<<o;
     for(int i=0;i<blocks.length();i++)
         if(blocks[i].block->name=="Large-IN")
     {

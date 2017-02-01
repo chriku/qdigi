@@ -25,6 +25,8 @@ class Block : public QObject
 {
     Q_OBJECT
 public:
+    bool useFake;
+    QList<bool> fake;
     QString description;
     QStringList alt;
     explicit Block(QObject *parent = 0);

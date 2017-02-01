@@ -1,4 +1,5 @@
 #include <QInputDialog>
+#include <QDesktopServices>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QMenu>
@@ -655,7 +656,6 @@ void DigiView::timeout()
         bool state=states[keys[i]].first;
         QColor col=states[keys[i]].second;
         blocks[k].block->pins[l].state=state;
-        qDebug()<<col;
         blocks[k].block->pins[l].color=col;
     }
     if(!ok)
@@ -1526,12 +1526,13 @@ QList<QPair<QColor,QString> > DigiView::loadColorProfile()
 void DigiView::createTable()
 {
     QPoint pos(-1,-1);
+    Block* lin;
     for(int i=0;i<blocks.length();i++)
     {
         if(blocks[i].block->name=="Large-IN")
         {
             pos=blocks[i].pos;
-            blocks.removeAt(i);
+            lin=blocks[i].block;
             i=blocks.length();
         }
     }
@@ -1558,15 +1559,14 @@ void DigiView::createTable()
             pins.append(QLine(QPoint(-1,-1),pin));
             cnt++;
         }
+        lin->useFake=true;
+        lin->fake.clear();
         for(int i=0;i<pins.length();i++)
         {
-            block_t blk;
-            blk.block=BlockList::newBlock("NULL");
-            blk.pos=pins[i].p2()+QPoint(-2,-1);
-            blocks.append(blk);
-            cleanUp();
-            fakeGates.insert((pins.length()-1)-i,blocks.length()-1);
+            lin->fake.append(false);
         }
+        while(lin->fake.length()<16)
+            lin->fake.append(false);
         for(int i=0;i<pow(pins.length(),2);i++)
         {
             QPair<QList<bool>,QList<bool> > row;
@@ -1575,9 +1575,12 @@ void DigiView::createTable()
             {
                 values.prepend((i>>j)%2==1);
             }
+            lin->fake.clear();
             row.first=values;
             for(int j=0;j<pins.length();j++)
-                blocks[fakeGates[j]].block->pins[0].type=values[j]==1;
+                lin->fake.prepend(values[j]);
+            while(lin->fake.length()<16)
+                lin->fake.append(false);
             for(int j=0;j<5;j++)
                 timeout();
             QList<bool> res;
@@ -1586,6 +1589,7 @@ void DigiView::createTable()
             row.second=res;
             table.append(row);
         }
+        lin->useFake=false;
         QFile out("logic.html");
         out.open(QFile::WriteOnly|QFile::Truncate);
         out.write("<html><body><table border=1><tr>");
@@ -1611,9 +1615,12 @@ void DigiView::createTable()
                     c="1";
                 out.write("<td>"+c.toUtf8()+"</td>");
             }
-            out.write("</tr>");
+            out.write("</tr>\n");
         }
-        out.write("</tr></body></html>");
+        out.write("</table></body></html>");
+        out.flush();
+        out.close();
+        QDesktopServices::openUrl(QUrl("file:///"+QDir().absoluteFilePath(out.fileName())));
     }
 }
 

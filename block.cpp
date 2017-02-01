@@ -10,7 +10,7 @@ extern "C" {
 #include "luasocket.h"
 }
 
-Block::Block(QObject *parent) : QObject(parent) { L = luaL_newstate(); connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));}
+Block::Block(QObject *parent) : QObject(parent) { L = luaL_newstate(); connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));useFake=false;}
 
 void Block::load(QString fileName) {
     //watcher.addPath(fileName);
@@ -59,6 +59,9 @@ QPixmap Block::drawBlock(QColor color) {
         qDebug() << "ERR3" << lua_tostring(L, -1);
     qpainter.setPen(Qt::black);
     for (int i = 0; i < pins.length(); i++) {
+        QPen pen(pins[i].color);
+        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
+        qpainter.setPen(pen);
         QPoint dir(Settings::final()->gridSize() / 2.0, 0);
         if (pins[i].direction == 2)
             dir = QPoint(-Settings::final()->gridSize() / 2.0, 0);
@@ -70,9 +73,6 @@ QPixmap Block::drawBlock(QColor color) {
                         rad, rad);
             dir /= 2.0;
         }
-        QPen pen(pins[i].color);
-        pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
-        qpainter.setPen(pen);
         qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
                           (pins[i].point * Settings::final()->gridSize()) + dir);
         pen.setColor(Qt::black);
@@ -167,23 +167,28 @@ void Block::onrelease(QPointF where) {
 }
 
 bool Block::getState(int pin) {
-    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
-    lua_setglobal(L,"state");
-    pushGlobal(L);
-    lua_getglobal(L, "getState");
-    if (!lua_isnil(L, -1)) {
-        lua_pushinteger(L, pin + 1);
-        if (lua_pcall(L, 1, 1, 0) == LUA_OK) {
-            lua_getglobal(L,"state");
-            lua_rawseti(L,LUA_REGISTRYINDEX,state);
-            return lua_toboolean(L, -1);
+    if(!useFake)
+    {
+        lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+        lua_setglobal(L,"state");
+        pushGlobal(L);
+        lua_getglobal(L, "getState");
+        if (!lua_isnil(L, -1)) {
+            lua_pushinteger(L, pin + 1);
+            if (lua_pcall(L, 1, 1, 0) == LUA_OK) {
+                lua_getglobal(L,"state");
+                lua_rawseti(L,LUA_REGISTRYINDEX,state);
+                return lua_toboolean(L, -1);
+            } else
+                qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
         } else
-            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
-    } else
-        qDebug() << "Warning: "
-                 << "Missing State at" << name;
-    lua_getglobal(L,"state");
-    lua_rawseti(L,LUA_REGISTRYINDEX,state);
+            qDebug() << "Warning: "
+                     << "Missing State at" << name;
+        lua_getglobal(L,"state");
+        lua_rawseti(L,LUA_REGISTRYINDEX,state);
+    }
+    else
+        return fake[pin];
     return false;
 }
 
@@ -282,7 +287,7 @@ void Block::init(Block *blk)
         lua_pop(L, 1);
         lua_getfield(L, -1, "description");
         if(lua_isstring(L,-1))
-        blk->description = QByteArray(lua_tostring(L, -1));
+            blk->description = QByteArray(lua_tostring(L, -1));
         lua_pop(L, 1);
         lua_getfield(L, -1, "name");
         blk->name = QByteArray(lua_tostring(L, -1));

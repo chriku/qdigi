@@ -150,6 +150,9 @@ void DigiView::paintEvent(QPaintEvent* event)
             QRect rect(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
             painter.drawRect(rect);
         }
+    painter.setBrush(Qt::NoBrush);
+    pen.setColor(Qt::black);
+    painter.setPen(pen);
     for(int i=0;i<blocks.length();i++)
     {
         painter.drawPicture(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color));

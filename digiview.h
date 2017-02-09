@@ -72,6 +72,9 @@ public:
     void zoomOut();
     QPoint startPoint;
     QPoint curPoint;
+    bool drag;
+    int blkIdx;
+    QPoint startBlock;
     QList<line_t> lines;
     QList<text_t> texts;
     bool save(QString where=QString());

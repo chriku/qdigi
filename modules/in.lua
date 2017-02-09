@@ -1,6 +1,6 @@
 state=false
 function paintEvent(painter,color)
-  painter:setPen()
+  painter:setPen(color)
   if state then
     painter:setBrush("red")
   else

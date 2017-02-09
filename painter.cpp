@@ -101,6 +101,7 @@ int Painter::lsetPen(lua_State *L)
     }
     if(lua_isnumber(L,3))
         pen.setWidth(lua_tonumber(L,3)*Settings::final()->gridSize());
+    pen.setCapStyle(Qt::RoundCap);
     painter->setPen(pen);
     return 0;
 }

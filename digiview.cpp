@@ -144,6 +144,7 @@ void DigiView::paintEvent(QPaintEvent* event)
         rect.setHeight(rect.height()+8);
         painter.drawRect(rect);
     }
+    if(!drag)
     if(curPoint!=QPoint(-1,-1))
         if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
         {
@@ -169,6 +170,7 @@ void DigiView::paintEvent(QPaintEvent* event)
     QPen line(Qt::black);
     line.setWidth(3);
     painter.setPen(line);
+    if(!drag)
     if(curPoint!=QPoint(-1,-1))
         if(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x())))
             painter.drawLine(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
@@ -311,6 +313,18 @@ void DigiView::mousePressEvent(QMouseEvent *event)
                         {
                             idx=i;
                         }
+        int pin=-1;
+        if(idx>=0)
+            for(int i=0;i<blocks[idx].block->pins.length();i++)
+                if(startPoint==(blocks[idx].pos+blocks[idx].block->pins[i].point))
+                    pin=i;
+        drag=false;
+        blkIdx=idx;
+        if((pin==-1)&&(idx>=0))
+        {
+            startBlock=blocks[idx].pos;
+            drag=true;
+        }
         if(idx>=0)
         {
             double x=event->pos().x()/Settings::final()->gridSize();
@@ -329,6 +343,10 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
     {
         clearSelection();
         curPoint=toGrid(event->pos());
+        if(drag)
+        {
+            blocks[blkIdx].pos=startBlock+(curPoint-startPoint);
+        }
     }
     update();
 }
@@ -341,63 +359,66 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
         QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
         clearSelection();
         curPoint=toGrid(event->pos());
-        if((startPoint.x()==curPoint.x())||(startPoint.y()==curPoint.y()))
-            if(startPoint!=curPoint)
-            {
-                line_t line;
-                line.line=QLine(startPoint,curPoint);
-                for(int i=0;i<lines.length();i++)
-                    if(onLine(lines[i].line,startPoint)||onLine(lines[i].line,curPoint))
-                        line.color=lines[i].color;
-                lines.append(line);
-                cleanUp();
-                emit changed();
-            }
-        if(curPoint!=startPoint)
-            if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
-            {
-                QRect sel(curPoint,startPoint);
-                for(int i=0;i<texts.length();i++)
-                {
-                    text_t cur=texts[i];
-                    QRectF rect(cur.pos.x(),cur.pos.y()-1.0,cur.len,1.0);
-                    if(rect.intersects(QRectF(sel)))
-                        selectedTexts.append(i);
-                }
-                for(int i=0;i<blocks.length();i++)
-                {
-                    QRect blk(blocks[i].pos,QSize(blocks[i].block->width+1,blocks[i].block->height+1));
-                    if(sel.intersects(blk))
-                        selectedBlocks.append(i);
-                }
-
-                for(int i=0;i<lines.length();i++)
-                {
-                    QRect line(lines[i].line.p1(),lines[i].line.p2());
-                    line.setWidth(fmax(1,line.width()));
-                    line.setHeight(fmax(1,line.height()));
-                    if(sel.intersects(line))
-                        selectedLines.append(i);
-                }
-            }
-        if(curPoint==startPoint)
+        if(!drag)
         {
-            int idx=-1;
-            for(int i=0;i<blocks.length();i++)
-                if((blocks[i].pos.x())<curPoint.x())
-                    if((blocks[i].pos.y())<curPoint.y())
-                        if((blocks[i].pos.y()+blocks[i].block->height)>=curPoint.y())
-                            if((blocks[i].pos.x()+blocks[i].block->width)>=curPoint.x())
-                            {
-                                idx=i;
-                            }
-            if(idx>=0)
+            if((startPoint.x()==curPoint.x())||(startPoint.y()==curPoint.y()))
+                if(startPoint!=curPoint)
+                {
+                    line_t line;
+                    line.line=QLine(startPoint,curPoint);
+                    for(int i=0;i<lines.length();i++)
+                        if(onLine(lines[i].line,startPoint)||onLine(lines[i].line,curPoint))
+                            line.color=lines[i].color;
+                    lines.append(line);
+                    cleanUp();
+                    emit changed();
+                }
+            if(curPoint!=startPoint)
+                if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
+                {
+                    QRect sel(curPoint,startPoint);
+                    for(int i=0;i<texts.length();i++)
+                    {
+                        text_t cur=texts[i];
+                        QRectF rect(cur.pos.x(),cur.pos.y()-1.0,cur.len,1.0);
+                        if(rect.intersects(QRectF(sel)))
+                            selectedTexts.append(i);
+                    }
+                    for(int i=0;i<blocks.length();i++)
+                    {
+                        QRect blk(blocks[i].pos,QSize(blocks[i].block->width+1,blocks[i].block->height+1));
+                        if(sel.intersects(blk))
+                            selectedBlocks.append(i);
+                    }
+
+                    for(int i=0;i<lines.length();i++)
+                    {
+                        QRect line(lines[i].line.p1(),lines[i].line.p2());
+                        line.setWidth(fmax(1,line.width()));
+                        line.setHeight(fmax(1,line.height()));
+                        if(sel.intersects(line))
+                            selectedLines.append(i);
+                    }
+                }
+            if(curPoint==startPoint)
             {
-                double x=event->pos().x()/Settings::final()->gridSize();
-                double y=event->pos().y()/Settings::final()->gridSize();
-                QPointF p(x,y);
-                blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
-                blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
+                int idx=-1;
+                for(int i=0;i<blocks.length();i++)
+                    if((blocks[i].pos.x())<curPoint.x())
+                        if((blocks[i].pos.y())<curPoint.y())
+                            if((blocks[i].pos.y()+blocks[i].block->height)>=curPoint.y())
+                                if((blocks[i].pos.x()+blocks[i].block->width)>=curPoint.x())
+                                {
+                                    idx=i;
+                                }
+                if(idx>=0)
+                {
+                    double x=event->pos().x()/Settings::final()->gridSize();
+                    double y=event->pos().y()/Settings::final()->gridSize();
+                    QPointF p(x,y);
+                    blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
+                    blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
+                }
             }
         }
         startPoint=QPoint(-1,-1);
@@ -1732,7 +1753,7 @@ void DigiView::largeIn(int o)
 {
     for(int i=0;i<blocks.length();i++)
         if(blocks[i].block->name=="Large-IN")
-    {
+        {
             blocks[i].block->keyPress(o);
-    }
+        }
 }

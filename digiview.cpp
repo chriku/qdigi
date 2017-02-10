@@ -301,7 +301,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
     QWidget::mousePressEvent(event);
     if(event->button()==Qt::LeftButton)
     {
-        clearSelection();
+        bool clear=true;
         startPoint=toGrid(event->pos());
         curPoint=startPoint;
         int idx=-1;
@@ -322,6 +322,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         blkIdx=idx;
         if((pin==-1)&&(idx>=0))
         {
+            clear=false;
             startBlock=blocks[idx].pos;
             drag=true;
         }
@@ -332,6 +333,8 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             QPointF p(x,y);
             blocks[idx].block->onpress(p-QPointF(blocks[idx].pos));
         }
+        if(clear)
+        clearSelection();
     }
     update();
 }
@@ -341,12 +344,21 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
     QWidget::mouseMoveEvent(event);
     if(event->buttons()&Qt::LeftButton)
     {
-        clearSelection();
         curPoint=toGrid(event->pos());
         if(drag)
         {
-            blocks[blkIdx].pos=startBlock+(curPoint-startPoint);
+            blocks[blkIdx].pos+=curPoint-startPoint;
+            for(int i=0;i<selectedBlocks.length();i++)
+                if(selectedBlocks[i]!=blkIdx)
+                    blocks[selectedBlocks[i]].pos+=curPoint-startPoint;
+            for(int i=0;i<selectedLines.length();i++)
+                lines[selectedLines[i]].line.translate(curPoint-startPoint);
+            for(int i=0;i<selectedTexts.length();i++)
+                texts[selectedTexts[i]].pos+=curPoint-startPoint;
+            startPoint=curPoint;
         }
+        else
+            clearSelection();
     }
     update();
 }
@@ -357,7 +369,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
     if(event->button()==Qt::LeftButton)
     {
         QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
-        clearSelection();
+        //clearSelection();
         curPoint=toGrid(event->pos());
         if(!drag)
         {

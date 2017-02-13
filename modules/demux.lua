@@ -26,4 +26,4 @@ function makeState()
   state={false,false,false,false}
   state[dialed+1]=pins[3]
 end
-return {width=3,height=4,name="DeMUX",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"},{4,4,"OUTPUT"}},category="multi",description="Demultiplexer"}
+return {width=3,height=4,name="DeMUX 4-1",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,4,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"},{4,4,"OUTPUT"}},category="multi",description="Demultiplexer"}

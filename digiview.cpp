@@ -412,25 +412,25 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                             selectedLines.append(i);
                     }
                 }
-            if(curPoint==startPoint)
+        }
+        if(curPoint==startPoint)
+        {
+            int idx=-1;
+            for(int i=0;i<blocks.length();i++)
+                if((blocks[i].pos.x())<curPoint.x())
+                    if((blocks[i].pos.y())<curPoint.y())
+                        if((blocks[i].pos.y()+blocks[i].block->height)>=curPoint.y())
+                            if((blocks[i].pos.x()+blocks[i].block->width)>=curPoint.x())
+                            {
+                                idx=i;
+                            }
+            if(idx>=0)
             {
-                int idx=-1;
-                for(int i=0;i<blocks.length();i++)
-                    if((blocks[i].pos.x())<curPoint.x())
-                        if((blocks[i].pos.y())<curPoint.y())
-                            if((blocks[i].pos.y()+blocks[i].block->height)>=curPoint.y())
-                                if((blocks[i].pos.x()+blocks[i].block->width)>=curPoint.x())
-                                {
-                                    idx=i;
-                                }
-                if(idx>=0)
-                {
-                    double x=event->pos().x()/Settings::final()->gridSize();
-                    double y=event->pos().y()/Settings::final()->gridSize();
-                    QPointF p(x,y);
-                    blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
-                    blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
-                }
+                double x=event->pos().x()/Settings::final()->gridSize();
+                double y=event->pos().y()/Settings::final()->gridSize();
+                QPointF p(x,y);
+                blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
+                blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
             }
         }
         startPoint=QPoint(-1,-1);

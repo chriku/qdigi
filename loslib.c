@@ -106,6 +106,7 @@ static time_t l_checktime (lua_State *L, int arg) {
 ** it uses mkstemp.
 ** ===================================================================
 */
+#define LUA_USE_POSIX
 #if !defined(lua_tmpnam)	/* { */
 
 #if defined(LUA_USE_POSIX)	/* { */

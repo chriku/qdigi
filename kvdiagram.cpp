@@ -48,7 +48,7 @@ void KVDiagram::redoTable()
             item->setFlags(Qt::NoItemFlags);
             ui->wahreitstabelle->setItem(y,x,item);
         }
-    QString vals[16]={"0","1","0","1","0","1","0","1","0","1","0","1","0","1","0","1"};
+    QString vals[16]={"0","0","1","1","1","1","1","0","0","0","0","0","0","0","0","0"};
     //QString vals[16]={"1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"};
     for(int y=0;y<rowCount;y++)
     {
@@ -80,8 +80,11 @@ void KVDiagram::on_buttonBox_accepted()
             }
         }
     }
-    for(int round=0;round<100;round++)
+    for(int round=0;round<10;round++)
     {
+        qDebug()<<"Round";
+        for(int i=0;i<values.length();i++)
+            qDebug()<<values[i][0]<<values[i][1]<<values[i][2]<<values[i][3];
         for(int i=0;i<values.length();i++)
             for(int j=i+1;j<values.length();j++)
                 {
@@ -90,10 +93,10 @@ void KVDiagram::on_buttonBox_accepted()
                     {
                         int v1=values[i][k];
                         int v2=values[j][k];
-                        if(v1==2)
+                        /*if(v1==2)
                             continue;
                         if(v2==2)
-                            continue;
+                            continue;*/
                         if(v1!=v2)
                             diff++;
                     }
@@ -120,67 +123,8 @@ void KVDiagram::on_buttonBox_accepted()
                         values.removeAt(j);
                 }
     }
+    qDebug()<<"Result";
     for(int i=0;i<values.length();i++)
         qDebug()<<values[i][0]<<values[i][1]<<values[i][2]<<values[i][3];
-    /*
-    QList<QString> cells;
-    for(int i=0;i<rowCount;i++)
-        cells.append(ui->wahreitstabelle->item(i,columnCount)->text());
-    QSize size;
-    switch(columnCount)
-    {
-    case 2:
-        size=QSize(1,1);
-        break;
-    case 3:
-        size=QSize(2,1);
-        break;
-    case 4:
-        size=QSize(2,2);
-        break;
-    }
-    QImage img((pow(2,size.width())+1)*100,(pow(2,size.height())+1)*100,QImage::Format_ARGB32);
-    img.fill(Qt::white);
-    QPainter painter(&img);
-    painter.drawText(0,100,100,100,Qt::AlignCenter,"NICHT D\nC");
-    painter.drawText(0,200,100,100,Qt::AlignCenter,"D\nC");
-    painter.drawText(0,300,100,100,Qt::AlignCenter,"D\nNICHT C");
-    painter.drawText(0,400,100,100,Qt::AlignCenter,"NICHT D\nNICHT C");
-
-    painter.drawText(100,0,100,100,Qt::AlignCenter,"A\nNICHT B");
-    painter.drawText(200,0,100,100,Qt::AlignCenter,"A\nB");
-    painter.drawText(300,0,100,100,Qt::AlignCenter,"NICHT A\nB");
-    painter.drawText(400,0,100,100,Qt::AlignCenter,"NICHT A\nNICHT B");
-    QMap<QPair<int,int>,int> pos;
-    QImage img2=img;
-    QList<QList<QString> > map;
-    for(int x=0;x<pow(2,size.width());x++)
-    {
-        map.append(QList<QString>());
-        for(int y=0;y<pow(2,size.width());y++)
-        {
-            bool a=(x==1)||(x==0);
-            bool b=(x==1)||(x==2);
-            bool c=(y==1)||(y==0);
-            bool d=(y==1)||(y==2);
-            int num=a|(b<<1)|(c<<2)|(d<<3);
-            QString cur=QString::number(num);
-            painter.setPen(Qt::black);
-            painter.setBrush(Qt::NoBrush);
-            painter.drawRect((x+1)*100,(y+1)*100,100,100);
-            painter.drawText((x+1)*100,(y+1)*100,100,100,Qt::AlignCenter,cur);
-            map[x].append(cells.takeFirst());
-        }
-    }
-    painter.end();
-    img.save("kv1.png");
-    img=img2;
-    painter.begin(&img);
-    for(int x=0;x<pow(2,size.width());x++)
-        for(int y=0;y<pow(2,size.width());y++)
-        {
-            painter.drawText((x+1)*100,(y+1)*100,100,100,Qt::AlignCenter,map[x][y]);
-        }
-    painter.end();
-    img.save("kv2.png");*/
+    exit(0);
 }

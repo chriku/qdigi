@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     outFile.write("Start Logging\r\n");
     outFile.close();
     QApplication a(argc, argv);
-    qInstallMessageHandler(myMessageHandler);
+    //qInstallMessageHandler(myMessageHandler);
     if(Settings::final()->license().isEmpty())
     {
         QInputDialog dialog;

@@ -145,12 +145,12 @@ void DigiView::paintEvent(QPaintEvent* event)
         painter.drawRect(rect);
     }
     if(!drag)
-    if(curPoint!=QPoint(-1,-1))
-        if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
-        {
-            QRect rect(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
-            painter.drawRect(rect);
-        }
+        if(curPoint!=QPoint(-1,-1))
+            if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
+            {
+                QRect rect(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
+                painter.drawRect(rect);
+            }
     painter.setBrush(Qt::NoBrush);
     pen.setColor(Qt::black);
     painter.setPen(pen);
@@ -171,9 +171,9 @@ void DigiView::paintEvent(QPaintEvent* event)
     line.setWidth(3);
     painter.setPen(line);
     if(!drag)
-    if(curPoint!=QPoint(-1,-1))
-        if(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x())))
-            painter.drawLine(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
+        if(curPoint!=QPoint(-1,-1))
+            if(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x())))
+                painter.drawLine(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
     line.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<lines.length();i++)
     {
@@ -334,7 +334,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             blocks[idx].block->onpress(p-QPointF(blocks[idx].pos));
         }
         if(clear)
-        clearSelection();
+            clearSelection();
     }
     update();
 }
@@ -1396,7 +1396,7 @@ QImage DigiView::exportImage()
     QImage ret(pic.boundingRect().size()*10,QImage::Format_ARGB32);
     ret.fill(Qt::transparent);
     QPainter painter(&ret);
-    painter.setWorldTransform(QTransform().translate(-pic.boundingRect().topLeft().x(),-pic.boundingRect().topLeft().y()));
+    painter.setWorldTransform(QTransform().translate(-pic.boundingRect().topLeft().x()*10,-pic.boundingRect().topLeft().y()*10));
     painter.scale(10,10);
     painter.drawPicture(0,0,pic);
     painter.end();
@@ -1422,6 +1422,8 @@ QPicture DigiView::exportPicture()
     painter.setBrush(Qt::black);
     for(int i=0;i<vias.length();i++)
         painter.drawEllipse(vias[i]*Settings::final()->gridSize(),int(0.25*Settings::final()->gridSize()),int(0.25*Settings::final()->gridSize()));
+    painter.end();
+    qDebug()<<picture.boundingRect();
     return picture;
 }
 

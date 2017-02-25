@@ -9,11 +9,12 @@ class Settings : public QObject
 {
     Q_OBJECT
 public:
-    QSettings saveFile;
+    QSettings* saveFile;
     enum GRID {
         GRID_POINT,
         GRID_LINES
     } m_gridType;
+    QString mainPath;
     Q_PROPERTY(double gridSize READ gridSize WRITE setGridSize)
     Q_PROPERTY(double penWidth READ penWidth WRITE setPenWidth)
     Q_PROPERTY(int rasterSize READ rasterSize WRITE setRasterSize)

@@ -6,6 +6,8 @@
 #include "updater.h"
 #include "kvdiagram.h"
 #include "settings.h"
+#include "gdrive.h"
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <winreg.h>

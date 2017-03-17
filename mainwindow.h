@@ -48,6 +48,8 @@ private slots:
 
     void on_actionLogiktabelle_triggered();
 
+    void on_actionAuf_Google_Speichern_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

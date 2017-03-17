@@ -195,7 +195,7 @@ void Block::execContext(int idx) {
             lua_getglobal(L,"state");
             lua_rawseti(L,LUA_REGISTRYINDEX,state);
         } else
-            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
+            qDebug() << "ERR5" << lua_tostring(L, -1)<<name;
     }
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);

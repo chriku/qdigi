@@ -2,19 +2,22 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QDir>
+#include <QDebug>
 
 Settings* settings=NULL;
 Settings::Settings(QObject *parent) : QObject(parent)
 {
+    oauth_id="167107903260-s3lk7i287aidt7qj2l82ml6rsd3b2cot.apps.googleusercontent.com";
+    oauth_key="Qt3CQ9UMOkoE8TFkR-b6RZrL";
 #ifndef Q_OS_LINUX
     //Windows
     mainPath=QApplication::applicationDirPath();
 #else
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
     dir.mkdir(".qdigi");
-    mainPath+=dir.absoluteFilePath(".qdigi");
+    mainPath=dir.absoluteFilePath(".qdigi");
 #endif
-    saveFile=new QSettings(mainPath+"/settings.ini",QSettings::IniFormat);
+    saveFile=new QSettings(QDir(mainPath).absoluteFilePath("settings.ini"),QSettings::IniFormat);
     m_gridSize=saveFile->value("gridSize",20).toInt();
     m_gridType=(GRID)saveFile->value("gridType",GRID_LINES).toInt();
     m_defaultSimu=saveFile->value("defaultSimu",false).toBool();
@@ -24,6 +27,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
     m_penWidth=saveFile->value("penWidth",0.1).toDouble();
     m_license=saveFile->value("licenseKey","").toString();
     m_background=saveFile->value("background",QColor(Qt::white)).value<QColor>();
+    m_refresh_token=saveFile->value("refresh_token","").toString();
 }
 
 Settings* Settings::final()
@@ -72,12 +76,26 @@ QColor Settings::background()
     return m_background;
 }
 
+QString Settings::refresh_token()
+{
+    m_refresh_token=saveFile->value("refresh_token","").toString();
+    return m_refresh_token;
+}
+
 
 void Settings::setGridSize(double size, bool session)
 {
     if(!session)
         saveFile->setValue("gridSize",QVariant((int)round(size)));
     m_gridSize=size;
+}
+
+
+void Settings::setRefresh_token(QString token)
+{
+    saveFile->setValue("refresh_token",token);
+    m_refresh_token=token;
+    saveFile->sync();
 }
 
 void Settings::setBackground(QColor back, bool session)

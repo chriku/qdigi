@@ -79,6 +79,7 @@ public:
     QList<line_t> lines;
     QList<text_t> texts;
     bool save(QString where=QString());
+    bool saveGoogle(QString where=QString());
     void load(QString where);
     QPoint toGrid(QPoint in);
     void contextMenuEvent(QContextMenuEvent *event);
@@ -90,7 +91,7 @@ public:
     QPicture exportPicture();
     QImage exportImage();
     void loadJson(QByteArray json);
-
+QJsonObject exportJSON();
     void createTable();
 signals:
     void changed();

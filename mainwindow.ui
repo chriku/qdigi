@@ -504,6 +504,7 @@
     <addaction name="actionNeu"/>
     <addaction name="actionSpeichern"/>
     <addaction name="actionSpeichern_Unter"/>
+    <addaction name="actionAuf_Google_Speichern"/>
     <addaction name="actionAls_Bild_Speichern"/>
     <addaction name="action_ffnen"/>
     <addaction name="separator"/>
@@ -552,7 +553,7 @@
   </action>
   <action name="actionSpeichern_Unter">
    <property name="text">
-    <string>Speichern Unter...</string>
+    <string>Lokal Speichern Unter...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
@@ -627,6 +628,11 @@
   <action name="actionLogiktabelle">
    <property name="text">
     <string>Logiktabelle</string>
+   </property>
+  </action>
+  <action name="actionAuf_Google_Speichern">
+   <property name="text">
+    <string>Auf Google Speichern...</string>
    </property>
   </action>
  </widget>

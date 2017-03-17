@@ -79,7 +79,9 @@ SOURCES += main.cpp\
 #    compat.c \
 #    buffer.c \
 #    auxiliar.c
-    kvdiagram.cpp
+    kvdiagram.cpp \
+    gdrive.cpp \
+    filechoose.cpp
 
 
 
@@ -139,13 +141,16 @@ HEADERS  += mainwindow.h \
     buffer.h \
     auxiliar.h \
     passworddialog.h \
-    kvdiagram.h
+    kvdiagram.h \
+    gdrive.h \
+    filechoose.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
     settingsdialog.ui \
     passworddialog.ui \
-    kvdiagram.ui
+    kvdiagram.ui \
+    filechoose.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc \
     misc.qrc

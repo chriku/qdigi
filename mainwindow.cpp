@@ -1,3 +1,4 @@
+#include <QInputDialog>
 #include "updater.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -7,12 +8,18 @@
 #include "blocklist.h"
 #include <QDebug>
 #include <QMessageBox>
+#include "gdrive.h"
+#include <unistd.h>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    for(auto act:ui->menuDatei->actions())
+        if(act->text()=="Auf Google Speichern...")
+            ui->menuDatei->removeAction(act);
     ui->digiView->bar=ui->statusBar;
     ui->simulation->setChecked(Settings::final()->defaultSimu());
     on_simulation_clicked();
@@ -72,7 +79,12 @@ void MainWindow::on_actionSpeichern_triggered()
         }
     }
     else
+    {
+        //if(Settings::final()->license().startsWith("1:"))
+        //    on_actionAuf_Google_Speichern_triggered();
+        // else
         on_actionSpeichern_Unter_triggered();
+    }
 }
 
 void MainWindow::on_actionEinstellungen_triggered()
@@ -97,10 +109,10 @@ void MainWindow::on_actionSpeichern_Unter_triggered()
         if(ui->digiView->save(fileName))
         {
             qDebug()<<"SAVING GOOD";
-        isChanged=false;
-        setWindowTitle("QDigi "+ui->digiView->fileName);
-        Settings::final()->addLastChanged(fileName);
-        updateLc();
+            isChanged=false;
+            setWindowTitle("QDigi "+ui->digiView->fileName);
+            Settings::final()->addLastChanged(fileName);
+            updateLc();
         }
     }
 }
@@ -235,4 +247,16 @@ void MainWindow::updateLc()
 void MainWindow::on_actionLogiktabelle_triggered()
 {
     ui->digiView->createTable();
+}
+
+void MainWindow::on_actionAuf_Google_Speichern_triggered()
+{
+    QString fileName=QInputDialog::getText(NULL,"Dateiname","Dateiname");
+    if(ui->digiView->saveGoogle(fileName))
+    {
+        isChanged=false;
+        setWindowTitle("QDigi "+ui->digiView->fileName);
+        Settings::final()->addLastChanged(fileName);
+        updateLc();
+    }
 }

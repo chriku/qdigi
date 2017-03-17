@@ -1,3 +1,4 @@
+#include "gdrive.h"
 #include <QInputDialog>
 #include <QDesktopServices>
 #include <QMessageBox>
@@ -456,89 +457,30 @@ bool DigiView::save(QString where)
     fileName=where;
     if(!where.endsWith(".qdigi"))
         where+=".qdigi";
-    QJsonObject root;
-    QJsonArray l;
-    for(int i=0;i<lines.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x1",lines[i].line.x1());
-        c.insert("y1",lines[i].line.y1());
-        c.insert("x2",lines[i].line.x2());
-        c.insert("y2",lines[i].line.y2());
-        c.insert("color",lines[i].color.name());
-        l.append(c);
-    }
-    root.insert("lines",l);
-    QJsonArray t;
-    for(int i=0;i<texts.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",texts[i].pos.x());
-        c.insert("y",texts[i].pos.y());
-        c.insert("text",texts[i].text);
-        c.insert("color",texts[i].color.name());
-        t.append(c);
-    }
-    root.insert("texts",t);
-    QJsonArray g;
-    for(int i=0;i<blocks.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",blocks[i].pos.x());
-        c.insert("y",blocks[i].pos.y());
-        c.insert("name",blocks[i].block->name);
-        c.insert("color",blocks[i].color.name());
-        QJsonArray pins;
-        for(int j=0;j<blocks[i].block->pins.length();j++)
-        {
-            QJsonObject obj;
-            obj.insert("type",blocks[i].block->pins[j].type);
-            pins.append(obj);
-        }
-        c.insert("pins",pins);
-        g.append(c);
-    }
-    root.insert("blocks",g);
-    QJsonArray v;
-    for(int i=0;i<vias.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",vias[i].x());
-        c.insert("y",vias[i].y());
-        v.append(c);
-    }
-    root.insert("vias",v);
+    QJsonObject root=exportJSON();
     int err=0;
     QFile file(where);
     file.open(QFile::WriteOnly|QFile::Truncate);
     QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
     file.write(data);
     file.close();
-    /*qDebug()<<"PA"<<file.exists();
-    /*qDebug()<<"A"<<file.exists();
-    file.remove();
-    qDebug()<<"POA"<<file.isOpen();
-    if(file.isOpen())
-        file.close();
-    file.remove();
-    qDebug()<<"A"<<file.exists();
-    qDebug()<<where;
-    zip_t* arch=zip_open(where.toStdString().data(),ZIP_CREATE|ZIP_TRUNCATE,&err);
-    qDebug()<<"Open"<<err;
-    qDebug()<<"Saving"<<data.left(100)<<"...";
-    zip_source_t * source=zip_source_buffer(arch,data.data(),data.length(),0);
-    qDebug()<<"src_bfr1"<<source;
-    qDebug()<<"ADD1"<<zip_file_add(arch,"data.json",source,ZIP_FL_OVERWRITE);
-    QByteArray version="0.1";
-    source=zip_source_buffer(arch,version.data(),version.length(),0);
-    qDebug()<<"src_bfr2"<<source;
-    qDebug()<<"ADD2"<<zip_file_add(arch,"version.txt",source,ZIP_FL_OVERWRITE);
-    if(zip_strerror(arch)!=NULL)
-        qDebug()<<"STRERROR"<<zip_strerror(arch);
-    if(zip_close(arch)!=0)
-    {
-        qDebug()<<"STRERRORCLOSE"<<zip_strerror(arch);
-    }*/
+    Settings::final()->setLastFile(where);
+    return true;
+}
+
+bool DigiView::saveGoogle(QString where)
+{
+    qDebug()<<"WHERE1"<<where;
+    if(where.isEmpty())
+        where=fileName;
+    qDebug()<<"WHERE2"<<where;
+    if(where.isEmpty())
+        return false;
+    fileName=where;
+    QJsonObject root=exportJSON();
+    QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
+    GDrive drive;
+    drive.uploadFile(fileName,data);
     Settings::final()->setLastFile(where);
     return true;
 }
@@ -1796,4 +1738,61 @@ void DigiView::largeIn(int o)
         {
             blocks[i].block->keyPress(o);
         }
+}
+
+QJsonObject DigiView::exportJSON()
+{
+    QJsonObject root;
+    QJsonArray l;
+    for(int i=0;i<lines.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x1",lines[i].line.x1());
+        c.insert("y1",lines[i].line.y1());
+        c.insert("x2",lines[i].line.x2());
+        c.insert("y2",lines[i].line.y2());
+        c.insert("color",lines[i].color.name());
+        l.append(c);
+    }
+    root.insert("lines",l);
+    QJsonArray t;
+    for(int i=0;i<texts.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x",texts[i].pos.x());
+        c.insert("y",texts[i].pos.y());
+        c.insert("text",texts[i].text);
+        c.insert("color",texts[i].color.name());
+        t.append(c);
+    }
+    root.insert("texts",t);
+    QJsonArray g;
+    for(int i=0;i<blocks.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x",blocks[i].pos.x());
+        c.insert("y",blocks[i].pos.y());
+        c.insert("name",blocks[i].block->name);
+        c.insert("color",blocks[i].color.name());
+        QJsonArray pins;
+        for(int j=0;j<blocks[i].block->pins.length();j++)
+        {
+            QJsonObject obj;
+            obj.insert("type",blocks[i].block->pins[j].type);
+            pins.append(obj);
+        }
+        c.insert("pins",pins);
+        g.append(c);
+    }
+    root.insert("blocks",g);
+    QJsonArray v;
+    for(int i=0;i<vias.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x",vias[i].x());
+        c.insert("y",vias[i].y());
+        v.append(c);
+    }
+    root.insert("vias",v);
+    return root;
 }

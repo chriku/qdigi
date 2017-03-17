@@ -14,8 +14,11 @@ public:
         GRID_POINT,
         GRID_LINES
     } m_gridType;
+    QString oauth_id;
+    QString oauth_key;
     QString mainPath;
     Q_PROPERTY(double gridSize READ gridSize WRITE setGridSize)
+    Q_PROPERTY(QString refresh_token READ refresh_token WRITE setRefresh_token)
     Q_PROPERTY(double penWidth READ penWidth WRITE setPenWidth)
     Q_PROPERTY(int rasterSize READ rasterSize WRITE setRasterSize)
     Q_PROPERTY(QString lastFile READ lastFile WRITE setLastFile)
@@ -28,6 +31,7 @@ public:
     QStringList lastChanged();
     void addLastChanged(QString what);
     explicit Settings(QObject *parent = 0);
+    QString m_refresh_token;
     double m_gridSize;
     double m_penWidth;
     QColor m_background;
@@ -45,8 +49,10 @@ public:
     static Settings* final();
     QString license();
     QColor background();
+    QString refresh_token();
 GRID gridType();
 QList<QColor> colors();
+void setRefresh_token(QString token);
 void setBackground(QColor back,bool session=false);
 void setColors(QList<QColor> col,bool session=false);
 void setApplicationDir(QString dir,bool session=false);

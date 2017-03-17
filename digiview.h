@@ -75,6 +75,7 @@ public:
     bool drag;
     bool dragged;
     int blkIdx;
+    int texIdx;
     QPoint startBlock;
     QList<line_t> lines;
     QList<text_t> texts;

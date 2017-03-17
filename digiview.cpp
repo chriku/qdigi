@@ -322,6 +322,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
                     pin=i;
         drag=false;
         blkIdx=idx;
+        texIdx=-1;
         if((pin==-1)&&(idx>=0))
         {
             clear=false;
@@ -337,6 +338,21 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         }
         if(clear)
             clearSelection();
+        texIdx=-1;
+        if(drag==false)
+        {
+            for(int i=0;i<texts.length();i++)
+            {
+                text_t cur=texts[i];
+                QRectF rect(cur.pos.x(),cur.pos.y()-1.0,cur.len,1.0);
+                qDebug()<<rect<<startPoint;
+                if(rect.contains(startPoint))
+                {
+                    drag=true;
+                    texIdx=i;
+                }
+            }
+        }
     }
     update();
 }
@@ -350,14 +366,19 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
         if(drag)
         {
             dragged=true;
-            blocks[blkIdx].pos+=curPoint-startPoint;
-            for(int i=0;i<selectedBlocks.length();i++)
-                if(selectedBlocks[i]!=blkIdx)
-                    blocks[selectedBlocks[i]].pos+=curPoint-startPoint;
-            for(int i=0;i<selectedLines.length();i++)
-                lines[selectedLines[i]].line.translate(curPoint-startPoint);
-            for(int i=0;i<selectedTexts.length();i++)
-                texts[selectedTexts[i]].pos+=curPoint-startPoint;
+            if(blkIdx>=0)
+            {
+                blocks[blkIdx].pos+=curPoint-startPoint;
+                for(int i=0;i<selectedBlocks.length();i++)
+                    if(selectedBlocks[i]!=blkIdx)
+                        blocks[selectedBlocks[i]].pos+=curPoint-startPoint;
+                for(int i=0;i<selectedLines.length();i++)
+                    lines[selectedLines[i]].line.translate(curPoint-startPoint);
+                for(int i=0;i<selectedTexts.length();i++)
+                    texts[selectedTexts[i]].pos+=curPoint-startPoint;
+            }
+            if(texIdx>=0)
+                texts[texIdx].pos+=curPoint-startPoint;
             startPoint=curPoint;
         }
         else

@@ -129,9 +129,11 @@ void DigiView::paintEvent(QPaintEvent* event)
     painter.setBrush(brush);
     for(int i=0;i<selectedBlocks.length();i++)
     {
-        QRect rect(((QPointF(blocks[selectedBlocks[i]].pos)+QPointF(0,0.5))*Settings::final()->gridSize()).toPoint(),QSize(1,1));
-        rect.setWidth((blocks[selectedBlocks[i]].block->width+1)*Settings::final()->gridSize());
-        rect.setHeight((blocks[selectedBlocks[i]].block->height)*Settings::final()->gridSize());
+        QRectF rect=blocks[selectedBlocks[i]]->rect();
+        rect.setTop(rect.top()*(Settings::final()->gridSize()));
+        rect.setLeft(rect.left()*(Settings::final()->gridSize()));
+        rect.setBottom(rect.bottom()*Settings::final()->gridSize());
+        rect.setRight(rect.right()*Settings::final()->gridSize());
         painter.drawRect(rect);
     }
     for(int i=0;i<selectedLines.length();i++)
@@ -157,15 +159,15 @@ void DigiView::paintEvent(QPaintEvent* event)
     painter.setPen(pen);
     for(int i=0;i<blocks.length();i++)
     {
-        painter.drawPicture(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color));
-        for(int j=0;j<blocks[i].block->pins.length();j++)
-            if(blocks[i].block->pins[j].state==2)
+        painter.drawPicture(blocks[i]->m_pos*Settings::final()->gridSize(),blocks[i]->block->drawBlock(blocks[i]->color));
+        for(int j=0;j<blocks[i]->block->pins.length();j++)
+            if(blocks[i]->block->pins[j].state==2)
             {
                 QPen pen(QColor::fromRgbF(1,0.5,0));
                 pen.setWidth(0);
                 painter.setPen(pen);
                 for(int r=5;r<(Settings::final()->gridSize());r+=5)
-                    painter.drawEllipse(((blocks[i].pos+blocks[i].block->pins[j].point) * Settings::final()->gridSize()),r,r);
+                    painter.drawEllipse((blocks[i]->block->pins[j].pos() * Settings::final()->gridSize()),r,r);
             }
     }
     QPen line(Qt::black);
@@ -275,13 +277,15 @@ void DigiView::dropEvent(QDropEvent *event)
 {
     clearSelection();
     dragPos=toGrid(event->pos())-QPoint(1,1);
-    block_t blk;
-    blk.block=BlockList::newBlock(dragGate);
-    blk.pos=dragPos.toPoint();
+    block_t* blk=new block_t;
+    blk->block=BlockList::newBlock(dragGate);
+    for(int i=0;i<blk->block->pins.length();i++)
+        blk->block->pins[i].parent=blk;
+    blk->m_pos=dragPos.toPoint();
     if(dragGate=="Large-IN")
     {
         for(int i=0;i<blocks.length();i++)
-            if(blocks[i].block->name=="Large-IN")
+            if(blocks[i]->block->name=="Large-IN")
             {
                 dragGate="";
                 return;
@@ -289,7 +293,7 @@ void DigiView::dropEvent(QDropEvent *event)
     }
     dragGate="";
     for(int i=0;i<blocks.length();i++)
-        if(QRect(blocks[i].pos.x(),blocks[i].pos.y(),blocks[i].block->width,blocks[i].block->height).intersects(QRect(blk.pos.x(),blk.pos.y(),blk.block->width,blk.block->height)))
+        if(QRectF(blocks[i]->rect()).intersects(blk->rect()))
             return;
     blocks.append(blk);
     emit changed();
@@ -308,17 +312,14 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         curPoint=startPoint;
         int idx=-1;
         for(int i=0;i<blocks.length();i++)
-            if((blocks[i].pos.x())<curPoint.x())
-                if((blocks[i].pos.y())<curPoint.y())
-                    if((blocks[i].pos.y()+blocks[i].block->height)>=curPoint.y())
-                        if((blocks[i].pos.x()+blocks[i].block->width)>=curPoint.x())
-                        {
-                            idx=i;
-                        }
+            if(blocks[i]->rect().contains(curPoint))
+            {
+                idx=i;
+            }
         int pin=-1;
         if(idx>=0)
-            for(int i=0;i<blocks[idx].block->pins.length();i++)
-                if(startPoint==(blocks[idx].pos+blocks[idx].block->pins[i].point))
+            for(int i=0;i<blocks[idx]->block->pins.length();i++)
+                if(startPoint==blocks[idx]->block->pins[i].pos())
                     pin=i;
         drag=false;
         blkIdx=idx;
@@ -326,7 +327,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         if((pin==-1)&&(idx>=0))
         {
             clear=false;
-            startBlock=blocks[idx].pos;
+            startBlock=blocks[idx]->m_pos;
             drag=true;
         }
         if(idx>=0)
@@ -334,7 +335,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             double x=event->pos().x()/Settings::final()->gridSize();
             double y=event->pos().y()/Settings::final()->gridSize();
             QPointF p(x,y);
-            blocks[idx].block->onpress(p-QPointF(blocks[idx].pos));
+            blocks[idx]->block->onpress(blocks[idx]->unmap(p));
         }
         if(clear)
             clearSelection();
@@ -368,10 +369,10 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
             dragged=true;
             if(blkIdx>=0)
             {
-                blocks[blkIdx].pos+=curPoint-startPoint;
+                blocks[blkIdx]->m_pos+=curPoint-startPoint;
                 for(int i=0;i<selectedBlocks.length();i++)
                     if(selectedBlocks[i]!=blkIdx)
-                        blocks[selectedBlocks[i]].pos+=curPoint-startPoint;
+                        blocks[selectedBlocks[i]]->m_pos+=curPoint-startPoint;
                 for(int i=0;i<selectedLines.length();i++)
                     lines[selectedLines[i]].line.translate(curPoint-startPoint);
                 for(int i=0;i<selectedTexts.length();i++)
@@ -412,7 +413,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
             if(curPoint!=startPoint)
                 if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
                 {
-                    QRect sel(curPoint,startPoint);
+                    QRectF sel(curPoint,startPoint);
                     for(int i=0;i<texts.length();i++)
                     {
                         text_t cur=texts[i];
@@ -422,8 +423,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                     }
                     for(int i=0;i<blocks.length();i++)
                     {
-                        QRect blk(blocks[i].pos,QSize(blocks[i].block->width+1,blocks[i].block->height+1));
-                        if(sel.intersects(blk))
+                        if(sel.intersects(blocks[i]->rect()))
                             selectedBlocks.append(i);
                     }
 
@@ -441,13 +441,10 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
         {
             int idx=-1;
             for(int i=0;i<blocks.length();i++)
-                if((blocks[i].pos.x())<curPoint.x())
-                    if((blocks[i].pos.y())<curPoint.y())
-                        if((blocks[i].pos.y()+blocks[i].block->height)>=curPoint.y())
-                            if((blocks[i].pos.x()+blocks[i].block->width)>=curPoint.x())
-                            {
-                                idx=i;
-                            }
+                if(blocks[i]->rect().contains(curPoint))
+                {
+                    idx=i;
+                }
             if(idx>=0)
             {
                 double x=event->pos().x()/Settings::final()->gridSize();
@@ -455,8 +452,8 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                 QPointF p(x,y);
                 if(!dragged)
                 {
-                    blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
-                    blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
+                    blocks[idx]->block->onclick(blocks[idx]->unmap(p));
+                    blocks[idx]->block->onrelease(blocks[idx]->unmap(p));
                 }
             }
         }
@@ -510,7 +507,7 @@ void DigiView::load(QString where)
 {
     lines.clear();
     for(int i=0;i<blocks.length();i++)
-        blocks[i].block->deleteLater();
+        blocks[i]->block->deleteLater();
     blocks.clear();
     vias.clear();
     QFile file(where);
@@ -584,9 +581,9 @@ void DigiView::timeout()
     for(int i=0;i<blocks.length();i++)
     {
         done.append(QList<bool>());
-        for(int j=0;j<blocks[i].block->pins.length();j++)
+        for(int j=0;j<blocks[i]->block->pins.length();j++)
         {
-            if(blocks[i].block->pins[j].direction==2)
+            if(blocks[i]->block->pins[j].direction==2)
                 done[i].append(true);
             else
                 done[i].append(false);
@@ -594,14 +591,14 @@ void DigiView::timeout()
     }
     QMap<QPair<int,int>,QPair<bool,QColor> > states;
     for(int i=0;i<blocks.length();i++)
-        for(int j=0;j<blocks[i].block->pins.length();j++)
-            if(blocks[i].block->pins[j].direction==2)
+        for(int j=0;j<blocks[i]->block->pins.length();j++)
+            if(blocks[i]->block->pins[j].direction==2)
             {
                 QList<QPair<QPoint,QColor> > points;
-                points.append(QPair<QPoint,QColor> (blocks[i].block->pins[j].point+blocks[i].pos,Qt::black));
-                QPoint sp=blocks[i].block->pins[j].point+blocks[i].pos;
-                bool state=blocks[i].block->getState(j);
-                if(blocks[i].block->pins[j].type)
+                points.append(QPair<QPoint,QColor> (blocks[i]->block->pins[j].pos(),Qt::black));
+                QPoint sp=blocks[i]->block->pins[j].pos();
+                bool state=blocks[i]->block->getState(j);
+                if(blocks[i]->block->pins[j].type)
                     state=!state;
                 QList<int> linesVisited;
                 while(points.length()>0)
@@ -618,7 +615,7 @@ void DigiView::timeout()
                                 points.append(QPair<QPoint,QColor>(lines[k].line.p1(),lines[k].color));
                                 points.append(QPair<QPoint,QColor>(lines[k].line.p2(),lines[k].color));
                                 if((lines[k].line.p1()==sp)||(lines[k].line.p2()==sp))
-                                    blocks[i].block->pins[j].color=lines[k].color;
+                                    blocks[i]->block->pins[j].color=lines[k].color;
                                 QPoint dp=lines[k].line.p2();
                                 if(lines[k].line.p1()==p)
                                     dp=lines[k].line.p1();
@@ -631,15 +628,15 @@ void DigiView::timeout()
                             }
                     }
                     for(int k=0;k<blocks.length();k++)
-                        for(int l=0;l<blocks[k].block->pins.length();l++)
-                            if((blocks[k].block->pins[l].point+blocks[k].pos+QPoint(0,0))==p)
+                        for(int l=0;l<blocks[k]->block->pins.length();l++)
+                            if((blocks[k]->block->pins[l].pos()+QPoint(0,0))==p)
                             {
-                                if(blocks[k].block->pins[l].direction==0)
+                                if(blocks[k]->block->pins[l].direction==0)
                                 {
                                     done[k][l]=true;
                                     states.insert(QPair<int,int>(k,l),QPair<bool,QColor>(state,pp.second));
                                 }
-                                if(blocks[k].block->pins[l].direction==2)
+                                if(blocks[k]->block->pins[l].direction==2)
                                 {
                                     if(!((i==k)&&(j==l)))
                                     {
@@ -671,20 +668,20 @@ void DigiView::timeout()
         int l=keys[i].second;
         bool state=states[keys[i]].first;
         QColor col=states[keys[i]].second;
-        blocks[k].block->pins[l].state=state;
-        blocks[k].block->pins[l].color=col;
+        blocks[k]->block->pins[l].state=state;
+        blocks[k]->block->pins[l].color=col;
     }
     if(!ok)
     {
         error=true;
         /*for(int i=0;i<blocks.length();i++)
-            for(int j=0;j<blocks[i].block->pins.length();j++)
-                if(blocks[i].block->pins[j].direction==0)
-                    blocks[i].block->pins[j].state=false;
+            for(int j=0;j<blocks[i]->block->pins.length();j++)
+                if(blocks[i]->block->pins[j].direction==0)
+                    blocks[i]->block->pins[j].state=false;
         for(int i=0;i<lines.length();i++)
             lines[i].state=false;*/
         for(int i=0;i<offen.length();i++)
-            blocks[offen[i].first].block->pins[offen[i].second].state=2;
+            blocks[offen[i].first]->block->pins[offen[i].second].state=2;
     }
     update();
 }
@@ -693,30 +690,33 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
 {
     event->accept();
     int block=-1;
+    int pblock=-1;
     bool ok=false;
     QMenu menu;
     QPoint p=toGrid(event->pos());
     QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
     for(int i=0;i<blocks.length();i++)
-        if((blocks[i].pos.x()<=(pf.x()))&&((blocks[i].pos.x()+blocks[i].block->width)>=(pf.x()-1)))
-            if((blocks[i].pos.y()<=(pf.y()-0.5))&&((blocks[i].pos.y()+blocks[i].block->height)>=(pf.y()-0.5)))
-                block=i;
+        if(QRectF(blocks[i]->rect()).contains(pf))
+            block=i;
+    for(int i=0;i<blocks.length();i++)
+        if(QRectF(blocks[i]->pinsRect()).contains(pf))
+            pblock=i;
     int pin=-1;
     QStringList alt;
-    if(block>=0)
+    if(pblock>=0)
     {
-        for(int i=0;i<blocks[block].block->pins.length();i++)
+        for(int i=0;i<blocks[pblock]->block->pins.length();i++)
         {
-            if(blocks[block].block->pins[i].point+blocks[block].pos==p)
+            if(blocks[pblock]->block->pins[i].pos()==p)
                 pin=i;
-            if(blocks[block].block->pins[i].direction==0)
-                if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(1,0)==p)
+            if(blocks[pblock]->block->pins[i].direction==0)
+                if(blocks[pblock]->block->pins[i].pos()+QPoint(1,0)==p)
                     pin=i;
-            if(blocks[block].block->pins[i].direction==2)
-                if(blocks[block].block->pins[i].point+blocks[block].pos+QPoint(-1,0)==p)
+            if(blocks[pblock]->block->pins[i].direction==2)
+                if(blocks[pblock]->block->pins[i].pos()+QPoint(-1,0)==p)
                     pin=i;
         }
-        alt=blocks[block].block->alt;
+        alt=blocks[pblock]->block->alt;
     }
     int line=-1;
     double dist=1.1;
@@ -810,10 +810,10 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     if(block>=0)
     {
         int cnt=0;
-        QList<QString> keys=blocks[block].block->contextMenu.keys();
+        QList<QString> keys=blocks[block]->block->contextMenu.keys();
         for(auto key:keys)
         {
-            int val=blocks[block].block->contextMenu[key];
+            int val=blocks[block]->block->contextMenu[key];
             QAction* act=menu.addAction(key);
             blockDefAct.insert(act,val);
             cnt++;
@@ -919,11 +919,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if(blockDefAct.contains(act))
             {
                 int func=blockDefAct[act];
-                blocks[block].block->execContext(func);
+                blocks[block]->block->execContext(func);
             }
             if(act==delBlockAct)
             {
-                blocks[block].block->deleteLater();
+                blocks[block]->block->deleteLater();
                 blocks.removeAt(block);
                 emit changed();
                 clearSelection();
@@ -931,8 +931,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             for(int i=0;i<alt.length();i++)
                 if(altAction[i]==act)
                 {
-                    blocks[block].block->deleteLater();
-                    blocks[block].block=BlockList::newBlock(alt[i]);
+                    blocks[block]->block->deleteLater();
+                    blocks[block]->block=BlockList::newBlock(alt[i]);
+                    block_t* blk=blocks[block];
+                    for(int i=0;i<blk->block->pins.length();i++)
+                        blk->block->pins[i].parent=blk;
                     emit changed();
                     clearSelection();
                 }
@@ -968,7 +971,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         if(pin>=0)
             if(act==changePinAct)
             {
-                blocks[block].block->pins[pin].type=!blocks[block].block->pins[pin].type;
+                blocks[pblock]->block->pins[pin].type=!blocks[pblock]->block->pins[pin].type;
                 emit changed();
                 clearSelection();
             }
@@ -1018,7 +1021,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             if(setBlockColorAction.contains(act))
             {
                 QColor c=setBlockColorAction[act];
-                blocks[block].color=c;
+                blocks[block]->color=c;
                 emit changed();
                 clearSelection();
             }
@@ -1257,8 +1260,8 @@ void DigiView::cleanUp()
             testVias.append(lines[i].line.p2());
         }
         for(int j=0;j<blocks.length();j++)
-            for(int k=0;k<blocks[j].block->pins.length();k++)
-                testVias.append(blocks[j].block->pins[k].point+blocks[j].pos);
+            for(int k=0;k<blocks[j]->block->pins.length();k++)
+                testVias.append(blocks[j]->block->pins[k].pos());
         testVias.append(vias);
         vias.clear();
         for(int i=0;i<testVias.length();i++)
@@ -1279,8 +1282,8 @@ void DigiView::cleanUp()
 
                 }
             for(int j=0;j<blocks.length();j++)
-                for(int k=0;k<blocks[j].block->pins.length();k++)
-                    if((blocks[j].block->pins[k].point+blocks[j].pos)==point)
+                for(int k=0;k<blocks[j]->block->pins.length();k++)
+                    if((blocks[j]->block->pins[k].pos())==point)
                     {
                         num++;
                         cnt++;
@@ -1335,9 +1338,9 @@ QList<QPoint> DigiView::allIntersect(QLine line)
             ret.append(lines[i].line.p2());
     }
     for(int i=0;i<blocks.length();i++)
-        for(int j=0;j<blocks[i].block->pins.length();j++)
-            if(onLine(line,blocks[i].block->pins[j].point+blocks[i].pos))
-                ret.append(blocks[i].block->pins[j].point+blocks[i].pos);
+        for(int j=0;j<blocks[i]->block->pins.length();j++)
+            if(onLine(line,blocks[i]->block->pins[j].pos()))
+                ret.append(blocks[i]->block->pins[j].pos());
     return ret;
 }
 
@@ -1398,7 +1401,7 @@ QPicture DigiView::exportPicture()
     QPicture picture;
     QPainter painter(&picture);
     for(int i=0;i<blocks.length();i++)
-        painter.drawPicture(blocks[i].pos*Settings::final()->gridSize(),blocks[i].block->drawBlock(blocks[i].color,true));
+        painter.drawPicture(blocks[i]->m_pos*Settings::final()->gridSize(),blocks[i]->block->drawBlock(blocks[i]->color,true));
     QPen line(Qt::black);
     line.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
     for(int i=0;i<lines.length();i++)
@@ -1445,32 +1448,36 @@ void DigiView::loadJson(QByteArray json)
     QJsonArray g=root["blocks"].toArray();
     for(int i=0;i<g.size();i++)
     {
-        block_t c;
-        c.pos=QPoint(g[i].toObject()["x"].toInt(),g[i].toObject()["y"].toInt());
-        c.block=0;
+        block_t *c=new block_t;
+        c->m_pos=QPoint(g[i].toObject()["x"].toInt(),g[i].toObject()["y"].toInt());
+        c->block=0;
         BlockList list;
         for(int j=0;j<list.blocks.length();j++)
             if(list.blocks[j]->name==g[i].toObject()["name"].toString())
             {
-                c.block=list.blocks[j]->clone();
+                c->block=list.blocks[j]->clone();
             }
         QJsonArray pins=g[i].toObject()["pins"].toArray();
         for(int j=0;j<pins.size();j++)
         {
             QJsonObject pin=pins[j].toObject();
-            if(c.block->pins.length()>j)
-                c.block->pins[j].type=pin["type"].toBool();
+            if(c->block->pins.length()>j)
+                c->block->pins[j].type=pin["type"].toBool();
         }
-        c.color=QColor(g[i].toObject()["color"].toString());
-        if(c.block!=0)
+        c->color=QColor(g[i].toObject()["color"].toString());
+        if(c->block!=0)
+        {
+            for(int i=0;i<c->block->pins.length();i++)
+                c->block->pins[i].parent=c;
             blocks.append(c);
+        }
     }
     for(int i=0;i<blocks.length();i++)
     {
         QJsonObject c;
-        c.insert("x",blocks[i].pos.x());
-        c.insert("y",blocks[i].pos.y());
-        c.insert("name",blocks[i].block->name);
+        c.insert("x",blocks[i]->m_pos.x());
+        c.insert("y",blocks[i]->m_pos.y());
+        c.insert("name",blocks[i]->block->name);
         g.append(c);
     }
     cleanUp();
@@ -1488,7 +1495,7 @@ void DigiView::clearSelection()
 void DigiView::deleteSelection()
 {
     for(int i=0;i<selectedBlocks.length();i++)
-        blocks[selectedBlocks[i]].block->deleteLater();
+        blocks[selectedBlocks[i]]->block->deleteLater();
     for(int i=0;i<selectedBlocks.length();i++)
     {
         int at=selectedBlocks[i];
@@ -1583,10 +1590,10 @@ void DigiView::createTable()
     Block* lin;
     for(int i=0;i<blocks.length();i++)
     {
-        if(blocks[i].block->name=="Large-IN")
+        if(blocks[i]->block->name=="Large-IN")
         {
-            pos=blocks[i].pos;
-            lin=blocks[i].block;
+            pos=blocks[i]->m_pos;
+            lin=blocks[i]->block;
             i=blocks.length();
         }
     }
@@ -1603,7 +1610,7 @@ void DigiView::createTable()
         QMap<int,int> fakeGates;
         QList<int> outputs;
         for(int i=0;i<blocks.length();i++)
-            if(blocks[i].block->name=="OUT")
+            if(blocks[i]->block->name=="OUT")
                 outputs.append(i);
         while(cnt<16)
         {
@@ -1639,7 +1646,7 @@ void DigiView::createTable()
                 timeout();
             QList<bool> res;
             for(int j=0;j<outputs.length();j++)
-                res.append(blocks[outputs[j]].block->pins[0].state);
+                res.append(blocks[outputs[j]]->block->pins[0].state);
             row.second=res;
             table.append(row);
         }
@@ -1755,9 +1762,9 @@ void DigiView::keyPressEvent(QKeyEvent *event)
 void DigiView::largeIn(int o)
 {
     for(int i=0;i<blocks.length();i++)
-        if(blocks[i].block->name=="Large-IN")
+        if(blocks[i]->block->name=="Large-IN")
         {
-            blocks[i].block->keyPress(o);
+            blocks[i]->block->keyPress(o);
         }
 }
 
@@ -1791,15 +1798,15 @@ QJsonObject DigiView::exportJSON()
     for(int i=0;i<blocks.length();i++)
     {
         QJsonObject c;
-        c.insert("x",blocks[i].pos.x());
-        c.insert("y",blocks[i].pos.y());
-        c.insert("name",blocks[i].block->name);
-        c.insert("color",blocks[i].color.name());
+        c.insert("x",blocks[i]->m_pos.x());
+        c.insert("y",blocks[i]->m_pos.y());
+        c.insert("name",blocks[i]->block->name);
+        c.insert("color",blocks[i]->color.name());
         QJsonArray pins;
-        for(int j=0;j<blocks[i].block->pins.length();j++)
+        for(int j=0;j<blocks[i]->block->pins.length();j++)
         {
             QJsonObject obj;
-            obj.insert("type",blocks[i].block->pins[j].type);
+            obj.insert("type",blocks[i]->block->pins[j].type);
             pins.append(obj);
         }
         c.insert("pins",pins);

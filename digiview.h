@@ -7,15 +7,7 @@
 #include <QTimer>
 #include <QPicture>
 
-struct block_t {
-    QPoint pos;
-    Block* block;
-    QColor color;
-    block_t()
-    {
-        color=Qt::black;
-    }
-};
+
 
 struct text_t {
     QPoint pos;
@@ -63,7 +55,7 @@ public:
     QList<QPoint> vias;
     QPointF dragPos;
     QString dragGate;
-    QList<block_t> blocks;
+    QList<block_t*> blocks;
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);

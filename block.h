@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QObject>
 #include <QPicture>
+#include <QDebug>
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -11,18 +12,9 @@ extern "C" {
 }
 #include <QMap>
 #include <QPoint>
-struct pin_t {
-    QPoint point;
-    int direction;
-    int state;
-    bool type;
-    QColor color;
-    pin_t()
-    {
-        state=false;
-        color=Qt::black;
-    }
-};
+class Block;
+class block_t;
+class pin_t;
 
 class Block : public QObject
 {
@@ -63,5 +55,47 @@ signals:
 public slots:
 void fileChanged(const QString &path);
 };
+class block_t {
+public:
+    Block* block;
+    QColor color;
+    block_t()
+    {
+        color=Qt::black;
+    }
+    QPoint m_pos;
+    QRectF rect()
+    {
+        QRectF rect(m_pos.x()+0.5,m_pos.y(),block->width,block->height+1.0);
+        return rect;
+    }
+    QRectF pinsRect()
+    {
+        QRectF rect(m_pos.x(),m_pos.y(),block->width+1,block->height+1.0);
+        return rect;
+    }
 
+    QPointF unmap(QPointF p)
+    {
+        return p-m_pos;
+    }
+};
+class pin_t {
+public:
+    QPoint pos(){
+        return parent->m_pos+m_point;
+    }
+
+    int direction;
+    int state;
+    bool type;
+    QColor color;
+    block_t* parent;
+    pin_t()
+    {
+        state=false;
+        color=Qt::black;
+    }
+    QPoint m_point;
+};
 #endif // BLOCK_H

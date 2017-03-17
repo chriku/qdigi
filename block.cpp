@@ -70,15 +70,15 @@ QPicture Block::drawBlock(QColor color, bool plain) {
         if (pins[i].type == true) {
             double rad = abs(dir.x()) / 4.0;
             qpainter.drawEllipse(
-                        (QPointF(pins[i].point * Settings::final()->gridSize())) +
+                        (QPointF(pins[i].m_point * Settings::final()->gridSize())) +
                         ((dir / 4.0) * 3.0),
                         rad, rad);
             dir /= 2.0;
         }
         if(!plain)
         {
-            qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
-                              (pins[i].point * Settings::final()->gridSize()) + dir);
+            qpainter.drawLine(pins[i].m_point * Settings::final()->gridSize(),
+                              (pins[i].m_point * Settings::final()->gridSize()) + dir);
             pen.setColor(Qt::black);
             pen.setStyle(Qt::DotLine);
             pen.setWidth(Settings::final()->penWidth()*Settings::final()->gridSize());
@@ -97,8 +97,8 @@ QPicture Block::drawBlock(QColor color, bool plain) {
             }
         }
         qpainter.setPen(pen);
-        qpainter.drawLine(pins[i].point * Settings::final()->gridSize(),
-                          (pins[i].point * Settings::final()->gridSize()) + dir);
+        qpainter.drawLine(pins[i].m_point * Settings::final()->gridSize(),
+                          (pins[i].m_point * Settings::final()->gridSize()) + dir);
         // qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
 
@@ -288,7 +288,7 @@ void Block::init(Block *blk)
             lua_pop(L, 1);
             if (type == "INPUT") {
                 pin_t pin;
-                pin.point = QPoint(x, y);
+                pin.m_point = QPoint(x, y);
                 pin.direction = 0;
                 pin.state = false;
                 pin.type = false;
@@ -296,7 +296,7 @@ void Block::init(Block *blk)
             }
             if (type == "OUTPUT") {
                 pin_t pin;
-                pin.point = QPoint(x, y);
+                pin.m_point = QPoint(x, y);
                 pin.direction = 2;
                 pin.type = false;
                 blk->pins.append(pin);

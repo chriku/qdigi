@@ -37,4 +37,4 @@ function makeState()
   end
   state=num
 end
-return {width=2,height=4,name="Aiken",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"},{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="coder",alt={"Reverse-Aiken"},description="Aiken Code Codierer"}
+return {width=2,height=4,name="Aiken",alt={"Reverse-Aiken"},pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"},{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"}},category="coder",alt={"Reverse-Aiken"},description="Aiken Code Codierer"}

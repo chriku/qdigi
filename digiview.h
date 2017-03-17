@@ -73,6 +73,7 @@ public:
     QPoint startPoint;
     QPoint curPoint;
     bool drag;
+    bool dragged;
     int blkIdx;
     QPoint startBlock;
     QList<line_t> lines;

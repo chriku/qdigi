@@ -298,6 +298,7 @@ void DigiView::dropEvent(QDropEvent *event)
 
 void DigiView::mousePressEvent(QMouseEvent *event)
 {
+    dragged=false;
     QWidget::mousePressEvent(event);
     if(event->button()==Qt::LeftButton)
     {
@@ -347,6 +348,7 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
         curPoint=toGrid(event->pos());
         if(drag)
         {
+            dragged=true;
             blocks[blkIdx].pos+=curPoint-startPoint;
             for(int i=0;i<selectedBlocks.length();i++)
                 if(selectedBlocks[i]!=blkIdx)
@@ -429,10 +431,11 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                 double x=event->pos().x()/Settings::final()->gridSize();
                 double y=event->pos().y()/Settings::final()->gridSize();
                 QPointF p(x,y);
-                if(!drag)
-                blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
-                if(!drag)
-                blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
+                if(!dragged)
+                {
+                    blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
+                    blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
+                }
             }
         }
         startPoint=QPoint(-1,-1);

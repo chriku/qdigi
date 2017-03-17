@@ -19,6 +19,20 @@ BlockList::BlockList(QObject *parent) : QObject(parent)
                 blocks.append(b);
             }
     }
+    bool done=false;
+    do
+    {
+        done=false;
+        for(int i=1;i<blocks.length();i++)
+        {
+            if(blocks[i-1]->name>blocks[i]->name)
+            {
+                blocks.swap(i-1,i);
+                done=true;
+            }
+        }
+    }
+    while(done);
 }
 
 Block* BlockList::newBlock(QString name)

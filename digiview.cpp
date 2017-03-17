@@ -1651,7 +1651,7 @@ void DigiView::createTable()
                 lin->fake.prepend(values[j]);
             while(lin->fake.length()<16)
                 lin->fake.append(false);
-            for(int j=0;j<5;j++)
+            for(int j=0;j<25;j++)
                 timeout();
             QList<bool> res;
             for(int j=0;j<outputs.length();j++)

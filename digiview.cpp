@@ -232,6 +232,15 @@ void DigiView::paintEvent(QPaintEvent* event)
                     painter.drawPie((cp.x()*Settings::final()->gridSize())-d,(cp.y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,16*135,16*90);
             }
         }
+        for(int j=0;j<blocks.length();j++)
+            for(int k=0;k<blocks[j]->block->pins.length();k++)
+                if(blocks[j]->block->pins[k].pos()==vias[i])
+                {
+                    if(blocks[j]->block->pins[k].direction==0)
+                        painter.drawPie((vias[i].x()*Settings::final()->gridSize())-d,(vias[i].y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,-16*45,16*90);
+                    else
+                        painter.drawPie((vias[i].x()*Settings::final()->gridSize())-d,(vias[i].y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,16*135,16*90);
+                }
     }
 }
 void DigiView::dragEnterEvent(QDragEnterEvent *event)

@@ -25,6 +25,7 @@ FROM debian:jessie
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
+	zip \
 	autoconf \
 	automake \
 	autopoint \
@@ -68,9 +69,9 @@ WORKDIR  /build
 RUN git clone https://github.com/mxe/mxe.git
 
 # Build cross environment
-RUN cd mxe && make qtbase
-RUN cd mxe && make qtmultimedia
-RUN cd mxe && make libzip
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtbase
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtmultimedia
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared libzip
 
 # TODO: Cleanup all unneeded stuff to make a slim image
 
@@ -78,7 +79,7 @@ RUN cd mxe && make libzip
 ENV PATH /build/mxe/usr/bin:$PATH
 
 # Add a qmake alias
-RUN ln -s /build/mxe/usr/bin/i686-w64-mingw32.static-qmake-qt5 /build/mxe/usr/bin/qmake
+RUN ln -s /build/mxe/usr/bin/i686-w64-mingw32.shared-qmake-qt5 /build/mxe/usr/bin/qmake
 
 ##########################################################################
 # Here the project specific workflow starts.
@@ -91,6 +92,10 @@ COPY . /src
 WORKDIR /src
 
 # Now build the project
-RUN qmake qdigi.pro && make -j 3
-
+RUN qmake qdigi.pro && make -j 8
+RUN mkdir -p outDir
+RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll outDir
+RUN cp -r release/qdigi.exe outDir
+RUN zip out.zip outDir
 #RUN make
+#RUN find / |grep libzip-4.dll

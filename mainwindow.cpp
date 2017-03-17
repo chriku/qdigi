@@ -9,7 +9,6 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "gdrive.h"
-#include <unistd.h>
 
 
 MainWindow::MainWindow(QWidget *parent) :

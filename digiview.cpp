@@ -1398,12 +1398,12 @@ QImage DigiView::exportImage()
     double grid=Settings::final()->gridSize();
     Settings::final()->setGridSize(10);
     QPicture pic=exportPicture();
-    QImage ret(pic.boundingRect().size()*10,QImage::Format_ARGB32);
+    QImage ret((pic.boundingRect().size()*10)+QSize(20,20),QImage::Format_ARGB32);
     ret.fill(Qt::transparent);
     QPainter painter(&ret);
     painter.setWorldTransform(QTransform().translate(-pic.boundingRect().topLeft().x()*10,-pic.boundingRect().topLeft().y()*10));
     painter.scale(10,10);
-    painter.drawPicture(0,0,pic);
+    painter.drawPicture(1,1,pic);
     painter.end();
     Settings::final()->setGridSize(grid);
     return ret;

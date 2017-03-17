@@ -429,7 +429,9 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                 double x=event->pos().x()/Settings::final()->gridSize();
                 double y=event->pos().y()/Settings::final()->gridSize();
                 QPointF p(x,y);
+                if(!drag)
                 blocks[idx].block->onclick(p-QPointF(blocks[idx].pos));
+                if(!drag)
                 blocks[idx].block->onrelease(p-QPointF(blocks[idx].pos));
             }
         }

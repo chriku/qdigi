@@ -15,7 +15,7 @@ function getState(pin)
   end
   return false
 end
-function onclick(x,y)
+function onrelease(x,y)
   if y<2.5 then
     state=(state+1)%16
   else

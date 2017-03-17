@@ -9,6 +9,7 @@ extern "C" {
 #include "lauxlib.h"
 #include "lualib.h"
 }
+#include <QMap>
 #include <QPoint>
 struct pin_t {
     QPoint point;
@@ -28,6 +29,7 @@ class Block : public QObject
     Q_OBJECT
 public:
     bool useFake;
+    QMap<QString,int> contextMenu;
     QList<bool> fake;
     QString description;
     QStringList alt;
@@ -50,6 +52,7 @@ Block* clone();
 void onclick(QPointF where);
 void onpress(QPointF where);
 void onrelease(QPointF where);
+void execContext(int idx);
 bool getState(int pin);
 static void init(Block* blk);
 ~Block();

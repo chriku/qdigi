@@ -839,10 +839,26 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QAction* delTextAct=NULL;
     QAction* changePinAct=NULL;
     QAction* addTextAct=NULL;
+    QMap<QAction*,int> blockDefAct;
     QMap<QAction*,QColor> setTextColorAction;
     QMap<QAction*,QColor> setLineColorAction;
     QMap<QAction*,QColor> setBlockColorAction;
     QList<QAction*> altAction;
+    if(block>=0)
+    {
+        int cnt=0;
+        QList<QString> keys=blocks[block].block->contextMenu.keys();
+        for(auto key:keys)
+        {
+            int val=blocks[block].block->contextMenu[key];
+            QAction* act=menu.addAction(key);
+            blockDefAct.insert(act,val);
+            cnt++;
+        }
+        if(cnt>0)
+            menu.addSeparator();
+        ok=true;
+    }
     if(lcnt>=2)
     {
         addViaAct=menu.addAction("Knotenpunkt hinzufügen");
@@ -937,6 +953,11 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         QAction* act=menu.exec(event->globalPos());
         if(block>=0)
         {
+            if(blockDefAct.contains(act))
+            {
+                int func=blockDefAct[act];
+                blocks[block].block->execContext(func);
+            }
             if(act==delBlockAct)
             {
                 blocks[block].block->deleteLater();

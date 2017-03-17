@@ -31,9 +31,9 @@ void Block::load(QString fileName) {
 QPicture Block::drawBlock(QColor color, bool plain) {
     QPicture ret;
     ret.setBoundingRect(QRect(0,0,(width * Settings::final()->gridSize()) +
-                Settings::final()->gridSize() + 1,
-                (height * Settings::final()->gridSize()) + 1 +
-                Settings::final()->gridSize()));
+                              Settings::final()->gridSize() + 1,
+                              (height * Settings::final()->gridSize()) + 1 +
+                              Settings::final()->gridSize()));
     QPainter qpainter(&ret);
     qpainter.setPen(Qt::black);
     pushGlobal(L);
@@ -186,6 +186,21 @@ void Block::onrelease(QPointF where) {
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 
+void Block::execContext(int idx) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
+    lua_geti(L,LUA_REGISTRYINDEX,idx);
+    if (!lua_isnil(L, -1)) {
+        if (lua_pcall(L, 0, 0, 0) == LUA_OK) {
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
+        } else
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
+    }
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
+}
+
 bool Block::getState(int pin) {
     if(!useFake)
     {
@@ -287,6 +302,18 @@ void Block::init(Block *blk)
                 blk->pins.append(pin);
             }
             lua_pop(L, 1);
+        }
+        lua_pop(L, 1);
+        lua_getfield(L, -1, "context");
+        if(lua_istable(L,-1))
+        {
+            qDebug()<<blk->fileName;
+            lua_pushnil(L);
+            while (lua_next(L, -2)) {
+                QString key=lua_tostring(L,-2);
+                int pin=luaL_ref(L,LUA_REGISTRYINDEX);
+                blk->contextMenu.insert(key,pin);
+            }
         }
         lua_pop(L, 1);
         lua_getfield(L, -1, "alt");

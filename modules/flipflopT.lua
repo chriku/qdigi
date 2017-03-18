@@ -1,6 +1,6 @@
 state={false,old=false}
 function paintEvent(painter,color)
-  if pins[1]==false and state.old==true then
+  if pins[1]==true and state.old==false then
     state[1]=not state[1]
   end
   state.old=pins[1]

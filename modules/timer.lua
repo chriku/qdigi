@@ -11,4 +11,4 @@ end
 function getState(pin)
   return state
 end
-return {width=1,height=1,name="Timer",pins={{2,1,"OUTPUT"}},category="base",description="Timer"}
+return {width=1,height=1,name="Timer",pins={{2,1,"OUTPUT"}},category="in",description="Timer"}

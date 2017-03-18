@@ -20,4 +20,4 @@ function paintEvent(painter,color)
   painter:drawLine(1.5,4,3.5,4)--g
   --painter:drawLine(2.1,3,2.9,3)
 end
-return {width=4,height=7,name="7 Segment",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"}},category="base",description="7-Segment-Anzeige"}
+return {width=4,height=7,name="7 Segment",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"}},category="out",description="7-Segment-Anzeige"}

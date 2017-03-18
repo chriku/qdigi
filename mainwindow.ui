@@ -78,7 +78,7 @@
    <property name="minimumSize">
     <size>
      <width>162</width>
-     <height>245</height>
+     <height>329</height>
     </size>
    </property>
    <property name="floating">
@@ -109,7 +109,7 @@
           <x>0</x>
           <y>0</y>
           <width>144</width>
-          <height>387</height>
+          <height>331</height>
          </rect>
         </property>
         <attribute name="label">
@@ -179,13 +179,149 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="page_input">
+        <attribute name="label">
+         <string>Eingabe</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="DragView" name="input">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>125</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QAbstractScrollArea::AdjustToContents</enum>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="dragEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="dragDropMode">
+            <enum>QAbstractItemView::DragDrop</enum>
+           </property>
+           <property name="defaultDropAction">
+            <enum>Qt::CopyAction</enum>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="textElideMode">
+            <enum>Qt::ElideNone</enum>
+           </property>
+           <property name="verticalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <property name="horizontalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <attribute name="horizontalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_output">
+        <attribute name="label">
+         <string>Ausgaben</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="DragView" name="output">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>125</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QAbstractScrollArea::AdjustToContents</enum>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="dragEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="dragDropMode">
+            <enum>QAbstractItemView::DragDrop</enum>
+           </property>
+           <property name="defaultDropAction">
+            <enum>Qt::CopyAction</enum>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="textElideMode">
+            <enum>Qt::ElideNone</enum>
+           </property>
+           <property name="verticalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <property name="horizontalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <attribute name="horizontalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="page_coder">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
           <width>144</width>
-          <height>387</height>
+          <height>331</height>
          </rect>
         </property>
         <attribute name="label">
@@ -261,7 +397,7 @@
           <x>0</x>
           <y>0</y>
           <width>144</width>
-          <height>387</height>
+          <height>331</height>
          </rect>
         </property>
         <attribute name="label">
@@ -331,21 +467,13 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_math">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>144</width>
-          <height>387</height>
-         </rect>
-        </property>
+       <widget class="QWidget" name="page_flipflop">
         <attribute name="label">
-         <string>Mathe</string>
+         <string>FlipFlops</string>
         </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="DragView" name="math">
+          <widget class="DragView" name="flipflop">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
              <horstretch>0</horstretch>
@@ -413,7 +541,7 @@
           <x>0</x>
           <y>0</y>
           <width>144</width>
-          <height>387</height>
+          <height>331</height>
          </rect>
         </property>
         <attribute name="label">

@@ -10,4 +10,4 @@ end
 function getState(pin)
   return false
 end
-return {width=1,height=1,name="NULL",pins={{2,1,"OUTPUT"}},category="base",description="Dauernull"}
+return {width=1,height=1,name="NULL",pins={{2,1,"OUTPUT"}},category="in",description="Dauernull"}

@@ -30,4 +30,4 @@ local context={}
 context["Reset"]=function()
   state=0
 end
-return {width=2,height=4,name="Zaehler",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"}},category="base",description="HEX-Eingabe",context=context}
+return {width=2,height=4,name="Zaehler",pins={{3,1,"OUTPUT"},{3,2,"OUTPUT"},{3,3,"OUTPUT"},{3,4,"OUTPUT"}},category="in",description="HEX-Eingabe",context=context}

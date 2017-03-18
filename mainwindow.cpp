@@ -28,9 +28,11 @@ MainWindow::MainWindow(QWidget *parent) :
     BlockList list;
     QList<Block*> base;
     QList<Block*> coder;
-    QList<Block*> math;
     QList<Block*> multi;
+    QList<Block*> flip;
     QList<Block*> other;
+    QList<Block*> inp;
+    QList<Block*> outp;
     for(int i=0;i<list.blocks.length();i++)
     {
         if(list.blocks[i]->category=="base")
@@ -39,16 +41,22 @@ MainWindow::MainWindow(QWidget *parent) :
             coder.append(list.blocks[i]);
         else if(list.blocks[i]->category=="multi")
             multi.append(list.blocks[i]);
-        else if(list.blocks[i]->category=="math")
-            math.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="flip")
+            flip.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="in")
+            inp.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="out")
+            outp.append(list.blocks[i]);
         else
             other.append(list.blocks[i]);
     }
     ui->base->blockList=base;
+    ui->flipflop->blockList=flip;
     ui->coder->blockList=coder;
     ui->other->blockList=other;
     ui->multi->blockList=multi;
-    ui->math->blockList=math;
+    ui->input->blockList=inp;
+    ui->output->blockList=outp;
     QStringList args=QApplication::arguments();
     if(args.length()>1)
     {

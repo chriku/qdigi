@@ -14,4 +14,4 @@ end
 function getState(pin)
   return ((state[1]>>(pin-2))%2)==1
 end
-return {width=3,height=4,name="Counter Div-16",pins={{0,1,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"},{4,4,"OUTPUT"}},category="base",description="FlipFlop mit Set und Reset"}
+return {width=3,height=4,name="Counter Div-16",pins={{0,1,"INPUT"},{4,1,"OUTPUT"},{4,2,"OUTPUT"},{4,3,"OUTPUT"},{4,4,"OUTPUT"}},category="flip",description="Zähler bis 16"}

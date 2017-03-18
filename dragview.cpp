@@ -1,5 +1,6 @@
 #include "dragview.h"
 #include <QDebug>
+#include <math.h>
 #include <QApplication>
 #include "blocklist.h"
 #include <QDrag>

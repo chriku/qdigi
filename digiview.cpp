@@ -20,6 +20,8 @@
 #include <zip.h>
 #include <math.h>
 
+int lastSel=-1;
+
 DigiView::DigiView(QWidget *parent) : QWidget(parent)
 {
     setFocus();
@@ -328,6 +330,8 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             }
         int pin=-1;
         if(idx>=0)
+            lastSel=idx;
+            if(idx>=0)
             for(int i=0;i<blocks[idx]->block->pins.length();i++)
                 if(startPoint==blocks[idx]->block->pins[i].pos())
                     pin=i;

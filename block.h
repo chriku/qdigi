@@ -66,7 +66,7 @@ public:
     QPoint m_pos;
     QRectF rect()
     {
-        QRectF rect(m_pos.x()+0.5,m_pos.y(),block->width,block->height+1.0);
+        QRectF rect(m_pos.x()+0.5,m_pos.y()+0.5,block->width,block->height);
         return rect;
     }
     QRectF pinsRect()

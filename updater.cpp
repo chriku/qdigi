@@ -20,7 +20,13 @@ void Updater::update()
     if(rfile.exists())
         rfile.remove();
     screen.showMessage("Auf Updates prüfen...",Qt::AlignCenter);
-    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update"));
+#ifdef Q_OS_LINUX
+    QString platform="linux";
+#endif
+#ifdef Q_OS_WIN32
+    QString platform="windows";
+#endif
+    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
     req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
     QNetworkReply*rep=manager.get(req);
     QEventLoop loop;
@@ -29,22 +35,23 @@ void Updater::update()
     if(rep->error()==QNetworkReply::NoError)
     {
         QByteArray resp=rep->readAll();
+        //qDebug()<<resp;
         QJsonParseError error;
         QJsonDocument doc=QJsonDocument::fromJson(resp,&error);
         if(error.error==error.NoError)
         {
             QJsonObject root=doc.object();
             QString nhash=root["app"].toString();
-            QCryptographicHash hash(QCryptographicHash::Sha512);
             QString fname=QApplication::applicationFilePath();
             if(fname.endsWith(".exe"))
             {
+                QCryptographicHash hash(QCryptographicHash::Sha512);
                 QFile file(fname);
                 file.open(QFile::ReadOnly);
                 hash.addData(&file);
                 file.close();
                 QString chash=hash.result().toHex();
-                /*if(chash.length()==nhash.length())
+                if(chash.length()==nhash.length())
                     if(chash!=nhash)
                         if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
                         {
@@ -68,13 +75,13 @@ void Updater::update()
                                 exit(0);
                             }
                         }
-                        */
             }
             QJsonArray files=root["files"].toArray();
             QStringList requestFiles;
             for(int i=0;i<files.size();i++)
             {
                 QJsonObject curFile=files[i].toObject();
+                QCryptographicHash hash(QCryptographicHash::Sha512);
                 QStringList parts=curFile["name"].toString().split('/');
                 QDir dir(Settings::final()->applicationDir());
                 for(int i=0;i<parts.length()-1;i++)
@@ -87,13 +94,12 @@ void Updater::update()
                 QFile file(name);
                 if(file.exists())
                 {
-                    QFileInfo info(file);
-                    uint oldT=info.lastModified().toTime_t();
-                    uint newT=QString(curFile["change"].toString()).toUInt();
-                    if(newT>oldT)
-                    {
+                    file.open(QFile::ReadOnly);
+                    hash.addData(&file);
+                    file.close();
+                    QString chash=hash.result().toHex();
+                    if(curFile["hash"].toString()!=chash)
                         requestFiles.append(curFile["name"].toString());
-                    }
                 }
                 else
                     requestFiles.append(curFile["name"].toString());

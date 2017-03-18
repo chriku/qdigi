@@ -307,7 +307,6 @@ void Block::init(Block *blk)
         lua_getfield(L, -1, "context");
         if(lua_istable(L,-1))
         {
-            qDebug()<<blk->fileName;
             lua_pushnil(L);
             while (lua_next(L, -2)) {
                 QString key=lua_tostring(L,-2);

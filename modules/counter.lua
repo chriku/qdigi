@@ -11,9 +11,6 @@ function paintEvent(painter,color)
   painter:drawText("-",0.5,3.5,2,1)
   painter:setPen(color)
   painter:drawRect(0.5,0.5,2,4)
-  painter:setPen(nil)
-  painter:setBrush("blue")
-  painter:drawRect(0.5,0.5,2,1)
 end
 function getState(pin)
   if (state>>(pin-1))%2==1 then

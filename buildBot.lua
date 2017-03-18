@@ -10,9 +10,13 @@ function urlencode(str)
    return str    
 end
 os.execute("cd .. &&  sshfs root@a20-olimex:/media/usb-stick/site/q/downloads mnt")
-os.execute("sudo ./build; cp qdigi.exe ~/mnt/")
-os.execute("nano /tmp/message")
-U=io.open("/tmp/message")
-message="Neues Update:\n"..U:read("*a")
-U:close()
-print(socket.request("https://api.telegram.org/bot324897373:AAGKPfQHDUqWPIE7EyT_ScgeCLfU2iaWvHg/sendMessage?chat_id="..chat_id.."&text="..urlencode(message)))
+if os.execute("sudo ./build") then
+  os.execute("rm -rf win;mkdir win")
+  os.execute("cd win && unzip ../qdigi.zip")
+  os.execute("cp -r win/qdigi/* ~/mnt/")
+  os.execute("nano /tmp/message")
+  U=io.open("/tmp/message")
+  message="Neues Update:\n"..U:read("*a")
+  U:close()
+  print(socket.request("https://api.telegram.org/bot324897373:AAGKPfQHDUqWPIE7EyT_ScgeCLfU2iaWvHg/sendMessage?chat_id="..chat_id.."&text="..urlencode(message)))
+end

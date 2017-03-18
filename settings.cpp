@@ -18,6 +18,8 @@ Settings::Settings(QObject *parent) : QObject(parent)
     mainPath=dir.absoluteFilePath(".qdigi");
 #endif
     saveFile=new QSettings(QDir(mainPath).absoluteFilePath("settings.ini"),QSettings::IniFormat);
+    mainPath=saveFile->value("appDirPath",mainPath).toString();
+    qDebug()<<mainPath;
     m_gridSize=saveFile->value("gridSize",20).toInt();
     m_gridType=(GRID)saveFile->value("gridType",GRID_LINES).toInt();
     m_defaultSimu=saveFile->value("defaultSimu",false).toBool();

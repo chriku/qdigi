@@ -1,10 +1,12 @@
 state={false,false,false,false}
 function paintEvent(painter,color)
   makeState()
+  painter:setFont(nil,0.5)
   painter:setBrush()
   painter:setPen(color)
   painter:drawRect(0.5,0.5,3,4)
   painter:setPen("black")
+  painter:drawText("mit\n\n\nFlipFlop",0.5,0.5,3,4)
   painter:drawText("G",0.5,0.5,1,2)
   painter:drawText("IN",0.5,3.5,1,1)
   painter:drawText("OUT0",1.5,0.5,2,1)

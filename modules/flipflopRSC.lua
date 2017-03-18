@@ -2,7 +2,6 @@ state={false,old=false}
 function paintEvent(painter,color)
   if pins[2]==false and state.old==true then
     if pins[1] and pins[3] then
-      state[1]=not state[1]
     elseif pins[1] then
       state[1]=true
     elseif pins[3] then
@@ -16,8 +15,8 @@ function paintEvent(painter,color)
   painter:drawRect(0.5,0.5,3,3)
   painter:setPen("black")
   painter:setFont(nil,1)
-  painter:drawText("J",0.5,0.5,1,1)
-  painter:drawText("K",0.5,2.5,1,1)
+  painter:drawText("S",0.5,0.5,1,1)
+  painter:drawText("R",0.5,2.5,1,1)
   painter:drawText("Q",2.5,0.5,1,1)
 end
 function getState(pin)
@@ -27,4 +26,4 @@ function getState(pin)
     return not state[1]
   end
 end
-return {width=3,height=3,name="JK-FlipFlop",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="flip",description="Jump/Kill-FlipFlop"}
+return {width=3,height=3,name="RS-FlipFlop-T",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="flip",description="RS-FlipFlop mit Takteingang"}

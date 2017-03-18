@@ -69,7 +69,7 @@ WORKDIR  /build
 RUN git clone https://github.com/mxe/mxe.git
 
 # Build cross environment
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtbase
+RUN cd mxe -j8 && make MXE_TARGETS=i686-w64-mingw32.shared qtbase
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtmultimedia
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared libzip
 
@@ -93,9 +93,14 @@ WORKDIR /src
 
 # Now build the project
 RUN qmake qdigi.pro && make -j 8
-RUN mkdir -p outDir
-RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll outDir
-RUN cp -r release/qdigi.exe outDir
-RUN zip out.zip outDir
+RUN rm -f qdigi
+RUN mkdir  qdigi
+RUN cp -r release/qdigi.exe qdigi
+RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
+RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
+RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
+RUN rm -f qdigi.zip && zip -r qdigi.zip qdigi
 #RUN make
-#RUN find / |grep libzip-4.dll
+#RUN find / |grep qwindows.dll
+#RUN find / |grep qt|grep .dll
+#RUN find / |grep zip|grep dll

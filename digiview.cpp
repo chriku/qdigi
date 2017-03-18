@@ -18,6 +18,7 @@
 #include <QJsonValue>
 #include <QDebug>
 #include <zip.h>
+#include <math.h>
 
 DigiView::DigiView(QWidget *parent) : QWidget(parent)
 {

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QColor>
 #include <QSettings>
+#include <math.h>
 
 class Settings : public QObject
 {

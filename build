@@ -4,6 +4,8 @@
 # using a cross compiler.
 #
 
+rm -rf qdigi.zip
+
 # Build the image
 docker build -t qtdyn .
 
@@ -11,4 +13,4 @@ docker build -t qtdyn .
 ####  docker run -it qt bash
 
 # Now extract the generated binary
-docker run qtdyn cat out.zip >out.zip
+docker run qtdyn cat qdigi.zip >qdigi.zip

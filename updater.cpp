@@ -44,7 +44,7 @@ void Updater::update()
                 hash.addData(&file);
                 file.close();
                 QString chash=hash.result().toHex();
-                if(chash.length()==nhash.length())
+                /*if(chash.length()==nhash.length())
                     if(chash!=nhash)
                         if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
                         {
@@ -68,6 +68,7 @@ void Updater::update()
                                 exit(0);
                             }
                         }
+                        */
             }
             QJsonArray files=root["files"].toArray();
             QStringList requestFiles;

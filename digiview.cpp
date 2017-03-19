@@ -1,4 +1,5 @@
 #include "gdrive.h"
+#include <QApplication>
 #include <QInputDialog>
 #include <QDesktopServices>
 #include <QMessageBox>
@@ -33,6 +34,7 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
     timer.setInterval(100);
     setContextMenuPolicy(Qt::DefaultContextMenu);
     resizeNow();
+    setMouseTracking(true);
 }
 
 void DigiView::paintEvent(QPaintEvent* event)
@@ -267,6 +269,10 @@ void DigiView::dragEnterEvent(QDragEnterEvent *event)
         }
         dragGate=gate;
         dragPos=toGrid(event->pos())-QPoint(1,1);
+        if(QApplication::mouseButtons()&Qt::LeftButton)
+            dragMany=false;
+        else
+            dragMany=true;
         event->acceptProposedAction();
         //qDebug()<<event;
         update();
@@ -305,7 +311,8 @@ void DigiView::dropEvent(QDropEvent *event)
                 return;
             }
     }
-    dragGate="";
+    if(!dragMany)
+        dragGate="";
     for(int i=0;i<blocks.length();i++)
         if(QRectF(blocks[i]->rect()).intersects(blk->rect()))
             return;
@@ -317,6 +324,38 @@ void DigiView::dropEvent(QDropEvent *event)
 
 void DigiView::mousePressEvent(QMouseEvent *event)
 {
+    if(dragGate!="")
+        if(dragMany)
+        {
+            event->accept();
+            clearSelection();
+            dragPos=toGrid(event->pos())-QPoint(1,1);
+            block_t* blk=new block_t;
+            blk->block=BlockList::newBlock(dragGate);
+            for(int i=0;i<blk->block->pins.length();i++)
+                blk->block->pins[i].parent=blk;
+            blk->m_pos=dragPos.toPoint();
+            if(dragGate=="Large-IN")
+            {
+                for(int i=0;i<blocks.length();i++)
+                    if(blocks[i]->block->name=="Large-IN")
+                    {
+                        dragGate="";
+                        return;
+                    }
+            }
+            if(event->button()!=Qt::LeftButton)
+                dragGate="";
+            for(int i=0;i<blocks.length();i++)
+                if(QRectF(blocks[i]->rect()).intersects(blk->rect()))
+                    return;
+            blocks.append(blk);
+            emit changed();
+            cleanUp();
+            update();
+            lastContext=QTime::currentTime();
+            return;
+        }
     dragged=false;
     QWidget::mousePressEvent(event);
     if(event->button()==Qt::LeftButton)
@@ -376,6 +415,16 @@ void DigiView::mousePressEvent(QMouseEvent *event)
 
 void DigiView::mouseMoveEvent(QMouseEvent *event)
 {
+    if(dragGate!="")
+        if(dragMany)
+        {
+            clearSelection();
+            dragPos=toGrid(event->pos())-QPoint(1,1);
+            update();
+            return;
+        }
+    if(!event->buttons())
+        return;
     QWidget::mouseMoveEvent(event);
     if(event->buttons()&Qt::LeftButton)
     {
@@ -406,6 +455,11 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
 
 void DigiView::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(dragGate!="")
+        if(dragMany)
+        {
+        }
+    qDebug()<<"EVENT";
     QWidget::mouseReleaseEvent(event);
     if(event->button()==Qt::LeftButton)
     {
@@ -705,6 +759,8 @@ void DigiView::timeout()
 void DigiView::contextMenuEvent(QContextMenuEvent *event)
 {
     event->accept();
+    if(lastContext.msecsTo(QTime::currentTime())<10)
+        return;
     int block=-1;
     int pblock=-1;
     bool ok=false;

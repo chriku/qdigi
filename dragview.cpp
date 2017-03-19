@@ -60,6 +60,7 @@ void DragView::startDrag(Qt::DropActions supportedActions)
     map.fill(Qt::transparent);
     drag->setPixmap(map);
     const QModelIndexList indexes = selectedIndexes();
-    drag->setMimeData( model()->mimeData( indexes ) );
+    QMimeData *mimeData=model()->mimeData( indexes );
+    drag->setMimeData( mimeData );
     drag->exec(supportedActions);
 }

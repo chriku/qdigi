@@ -6,7 +6,7 @@
 #include "blocklist.h"
 #include <QTimer>
 #include <QPicture>
-
+#include <QTime>
 
 
 struct text_t {
@@ -55,6 +55,8 @@ public:
     QList<QPoint> vias;
     QPointF dragPos;
     QString dragGate;
+    bool dragMany;
+    QTime lastContext;
     QList<block_t*> blocks;
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

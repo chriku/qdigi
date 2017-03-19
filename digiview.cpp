@@ -32,6 +32,7 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
     connect(&timer,SIGNAL(timeout()),this,SLOT(timeout()));
     timer.setInterval(100);
     setContextMenuPolicy(Qt::DefaultContextMenu);
+    resizeNow();
 }
 
 void DigiView::paintEvent(QPaintEvent* event)
@@ -245,6 +246,7 @@ void DigiView::paintEvent(QPaintEvent* event)
                         painter.drawPie((vias[i].x()*Settings::final()->gridSize())-d,(vias[i].y()*Settings::final()->gridSize())-d,d*2.0,d*2.0,16*135,16*90);
                 }
     }
+    //resizeNow();
 }
 void DigiView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -331,7 +333,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         int pin=-1;
         if(idx>=0)
             lastSel=idx;
-            if(idx>=0)
+        if(idx>=0)
             for(int i=0;i<blocks[idx]->block->pins.length();i++)
                 if(startPoint==blocks[idx]->block->pins[i].pos())
                     pin=i;
@@ -1329,6 +1331,7 @@ void DigiView::cleanUp()
                             lines.append(l2);
                         }
     }
+    resizeNow();
 }
 
 QList<QPoint> DigiView::allIntersect(QLine line)
@@ -1837,4 +1840,43 @@ QJsonObject DigiView::exportJSON()
     }
     root.insert("vias",v);
     return root;
+}
+
+void DigiView::resizeEvent(QResizeEvent *event)
+{
+}
+
+void DigiView::resizeNow()
+{
+    int bwid=0;
+    int bhei=0;
+    for(int i=0;i<blocks.length();i++)
+    {
+        QPointF rect=blocks[i]->rect().bottomRight();
+        bwid=fmax(bwid,rect.x());
+        bhei=fmax(bhei,rect.y());
+    }
+    for(int i=0;i<lines.length();i++)
+    {
+        QPointF rect=lines[i].line.p1();
+        bwid=fmax(bwid,rect.x());
+        bhei=fmax(bhei,rect.y());
+        rect=lines[i].line.p2();
+        bwid=fmax(bwid,rect.x());
+        bhei=fmax(bhei,rect.y());
+    }
+    for(int i=0;i<texts.length();i++)
+    {
+        QPointF rect=QRect(texts[i].pos.x(),texts[i].pos.y(),texts[i].len,1).bottomRight();
+        bwid=fmax(bwid,rect.x());
+        bhei=fmax(bhei,rect.y());
+    }
+    bwid*=Settings::final()->gridSize();
+    bhei*=Settings::final()->gridSize();
+    bwid+=window()->width();
+    bhei+=window()->height();
+    QSize size(bwid,bhei);
+    if(minimumSize()!=size)
+        setMinimumSize(size);
+    update();
 }

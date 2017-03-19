@@ -84,8 +84,10 @@ public:
     QPicture exportPicture();
     QImage exportImage();
     void loadJson(QByteArray json);
+    void resizeNow();
 QJsonObject exportJSON();
     void createTable();
+    void resizeEvent(QResizeEvent *event);
 signals:
     void changed();
 public slots:

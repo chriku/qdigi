@@ -29,6 +29,8 @@ public:
     void load(QString fileName);
     lua_State*L;
     int state;
+    bool checkable;
+    void keyPressNorm(QString key);
     void keyPress(int pos);
     int mainRef;
     QList<pin_t> pins;

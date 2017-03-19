@@ -46,6 +46,7 @@ public:
     explicit DigiView(QWidget *parent = 0);
     QTimer timer;
     void largeIn(int o);
+    void emitKey(QString key);
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);

@@ -143,6 +143,20 @@ void DigiView::paintEvent(QPaintEvent* event)
         rect.setRight(rect.right()*Settings::final()->gridSize());
         painter.drawRect(rect);
     }
+    if(lastSel>=0)
+    {
+        QPen pen(Qt::gray);
+        QBrush brush(Qt::gray);
+        painter.setPen(pen);
+        brush.setStyle(Qt::Dense6Pattern);
+        painter.setBrush(brush);
+        QRectF rect=blocks[lastSel]->rect();
+        rect.setTop(rect.top()*(Settings::final()->gridSize()));
+        rect.setLeft(rect.left()*(Settings::final()->gridSize()));
+        rect.setBottom(rect.bottom()*Settings::final()->gridSize());
+        rect.setRight(rect.right()*Settings::final()->gridSize());
+        painter.drawRect(rect);
+    }
     for(int i=0;i<selectedLines.length();i++)
     {
         QRect rect(lines[selectedLines[i]].line.p1()*Settings::final()->gridSize(),lines[selectedLines[i]].line.p2()*Settings::final()->gridSize());
@@ -372,7 +386,8 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             }
         int pin=-1;
         if(idx>=0)
-            lastSel=idx;
+            if(blocks[idx]->block->checkable)
+                lastSel=idx;
         if(idx>=0)
             for(int i=0;i<blocks[idx]->block->pins.length();i++)
                 if(startPoint==blocks[idx]->block->pins[i].pos())
@@ -999,6 +1014,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             }
             if(act==delBlockAct)
             {
+                lastSel=-1;
                 blocks[block]->block->deleteLater();
                 blocks.removeAt(block);
                 emit changed();
@@ -1020,6 +1036,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         {
             if(act==delSelAct)
             {
+                lastSel=-1;
                 deleteSelection();
             }
         }
@@ -1498,6 +1515,7 @@ QPicture DigiView::exportPicture()
 
 void DigiView::loadJson(QByteArray json)
 {
+    lastSel=-1;
     QJsonObject root=QJsonDocument::fromJson(json).object();
     QJsonArray l=root["lines"].toArray();
     for(int i=0;i<l.size();i++)
@@ -1830,6 +1848,7 @@ void DigiView::keyPressEvent(QKeyEvent *event)
             largeIn(15);
             break;
         default:
+            emitKey(event->text());
             return;
         }
         event->accept();
@@ -1838,10 +1857,18 @@ void DigiView::keyPressEvent(QKeyEvent *event)
 
 void DigiView::largeIn(int o)
 {
-    for(int i=0;i<blocks.length();i++)
-        if(blocks[i]->block->name=="Large-IN")
+    if(lastSel>=0)
+        if(blocks[lastSel]->block->name=="Large-IN")
         {
-            blocks[i]->block->keyPress(o);
+            blocks[lastSel]->block->keyPress(o);
+        }
+}
+
+void DigiView::emitKey(QString key)
+{
+    if(lastSel>=0)
+        {
+            blocks[lastSel]->block->keyPressNorm(key);
         }
 }
 

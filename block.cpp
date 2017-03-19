@@ -168,6 +168,21 @@ void Block::keyPress(int pos) {
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
+void Block::keyPressNorm(QString key) {
+    lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    lua_setglobal(L,"state");
+    lua_getglobal(L, "keyPress");
+    if (!lua_isnil(L, -1)) {
+        lua_pushstring(L, key.toUtf8().data());
+        if (lua_pcall(L, 1, 0, 0) == LUA_OK) {
+            lua_getglobal(L,"state");
+            lua_rawseti(L,LUA_REGISTRYINDEX,state);
+        } else
+            qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
+    }
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
+}
 
 void Block::onrelease(QPointF where) {
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
@@ -271,6 +286,7 @@ Block::~Block()
 
 void Block::init(Block *blk)
 {
+    blk->checkable=false;
     lua_State*L=blk->L;
     lua_rawgeti(L,LUA_REGISTRYINDEX,blk->mainRef);
     if (lua_pcall(L, 0, 1, 0) == LUA_OK) {
@@ -327,6 +343,12 @@ void Block::init(Block *blk)
         lua_pop(L, 1);
         lua_getfield(L, -1, "width");
         blk->width = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+        lua_getfield(L, -1, "checkable");
+        if(!lua_isnil(L,-1))
+        {
+            blk->checkable=lua_toboolean(L,-1);
+        }
         lua_pop(L, 1);
         lua_getfield(L, -1, "height");
         blk->height = lua_tointeger(L, -1);

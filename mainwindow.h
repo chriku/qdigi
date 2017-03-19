@@ -48,7 +48,6 @@ private slots:
 
     void on_actionLogiktabelle_triggered();
     void onRemoteSave();
-
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

@@ -41,7 +41,7 @@ public:
     QList<int> selectedTexts;
     void clearSelection();
     void deleteSelection();
-    QString fileName;
+    QUrl fileName;
     void cleanUp();
     explicit DigiView(QWidget *parent = 0);
     QTimer timer;
@@ -73,9 +73,8 @@ public:
     QPoint startBlock;
     QList<line_t> lines;
     QList<text_t> texts;
-    bool save(QString where=QString());
-    bool saveGoogle(QString where=QString());
-    void load(QString where);
+    bool save(QUrl where=QUrl());
+    void load(QUrl where);
     QPoint toGrid(QPoint in);
     void contextMenuEvent(QContextMenuEvent *event);
     void wheelEvent(QWheelEvent *event);

@@ -15,7 +15,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 bool isChanged;
-QMap<QAction*,QString> lastChangedActions;
+QMap<QAction*,QUrl> lastChangedActions;
 
 private slots:
     void on_actionSpeichern_triggered();
@@ -47,8 +47,7 @@ private slots:
     void updateLc();
 
     void on_actionLogiktabelle_triggered();
-
-    void on_actionAuf_Google_Speichern_triggered();
+    void onRemoteSave();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

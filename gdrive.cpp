@@ -1,10 +1,10 @@
-#include "gdrive.h"
+/*#include "gdrive.h"
 #include "settings.h"
 #include <QtNetwork>
 #include <QDesktopServices>
 #include <iostream>
 
-QNetworkAccessManager manager;
+//QNetworkAccessManager manager;
 
 GDrive::GDrive(QObject *parent) : QObject(parent)
 {
@@ -186,3 +186,4 @@ QStringList GDrive::listFiles()
     }
     return ret;
 }
+*/

@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QSettings>
 #include <math.h>
+#include <QUrl>
 
 class Settings : public QObject
 {
@@ -22,29 +23,29 @@ public:
     Q_PROPERTY(QString refresh_token READ refresh_token WRITE setRefresh_token)
     Q_PROPERTY(double penWidth READ penWidth WRITE setPenWidth)
     Q_PROPERTY(int rasterSize READ rasterSize WRITE setRasterSize)
-    Q_PROPERTY(QString lastFile READ lastFile WRITE setLastFile)
+    Q_PROPERTY(QUrl lastFile READ lastFile WRITE setLastFile)
     Q_PROPERTY(QString license READ license WRITE setLicense)
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
     Q_PROPERTY(QColor background READ background WRITE setBackground)
     Q_PROPERTY(QList<QColor> colors READ colors WRITE setColors)
-    QStringList lastChanged();
-    void addLastChanged(QString what);
+    QList<QUrl> lastChanged();
+    void addLastChanged(QUrl what);
     explicit Settings(QObject *parent = 0);
     QString m_refresh_token;
     double m_gridSize;
     double m_penWidth;
     QColor m_background;
     QList<QColor> m_colors;
-    QString m_lastFile;
+    QUrl m_lastFile;
     QString m_license;
     bool m_defaultSimu;
     int m_rasterSize;
     double gridSize();
     double penWidth();
     int rasterSize();
-    QString lastFile();
+    QUrl lastFile();
     QString applicationDir();
     bool defaultSimu();
     static Settings* final();
@@ -60,12 +61,14 @@ void setApplicationDir(QString dir,bool session=false);
 void setLicense(QString lic,bool session=false);
 void setPenWidth(double wid,bool session=false);
 void setRasterSize(int size,bool session=false);
-void setLastFile(QString file,bool session=false);
+void setLastFile(QUrl file,bool session=false);
 void setGridSize(double size,bool session=false);
 void setDefaultSimu(bool on, bool session=false);
 void setGridType(GRID type,bool session=false);
 QString m_applicationDir;
 void clear();
+void setLua(QString key,QString value);
+QString getLua(QString key);
 signals:
 
 public slots:

@@ -9,21 +9,29 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "gdrive.h"
+#include "remotedrivelist.h"
 
+QMap<QAction*,RemoteDrive*> actionMap;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    for(auto act:ui->menuDatei->actions())
-        if(act->text()=="Auf Google Speichern...")
-            ui->menuDatei->removeAction(act);
+    QMenu* remSave=new QMenu;
+    RemoteDriveList rlist;
+    for(int i=0;i<rlist.drives.length();i++)
+    {
+        QAction* act=remSave->addAction(rlist.drives[i]->name);
+        connect(act,SIGNAL(triggered(bool)),this,SLOT(onRemoteSave()));
+        actionMap.insert(act,rlist.drives[i]);
+    }
+    ui->actionEntfernt_Speichern_Unter->setMenu(remSave);
     ui->digiView->bar=ui->statusBar;
     ui->simulation->setChecked(Settings::final()->defaultSimu());
     on_simulation_clicked();
     //ui->digiView->load(Settings::final()->lastFile());
-    setWindowTitle("QDigi "+ui->digiView->fileName);
+    setWindowTitle("QDigi "+ui->digiView->fileName.toDisplayString());
     connect(ui->digiView,SIGNAL(changed()),this,SLOT(changed()));
     BlockList list;
     QList<Block*> base;
@@ -61,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if(args.length()>1)
     {
         ui->digiView->load(QDir().absoluteFilePath(args[1]));
-        Settings::final()->addLastChanged(QDir().absoluteFilePath(args[1]));
+        Settings::final()->addLastChanged(QUrl::fromLocalFile(QDir().absoluteFilePath(args[1])));
     }
     ui->toolBox->setCurrentWidget(ui->page_base);
     isChanged=false;
@@ -81,7 +89,7 @@ void MainWindow::on_actionSpeichern_triggered()
         if(ui->digiView->save())
         {
             qDebug()<<"SAVING GOOD";
-            setWindowTitle("QDigi "+ui->digiView->fileName);
+            setWindowTitle("QDigi "+ui->digiView->fileName.toDisplayString());
             isChanged=false;
         }
     }
@@ -112,13 +120,13 @@ void MainWindow::on_actionSpeichern_Unter_triggered()
     if(fd.selectedFiles().length()>0)
     {
         QString fileName=fd.selectedFiles().first();
-        qDebug()<<fileName;
-        if(ui->digiView->save(fileName))
+        qDebug()<<"SAVING NOW";
+        if(ui->digiView->save(QUrl::fromLocalFile(fileName)))
         {
             qDebug()<<"SAVING GOOD";
             isChanged=false;
-            setWindowTitle("QDigi "+ui->digiView->fileName);
-            Settings::final()->addLastChanged(fileName);
+            setWindowTitle("QDigi "+ui->digiView->fileName.toDisplayString());
+            Settings::final()->addLastChanged(QUrl::fromLocalFile(fileName));
             updateLc();
         }
     }
@@ -133,9 +141,10 @@ void MainWindow::on_action_ffnen_triggered()
     if(!fileName.isEmpty())
     {
         isChanged=false;
-        ui->digiView->load(fileName);
-        Settings::final()->addLastChanged(fileName);
-        setWindowTitle("QDigi "+ui->digiView->fileName);
+        qDebug()<<"LOADING"<<QUrl::fromLocalFile(fileName);
+        ui->digiView->load(QUrl::fromLocalFile(fileName));
+        Settings::final()->addLastChanged(QUrl::fromLocalFile(fileName));
+        setWindowTitle("QDigi "+ui->digiView->fileName.toDisplayString());
         updateLc();
     }
 }
@@ -150,14 +159,14 @@ void MainWindow::on_simulation_clicked()
 
 void MainWindow::on_actionNeu_triggered()
 {
-    ui->digiView->load("");
+    ui->digiView->load(QUrl(""));
     setWindowTitle("QDigi");
 }
 
 void MainWindow::changed()
 {
     isChanged=true;
-    setWindowTitle("QDigi * "+ui->digiView->fileName);
+    setWindowTitle("QDigi * "+ui->digiView->fileName.toDisplayString());
 }
 
 void MainWindow::on_actionZoom_R_cksetzen_triggered()
@@ -225,6 +234,7 @@ void MainWindow::on_actionL_schen_triggered()
 void MainWindow::openRecent()
 {
     QAction* send=(QAction*)sender();
+    qDebug()<<"LAST"<<lastChangedActions[send];
     ui->digiView->load(lastChangedActions[send]);
 }
 
@@ -237,14 +247,14 @@ void MainWindow::updateLc()
     if(ui->actionZuletzt_ge_ndert->menu()!=NULL)
         ui->actionZuletzt_ge_ndert->menu()->deleteLater();
     QMenu *lastChanged=new QMenu;
-    QStringList lc2=Settings::final()->lastChanged();
-    QStringList lc;
+    QList<QUrl> lc2=Settings::final()->lastChanged();
+    QList<QUrl> lc;
     for(int i=0;i<lc2.length();i++)
         lc.prepend(lc2[i]);
     for(int i=0;i<fmin(lc.length(),10);i++)
     {
-        QString name=lc[i];
-        QAction* act=lastChanged->addAction(QDir(name).dirName());
+        QUrl name=lc[i];
+        QAction* act=lastChanged->addAction(name.fileName());
         lastChangedActions.insert(act,name);
         connect(act,SIGNAL(triggered()),this,SLOT(openRecent()));
     }
@@ -256,14 +266,9 @@ void MainWindow::on_actionLogiktabelle_triggered()
     ui->digiView->createTable();
 }
 
-void MainWindow::on_actionAuf_Google_Speichern_triggered()
+void MainWindow::onRemoteSave()
 {
-    QString fileName=QInputDialog::getText(NULL,"Dateiname","Dateiname");
-    if(ui->digiView->saveGoogle(fileName))
-    {
-        isChanged=false;
-        setWindowTitle("QDigi "+ui->digiView->fileName);
-        Settings::final()->addLastChanged(fileName);
-        updateLc();
-    }
+    QAction* send=(QAction*)sender();
+    RemoteDrive* drive=actionMap[send];
+    ui->digiView->save(drive->saveUrl());
 }

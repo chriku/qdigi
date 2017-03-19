@@ -9,7 +9,7 @@ class RemoteDriveList : public QObject
     Q_OBJECT
 public:
     explicit RemoteDriveList(QObject *parent = 0);
-
+    static QList<RemoteDrive*> drives;
 signals:
 
 public slots:

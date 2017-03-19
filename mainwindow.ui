@@ -180,6 +180,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_input">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>144</width>
+          <height>331</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>Eingabe</string>
         </attribute>
@@ -248,6 +256,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_output">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>144</width>
+          <height>331</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>Ausgaben</string>
         </attribute>
@@ -468,6 +484,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_flipflop">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>144</width>
+          <height>331</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>FlipFlops</string>
         </attribute>
@@ -632,7 +656,7 @@
     <addaction name="actionNeu"/>
     <addaction name="actionSpeichern"/>
     <addaction name="actionSpeichern_Unter"/>
-    <addaction name="actionAuf_Google_Speichern"/>
+    <addaction name="actionEntfernt_Speichern_Unter"/>
     <addaction name="actionAls_Bild_Speichern"/>
     <addaction name="action_ffnen"/>
     <addaction name="separator"/>
@@ -761,6 +785,11 @@
   <action name="actionAuf_Google_Speichern">
    <property name="text">
     <string>Auf Google Speichern...</string>
+   </property>
+  </action>
+  <action name="actionEntfernt_Speichern_Unter">
+   <property name="text">
+    <string>Entfernt Speichern Unter...</string>
    </property>
   </action>
  </widget>

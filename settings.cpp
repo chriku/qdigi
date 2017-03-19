@@ -18,13 +18,15 @@ Settings::Settings(QObject *parent) : QObject(parent)
     mainPath=dir.absoluteFilePath(".qdigi");
 #endif
     saveFile=new QSettings(QDir(mainPath).absoluteFilePath("settings.ini"),QSettings::IniFormat);
+    QString omp=mainPath;
     mainPath=saveFile->value("appDirPath",mainPath).toString();
-    qDebug()<<mainPath;
+    if(omp!=mainPath)
+        saveFile=new QSettings(QDir(mainPath).absoluteFilePath("settings.ini"),QSettings::IniFormat);
     m_gridSize=saveFile->value("gridSize",20).toInt();
     m_gridType=(GRID)saveFile->value("gridType",GRID_LINES).toInt();
     m_defaultSimu=saveFile->value("defaultSimu",false).toBool();
     m_applicationDir=saveFile->value("applicationDir",mainPath).toString();
-    m_lastFile=saveFile->value("lastFile","").toString();
+    m_lastFile=saveFile->value("lastFile","").toUrl();
     m_rasterSize=saveFile->value("rasterSize",5).toInt();
     m_penWidth=saveFile->value("penWidth",0.1).toDouble();
     m_license=saveFile->value("licenseKey","").toString();
@@ -49,7 +51,7 @@ double Settings::penWidth()
     return m_penWidth;
 }
 
-QString Settings::lastFile()
+QUrl Settings::lastFile()
 {
     return m_lastFile;
 }
@@ -135,7 +137,7 @@ void Settings::setDefaultSimu(bool on, bool session)
     m_defaultSimu=on;
 }
 
-void Settings::setLastFile(QString file, bool session)
+void Settings::setLastFile(QUrl file, bool session)
 {
     if(!session)
         saveFile->setValue("lastFile",file);
@@ -156,16 +158,20 @@ void Settings::clear()
     settings=NULL;
 }
 
-void Settings::addLastChanged(QString what)
+void Settings::addLastChanged(QUrl what)
 {
-    QStringList list=saveFile->value("lastChanged").toStringList();
+    QList<QVariant> list=saveFile->value("lastChanged").toList();
     list.append(what);
     saveFile->setValue("lastChanged",list);
 }
 
-QStringList Settings::lastChanged()
+QList<QUrl> Settings::lastChanged()
 {
-    return saveFile->value("lastChanged").toStringList();
+    QList<QVariant> vlist=saveFile->value("lastChanged").toList();
+    QList<QUrl> ulist;
+    for(int i=0;i<vlist.length();i++)
+        ulist.append(vlist[i].toUrl());
+    return ulist;
 }
 
 void Settings::setColors(QList<QColor> col, bool session)
@@ -193,4 +199,19 @@ void Settings::setLicense(QString lic, bool session)
 QString Settings::license()
 {
     return m_license;
+}
+
+void Settings::setLua(QString key, QString value)
+{
+    saveFile->beginGroup("lua");
+    saveFile->setValue(key,value);
+    saveFile->endGroup();
+}
+
+QString Settings::getLua(QString key)
+{
+    saveFile->beginGroup("lua");
+    QString value=saveFile->value(key).toString();
+    saveFile->endGroup();
+    return value;
 }

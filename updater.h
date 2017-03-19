@@ -14,6 +14,7 @@ QSplashScreen screen;
 void update();
 QNetworkAccessManager manager;
 static void registerReg();
+QString toPath(QString in);
 signals:
 
 public slots:

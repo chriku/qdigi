@@ -41,6 +41,14 @@ void Updater::update()
         if(error.error==error.NoError)
         {
             QJsonObject root=doc.object();
+            QJsonArray rm=root["rm"].toArray();
+            for(int i=0;i<rm.size();i++)
+            {
+                QString cur=toPath(rm.at(i).toString());
+                QFile file(cur);
+                if(file.exists())
+                    file.remove();
+            }
             QString nhash=root["app"].toString();
             QString fname=QApplication::applicationFilePath();
             if(fname.endsWith(".exe"))
@@ -82,15 +90,7 @@ void Updater::update()
             {
                 QJsonObject curFile=files[i].toObject();
                 QCryptographicHash hash(QCryptographicHash::Sha512);
-                QStringList parts=curFile["name"].toString().split('/');
-                QDir dir(Settings::final()->applicationDir());
-                for(int i=0;i<parts.length()-1;i++)
-                {
-                    if(!dir.entryList().contains(parts[i]))
-                        dir.mkdir(parts[i]);
-                    dir.cd(parts[i]);
-                }
-                QString name=dir.absoluteFilePath(parts.last());
+                QString name=toPath(curFile["name"].toString());
                 QFile file(name);
                 if(file.exists())
                 {
@@ -117,15 +117,7 @@ void Updater::update()
                 if(rep->error()==QNetworkReply::NoError)
                 {
                     QByteArray data=rep->readAll();
-                    QStringList parts=requestFiles[i].split('/');
-                    QDir dir(Settings::final()->applicationDir());
-                    for(int i=0;i<parts.length()-1;i++)
-                    {
-                        if(!dir.entryList().contains(parts[i]))
-                            dir.mkdir(parts[i]);
-                        dir.cd(parts[i]);
-                    }
-                    QString name=dir.absoluteFilePath(parts.last());
+                    QString name=toPath(requestFiles[i]);
                     QFile file(name);
                     file.open(QFile::WriteOnly|QFile::Truncate);
                     file.write(data);
@@ -173,4 +165,18 @@ void Updater::registerReg()
     system("qdigiFile.reg");
     file.remove();
 #endif
+}
+
+QString Updater::toPath(QString in)
+{
+    QStringList parts=in.split('/');
+    QDir dir(Settings::final()->applicationDir());
+    for(int i=0;i<parts.length()-1;i++)
+    {
+        if(!dir.entryList().contains(parts[i]))
+            dir.mkdir(parts[i]);
+        dir.cd(parts[i]);
+    }
+    QString name=dir.absoluteFilePath(parts.last());
+    return name;
 }

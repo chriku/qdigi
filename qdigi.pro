@@ -102,7 +102,12 @@ SOURCES += main.cpp\
     lua/unixdgram.c \
     lua/unixstream.c \
     lua/usocket.c \
-    lua/wsocket.c
+    lua/wsocket.c \
+    lualibcollection.cpp \
+    luahttp.cpp \
+    luasettings.cpp \
+    luadesktop.cpp \
+    luahttpserver.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -163,7 +168,12 @@ HEADERS  += mainwindow.h \
     lua/unixdgram.h \
     lua/unixstream.h \
     lua/usocket.h \
-    lua/wsocket.h
+    lua/wsocket.h \
+    lualibcollection.h \
+    luahttp.h \
+    luasettings.h \
+    luadesktop.h \
+    luahttpserver.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \

@@ -1,3 +1,4 @@
+#include "remotedrivelist.h"
 #include "gdrive.h"
 #include <QApplication>
 #include <QInputDialog>
@@ -534,103 +535,106 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
     update();
 }
 
-bool DigiView::save(QString where)
+bool DigiView::save(QUrl where)
 {
-    qDebug()<<"WHERE1"<<where;
     if(where.isEmpty())
         where=fileName;
-    qDebug()<<"WHERE2"<<where;
     if(where.isEmpty())
         return false;
     fileName=where;
-    if(!where.endsWith(".qdigi"))
-        where+=".qdigi";
+    QString w=where.toLocalFile();
+    if(!w.endsWith(".qdigi"))
+        w+=".qdigi";
     QJsonObject root=exportJSON();
-    int err=0;
-    QFile file(where);
-    file.open(QFile::WriteOnly|QFile::Truncate);
     QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
-    file.write(data);
-    file.close();
-    Settings::final()->setLastFile(where);
+    if(where.scheme()=="file")
+    {
+        int err=0;
+        QFile file(w);
+        file.open(QFile::WriteOnly|QFile::Truncate);
+        file.write(data);
+        file.close();
+        Settings::final()->setLastFile(fileName);
+    }
+    else
+    {
+        RemoteDriveList list;
+        for(int i=0;i<list.drives.length();i++){
+            if(list.drives[i]->prefix==where.scheme())
+            {
+                if(list.drives[i]->save(where,data))
+                {
+                    Settings::final()->setLastFile(fileName);
+                    return true;
+                }
+            }
+        }
+    }
+
     return true;
 }
 
-bool DigiView::saveGoogle(QString where)
-{
-    qDebug()<<"WHERE1"<<where;
-    if(where.isEmpty())
-        where=fileName;
-    qDebug()<<"WHERE2"<<where;
-    if(where.isEmpty())
-        return false;
-    fileName=where;
-    QJsonObject root=exportJSON();
-    QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
-    GDrive drive;
-    drive.uploadFile(fileName,data);
-    Settings::final()->setLastFile(where);
-    return true;
-}
-
-void DigiView::load(QString where)
+void DigiView::load(QUrl where)
 {
     lines.clear();
     for(int i=0;i<blocks.length();i++)
         blocks[i]->block->deleteLater();
     blocks.clear();
     vias.clear();
-    QFile file(where);
-    file.open(QFile::ReadOnly);
-    if(!file.isOpen())
-        return;
-    QByteArray header=file.read(4);
-    bool isZip=false;
-    if(header.at(0)==0x50)
-        if(header.at(1)==0x4B)
-            if(header.at(2)==0x03)
-                if(header.at(3)==0x04)
-                {
-                    isZip=true;
-                }
-    file.seek(0);
-    fileName=where;
-    Settings::final()->setLastFile(fileName);
-    if(!isZip)
+    if(where.scheme()=="file")
     {
-        loadJson(file.readAll());
-        file.close();
-    }
-    else
-    {
-        int err;
-        zip_t *arch=zip_fdopen(file.handle(),0,&err);
-        zip_file_t* vfile=zip_fopen(arch,"version.txt",0);
-        QByteArray version(128,0);
-        int len=zip_fread(vfile,version.data(),version.length());
-        version=version.left(len);
-        version=version.replace("\r","");
-        version=version.replace("\n","");
-        zip_fclose(vfile);
-        if(version=="0.1")
+        QFile file(where.toLocalFile());
+        file.open(QFile::ReadOnly);
+        if(!file.isOpen())
+            return;
+        QByteArray header=file.read(4);
+        bool isZip=false;
+        if(header.at(0)==0x50)
+            if(header.at(1)==0x4B)
+                if(header.at(2)==0x03)
+                    if(header.at(3)==0x04)
+                    {
+                        isZip=true;
+                    }
+        file.seek(0);
+        fileName=where;
+        Settings::final()->setLastFile(fileName.toString());
+        if(!isZip)
         {
-            QByteArray data;
-            zip_file_t* dfile=zip_fopen(arch,"data.json",0);
-            int len;
-            do {
-                QByteArray buf(1024,0);
-                len=zip_fread(dfile,buf.data(),buf.length());
-                buf=buf.left(len);
-                data+=buf;
-            }while(len>0);
-            loadJson(data);
+            loadJson(file.readAll());
+            file.close();
         }
         else
         {
-            QMessageBox::warning(NULL,"QDigi Fehler","Unbekanntes Dateiformat");
+            int err;
+            zip_t *arch=zip_fdopen(file.handle(),0,&err);
+            zip_file_t* vfile=zip_fopen(arch,"version.txt",0);
+            QByteArray version(128,0);
+            int len=zip_fread(vfile,version.data(),version.length());
+            version=version.left(len);
+            version=version.replace("\r","");
+            version=version.replace("\n","");
+            zip_fclose(vfile);
+            if(version=="0.1")
+            {
+                QByteArray data;
+                zip_file_t* dfile=zip_fopen(arch,"data.json",0);
+                int len;
+                do {
+                    QByteArray buf(1024,0);
+                    len=zip_fread(dfile,buf.data(),buf.length());
+                    buf=buf.left(len);
+                    data+=buf;
+                }while(len>0);
+                loadJson(data);
+            }
+            else
+            {
+                QMessageBox::warning(NULL,"QDigi Fehler","Unbekanntes Dateiformat");
+            }
+            zip_close(arch);
+            file.close();
         }
-        zip_close(arch);
-        file.close();
     }
 }
 

@@ -17,41 +17,6 @@ win32:LIBS += -lws2_32
 SOURCES += main.cpp\
         mainwindow.cpp \
     digiview.cpp \
-    lapi.c \
-    lauxlib.c \
-    lbaselib.c \
-    lbitlib.c \
-    lcode.c \
-    lcorolib.c \
-    lctype.c \
-    ldblib.c \
-    ldebug.c \
-    ldo.c \
-    ldump.c \
-    lfunc.c \
-    lgc.c \
-    linit.c \
-    liolib.c \
-    llex.c \
-    lmathlib.c \
-    lmem.c \
-    loadlib.c \
-    lobject.c \
-    lopcodes.c \
-    loslib.c \
-    lparser.c \
-    lstate.c \
-    lstring.c \
-    lstrlib.c \
-    ltable.c \
-    ltablib.c \
-    ltm.c \
-    lua.c \
-    luac.c \
-    lundump.c \
-    lutf8lib.c \
-    lvm.c \
-    lzio.c \
     block.cpp \
     dragview.cpp \
     blocklist.cpp \
@@ -81,38 +46,69 @@ SOURCES += main.cpp\
 #    auxiliar.c
     kvdiagram.cpp \
     gdrive.cpp \
-    filechoose.cpp
+    filechoose.cpp \
+    remotedrive.cpp \
+    remotedrivelist.cpp \
+    lua/auxiliar.c \
+    lua/buffer.c \
+    lua/compat.c \
+    lua/except.c \
+    lua/inet.c \
+    lua/io.c \
+    lua/lapi.c \
+    lua/lauxlib.c \
+    lua/lbaselib.c \
+    lua/lbitlib.c \
+    lua/lcode.c \
+    lua/lcorolib.c \
+    lua/lctype.c \
+    lua/ldblib.c \
+    lua/ldebug.c \
+    lua/ldo.c \
+    lua/ldump.c \
+    lua/lfunc.c \
+    lua/lgc.c \
+    lua/linit.c \
+    lua/liolib.c \
+    lua/llex.c \
+    lua/lmathlib.c \
+    lua/lmem.c \
+    lua/loadlib.c \
+    lua/lobject.c \
+    lua/lopcodes.c \
+    lua/loslib.c \
+    lua/lparser.c \
+    lua/lstate.c \
+    lua/lstring.c \
+    lua/lstrlib.c \
+    lua/ltable.c \
+    lua/ltablib.c \
+    lua/ltm.c \
+    lua/lua.c \
+    lua/luac.c \
+    lua/luasocket.c \
+    lua/lundump.c \
+    lua/lutf8lib.c \
+    lua/lvm.c \
+    lua/lzio.c \
+    lua/mime.c \
+    lua/options.c \
+    lua/select.c \
+    lua/serial.c \
+    lua/tcp.c \
+    lua/timeout.c \
+    lua/udp.c \
+    lua/unix.c \
+    lua/unixdgram.c \
+    lua/unixstream.c \
+    lua/usocket.c \
+    lua/wsocket.c
 
-
+QMAKE_INCDIR += ./lua
 
 
 HEADERS  += mainwindow.h \
     digiview.h \
-    lapi.h \
-    lauxlib.h \
-    lcode.h \
-    lctype.h \
-    ldebug.h \
-    ldo.h \
-    lfunc.h \
-    lgc.h \
-    llex.h \
-    llimits.h \
-    lmem.h \
-    lobject.h \
-    lopcodes.h \
-    lparser.h \
-    lprefix.h \
-    lstate.h \
-    lstring.h \
-    ltable.h \
-    ltm.h \
-    lua.h \
-    luaconf.h \
-    lualib.h \
-    lundump.h \
-    lvm.h \
-    lzio.h \
     block.h \
     dragview.h \
     blocklist.h \
@@ -120,30 +116,54 @@ HEADERS  += mainwindow.h \
     settingsdialog.h \
     updater.h \
     painter.h \
-    wsocket.h \
-    usocket.h \
-    unixstream.h \
-    unixdgram.h \
-    unix.h \
-    udp.h \
-    timeout.h \
-    tcp.h \
-    socket.h \
-    select.h \
-    pierror.h \
-    options.h \
-    mime.h \
-    luasocket.h \
-    io.h \
-    inet.h \
-    except.h \
-    compat.h \
-    buffer.h \
-    auxiliar.h \
     passworddialog.h \
     kvdiagram.h \
     gdrive.h \
-    filechoose.h
+    filechoose.h \
+    remotedrive.h \
+    remotedrivelist.h \
+    lua/auxiliar.h \
+    lua/buffer.h \
+    lua/compat.h \
+    lua/except.h \
+    lua/inet.h \
+    lua/io.h \
+    lua/lapi.h \
+    lua/lauxlib.h \
+    lua/lcode.h \
+    lua/lctype.h \
+    lua/ldebug.h \
+    lua/ldo.h \
+    lua/lfunc.h \
+    lua/lgc.h \
+    lua/llex.h \
+    lua/llimits.h \
+    lua/lmem.h \
+    lua/lobject.h \
+    lua/lopcodes.h \
+    lua/lparser.h \
+    lua/lprefix.h \
+    lua/lstate.h \
+    lua/lstring.h \
+    lua/ltable.h \
+    lua/ltm.h \
+    lua/lua.h \
+    lua/luaconf.h \
+    lua/lualib.h \
+    lua/luasocket.h \
+    lua/lundump.h \
+    lua/lvm.h \
+    lua/lzio.h \
+    lua/mime.h \
+    lua/socket.h \
+    lua/tcp.h \
+    lua/timeout.h \
+    lua/udp.h \
+    lua/unix.h \
+    lua/unixdgram.h \
+    lua/unixstream.h \
+    lua/usocket.h \
+    lua/wsocket.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \

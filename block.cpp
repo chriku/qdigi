@@ -169,17 +169,32 @@ void Block::keyPress(int pos) {
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 void Block::keyPressNorm(QString key) {
+    qDebug()<<"Sending Key to"<<name;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
+    qDebug()<<"1"<<name<<key;
     lua_setglobal(L,"state");
+    qDebug()<<"2"<<name<<key;
     lua_getglobal(L, "keyPress");
+    qDebug()<<"3"<<name<<key;
     if (!lua_isnil(L, -1)) {
+        qDebug()<<"4"<<name<<key;
         lua_pushstring(L, key.toUtf8().data());
+        qDebug()<<"5"<<name<<key;
         if (lua_pcall(L, 1, 0, 0) == LUA_OK) {
+            qDebug()<<"6"<<name<<key;
+            qDebug()<<"Successful send"<<key;
+            qDebug()<<"7"<<name<<key;
             lua_getglobal(L,"state");
+            qDebug()<<"8"<<name<<key;
             lua_rawseti(L,LUA_REGISTRYINDEX,state);
+            qDebug()<<"9"<<name<<key;
         } else
             qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
+        qDebug()<<"10"<<name<<key;
     }
+    else
+        qDebug()<<"Doesn't handle Key Press"<<name;
+    qDebug()<<"11"<<name<<key;
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }

@@ -14,6 +14,7 @@ Updater::Updater(QObject *parent) : QObject(parent),
 
 void Updater::update()
 {
+    QDateTime startTime=QDateTime::currentDateTime();
     if(Settings::final()->license().isEmpty())
         return;
     QFile rfile(QApplication::applicationFilePath()+".old");
@@ -28,6 +29,7 @@ void Updater::update()
 #endif
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
     req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+    qDebug()<<"1"<<QDateTime::currentDateTime().msecsTo(startTime);
     QNetworkReply*rep=manager.get(req);
     QEventLoop loop;
     connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
@@ -105,7 +107,10 @@ void Updater::update()
                     requestFiles.append(curFile["name"].toString());
             }
             if(requestFiles.length()==0)
+            {
+                qDebug()<<"3"<<QDateTime::currentDateTime().msecsTo(startTime);
                 return;
+            }
             screen.showMessage(""+QString::number(requestFiles.length())+" Dateien werden heruntergeladen",Qt::AlignCenter);
             for(int i=0;i<requestFiles.length();i++)
             {
@@ -127,6 +132,7 @@ void Updater::update()
                 else
                     qDebug()<<rep->errorString();
                 screen.showMessage(QString::number(i+1)+" von "+QString::number(requestFiles.length())+" Dateien sind heruntergeladen",Qt::AlignCenter);
+                qDebug()<<"4"<<QDateTime::currentDateTime().msecsTo(startTime);
             }
         }else
             screen.showMessage("Internal Error",Qt::AlignCenter);

@@ -50,11 +50,11 @@ SOURCES += main.cpp\
     remotedrive.cpp \
     remotedrivelist.cpp \
     lua/auxiliar.c \
-    lua/buffer.c \
+    #lua/buffer.c \
     lua/compat.c \
     lua/except.c \
-    lua/inet.c \
-    lua/io.c \
+    #lua/inet.c \
+    #lua/io.c \
     lua/lapi.c \
     lua/lauxlib.c \
     lua/lbaselib.c \
@@ -86,23 +86,23 @@ SOURCES += main.cpp\
     lua/ltm.c \
     lua/lua.c \
     lua/luac.c \
-    lua/luasocket.c \
+    #lua/luasocket.c \
     lua/lundump.c \
     lua/lutf8lib.c \
     lua/lvm.c \
     lua/lzio.c \
-    lua/mime.c \
-    lua/options.c \
-    lua/select.c \
-    lua/serial.c \
-    lua/tcp.c \
-    lua/timeout.c \
-    lua/udp.c \
-    lua/unix.c \
-    lua/unixdgram.c \
-    lua/unixstream.c \
-    lua/usocket.c \
-    lua/wsocket.c \
+    #lua/mime.c \
+    #lua/options.c \
+    #lua/select.c \
+    #lua/serial.c \
+    #lua/tcp.c \
+    #lua/timeout.c \
+    #lua/udp.c \
+    #lua/unix.c \
+    #lua/unixdgram.c \
+    #lua/unixstream.c \
+    #lua/usocket.c \
+    #lua/wsocket.c \
     lualibcollection.cpp \
     luahttp.cpp \
     luasettings.cpp \
@@ -128,10 +128,10 @@ HEADERS  += mainwindow.h \
     remotedrive.h \
     remotedrivelist.h \
     lua/auxiliar.h \
-    lua/buffer.h \
+    #lua/buffer.h \
     lua/compat.h \
     lua/except.h \
-    lua/inet.h \
+    #lua/inet.h \
     lua/io.h \
     lua/lapi.h \
     lua/lauxlib.h \
@@ -155,20 +155,20 @@ HEADERS  += mainwindow.h \
     lua/lua.h \
     lua/luaconf.h \
     lua/lualib.h \
-    lua/luasocket.h \
+    #lua/luasocket.h \
     lua/lundump.h \
     lua/lvm.h \
     lua/lzio.h \
     lua/mime.h \
-    lua/socket.h \
-    lua/tcp.h \
-    lua/timeout.h \
-    lua/udp.h \
-    lua/unix.h \
-    lua/unixdgram.h \
-    lua/unixstream.h \
-    lua/usocket.h \
-    lua/wsocket.h \
+    #lua/socket.h \
+    #lua/tcp.h \
+    #lua/timeout.h \
+    #lua/udp.h \
+    #lua/unix.h \
+    #lua/unixdgram.h \
+    #lua/unixstream.h \
+    #lua/usocket.h \
+    #lua/wsocket.h \
     lualibcollection.h \
     luahttp.h \
     luasettings.h \

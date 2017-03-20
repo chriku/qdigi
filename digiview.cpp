@@ -27,6 +27,7 @@ int lastSel=-1;
 DigiView::DigiView(QWidget *parent) : QWidget(parent)
 {
     setFocus();
+    lastContext=QTime::currentTime();
     startPoint=QPoint(-1,-1);
     curPoint=QPoint(-1,-1);
     BlockList list;
@@ -143,20 +144,6 @@ void DigiView::paintEvent(QPaintEvent* event)
         rect.setRight(rect.right()*Settings::final()->gridSize());
         painter.drawRect(rect);
     }
-    if(lastSel>=0)
-    {
-        QPen pen(Qt::gray);
-        QBrush brush(Qt::gray);
-        painter.setPen(pen);
-        brush.setStyle(Qt::Dense6Pattern);
-        painter.setBrush(brush);
-        QRectF rect=blocks[lastSel]->rect();
-        rect.setTop(rect.top()*(Settings::final()->gridSize()));
-        rect.setLeft(rect.left()*(Settings::final()->gridSize()));
-        rect.setBottom(rect.bottom()*Settings::final()->gridSize());
-        rect.setRight(rect.right()*Settings::final()->gridSize());
-        painter.drawRect(rect);
-    }
     for(int i=0;i<selectedLines.length();i++)
     {
         QRect rect(lines[selectedLines[i]].line.p1()*Settings::final()->gridSize(),lines[selectedLines[i]].line.p2()*Settings::final()->gridSize());
@@ -175,6 +162,20 @@ void DigiView::paintEvent(QPaintEvent* event)
                 QRect rect(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
                 painter.drawRect(rect);
             }
+    if(lastSel>=0)
+    {
+        QPen pen(Qt::gray);
+        QBrush brush(Qt::gray);
+        painter.setPen(pen);
+        brush.setStyle(Qt::Dense6Pattern);
+        painter.setBrush(brush);
+        QRectF rect=blocks[lastSel]->rect();
+        rect.setTop(rect.top()*(Settings::final()->gridSize()));
+        rect.setLeft(rect.left()*(Settings::final()->gridSize()));
+        rect.setBottom(rect.bottom()*Settings::final()->gridSize());
+        rect.setRight(rect.right()*Settings::final()->gridSize());
+        painter.drawRect(rect);
+    }
     painter.setBrush(Qt::NoBrush);
     pen.setColor(Qt::black);
     painter.setPen(pen);
@@ -339,6 +340,7 @@ void DigiView::dropEvent(QDropEvent *event)
 
 void DigiView::mousePressEvent(QMouseEvent *event)
 {
+    setFocus();
     if(dragGate!="")
         if(dragMany)
         {
@@ -475,7 +477,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
         if(dragMany)
         {
         }
-    qDebug()<<"EVENT";
+    qDebug()<<"EVENTR";
     QWidget::mouseReleaseEvent(event);
     if(event->button()==Qt::LeftButton)
     {
@@ -601,8 +603,14 @@ void DigiView::load(QUrl where)
         QFile file(where.toLocalFile());
         file.open(QFile::ReadOnly);
         if(!file.isOpen())
+        {
+            qDebug()<<"Cannot Open";
             return;
+        }
+        else
+            qDebug()<<"Have Open"<<file.fileName();
         QByteArray header=file.read(4);
+        qDebug()<<file.size();
         bool isZip=false;
         if(header.at(0)==0x50)
             if(header.at(1)==0x4B)
@@ -616,7 +624,9 @@ void DigiView::load(QUrl where)
         Settings::final()->setLastFile(fileName.toString());
         if(!isZip)
         {
-            loadJson(file.readAll());
+            QByteArray data=file.readAll();
+            loadJson(data);
+            qDebug()<<"Data is"<<data;
             file.close();
         }
         else
@@ -662,7 +672,6 @@ QPoint DigiView::toGrid(QPoint in)
 
 void DigiView::timeout()
 {
-    setFocus();
 
     error=false;
     QList<QList<bool> > done;
@@ -778,7 +787,9 @@ void DigiView::timeout()
 void DigiView::contextMenuEvent(QContextMenuEvent *event)
 {
     event->accept();
-    if(lastContext.msecsTo(QTime::currentTime())<10)
+    int lastTime=lastContext.msecsTo(QTime::currentTime());
+    qDebug()<<lastTime;
+    if((lastTime<10)&&(lastTime>=0))
         return;
     int block=-1;
     int pblock=-1;
@@ -1589,6 +1600,7 @@ void DigiView::clearSelection()
 
 void DigiView::deleteSelection()
 {
+    lastSel=-1;
     for(int i=0;i<selectedBlocks.length();i++)
         blocks[selectedBlocks[i]]->block->deleteLater();
     for(int i=0;i<selectedBlocks.length();i++)
@@ -1795,6 +1807,8 @@ QList<int> DigiView::linesAtPoint(QPoint point)
 
 void DigiView::keyPressEvent(QKeyEvent *event)
 {
+    setFocus();
+    qDebug()<<"KEY EVENT"<<event->text();
     if(event->modifiers()==0)
     {
         switch(event->key())
@@ -1853,6 +1867,7 @@ void DigiView::keyPressEvent(QKeyEvent *event)
         }
         event->accept();
     }
+    update();
 }
 
 void DigiView::largeIn(int o)
@@ -1866,10 +1881,12 @@ void DigiView::largeIn(int o)
 
 void DigiView::emitKey(QString key)
 {
+    qDebug()<<"Emitting Key";
     if(lastSel>=0)
-        {
-            blocks[lastSel]->block->keyPressNorm(key);
-        }
+    {
+        qDebug()<<"Last Sel is "<<blocks[lastSel]->block->name;
+        blocks[lastSel]->block->keyPressNorm(key);
+    }
 }
 
 QJsonObject DigiView::exportJSON()

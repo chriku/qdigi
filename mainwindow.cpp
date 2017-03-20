@@ -272,3 +272,10 @@ void MainWindow::onRemoteSave()
     RemoteDrive* drive=actionMap[send];
     ui->digiView->save(drive->saveUrl());
 }
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    qDebug()<<"REDIRECT"<<event->key();
+    ui->digiView->keyPressEvent(event);
+    update();
+}

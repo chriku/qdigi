@@ -31,9 +31,12 @@ context["Reset"]=function()
   state=0
 end
 function keyPress(key)
+  print("KEY PRESSED",key)
   if key=="+" then
+    print("Plus KEY PRESSED")
     state=(state+1)%16
   elseif key=="-" then
+    print("Minus KEY PRESSED")
     state=(state+15)%16
   end
 end

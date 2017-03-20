@@ -18,6 +18,7 @@ bool isChanged;
 QMap<QAction*,QUrl> lastChangedActions;
 
 private slots:
+void keyPressEvent(QKeyEvent* event);
     void on_actionSpeichern_triggered();
 
     void on_actionEinstellungen_triggered();

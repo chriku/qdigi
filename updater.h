@@ -18,6 +18,7 @@ QString toPath(QString in);
 signals:
 
 public slots:
+void authenticationRequired(QNetworkProxy proxy, QAuthenticator* auth);
 };
 
 #endif // UPDATER_H

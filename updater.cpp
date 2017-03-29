@@ -8,6 +8,7 @@
 Updater::Updater(QObject *parent) : QObject(parent),
     screen(QPixmap(":/splash.png"))
 {
+    connect(&manager,SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),this,SLOT(authenticationRequired(QNetworkProxy,QAuthenticator*)));
     screen.setMask(QBitmap(":/mask.png"));
     screen.show();
 }
@@ -185,4 +186,22 @@ QString Updater::toPath(QString in)
     }
     QString name=dir.absoluteFilePath(parts.last());
     return name;
+}
+
+void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
+{
+    qDebug()<<"PROXY CAPA"<<proxy.capabilities();
+    qDebug()<<"PROXY HOSTNAME"<<proxy.hostName();
+    qDebug()<<"PROXY CACHING"<<proxy.isCachingProxy();
+    qDebug()<<"PROXY TRANSPARENT"<<proxy.isTransparentProxy();
+    qDebug()<<"PROXY PASSWORD"<<proxy.password();
+    qDebug()<<"PROXY USER"<<proxy.user();
+    qDebug()<<"PROXY PORT"<<proxy.port();
+    for(auto head:proxy.rawHeaderList())
+    qDebug()<<"PROXY HEADER"<<head<<" is "<<proxy.rawHeader(head);
+    qDebug()<<"PROXY TYPE"<<proxy.type();
+    QSettings saved(QDir(QApplication::applicationDirPath()).absoluteFilePath("auth.ini"));
+    auth->setPassword(saved.value("password").toString());
+    auth->setUser(saved.value("username").toString());
+    auth->setRealm(saved.value("realm").toString());
 }

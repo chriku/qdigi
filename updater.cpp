@@ -4,6 +4,9 @@
 #include <QDir>
 #include <QApplication>
 #include "settings.h"
+#include <QInputDialog>
+
+extern QNetworkAccessManager manager;
 
 Updater::Updater(QObject *parent) : QObject(parent),
     screen(QPixmap(":/splash.png"))
@@ -190,18 +193,14 @@ QString Updater::toPath(QString in)
 
 void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 {
-    qDebug()<<"PROXY CAPA"<<proxy.capabilities();
-    qDebug()<<"PROXY HOSTNAME"<<proxy.hostName();
-    qDebug()<<"PROXY CACHING"<<proxy.isCachingProxy();
-    qDebug()<<"PROXY TRANSPARENT"<<proxy.isTransparentProxy();
-    qDebug()<<"PROXY PASSWORD"<<proxy.password();
-    qDebug()<<"PROXY USER"<<proxy.user();
-    qDebug()<<"PROXY PORT"<<proxy.port();
-    for(auto head:proxy.rawHeaderList())
-    qDebug()<<"PROXY HEADER"<<head<<" is "<<proxy.rawHeader(head);
-    qDebug()<<"PROXY TYPE"<<proxy.type();
-    QSettings saved(QDir(QApplication::applicationDirPath()).absoluteFilePath("auth.ini"));
-    auth->setPassword(saved.value("password").toString());
-    auth->setUser(saved.value("username").toString());
-    auth->setRealm(saved.value("realm").toString());
+    *auth=QAuthenticator();
+    bool ok;
+    QString username=QInputDialog::getText(NULL,"Login","Username",QLineEdit::Normal,"",&ok);
+    if(!ok)
+        return;
+    QString password=QInputDialog::getText(NULL,"Login","Passwort",QLineEdit::Password,"",&ok);
+    if(!ok)
+        return;
+    auth->setUser(username);
+    auth->setPassword(password);
 }

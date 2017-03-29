@@ -1,7 +1,7 @@
 #include "luahttp.h"
 #include <QtNetwork>
 
-QNetworkAccessManager manager;
+extern QNetworkAccessManager manager;
 
 LuaHttp::LuaHttp(QObject *parent) : QObject(parent)
 {

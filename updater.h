@@ -12,7 +12,6 @@ public:
     explicit Updater(QObject *parent = 0);
 QSplashScreen screen;
 void update();
-QNetworkAccessManager manager;
 static void registerReg();
 QString toPath(QString in);
 signals:

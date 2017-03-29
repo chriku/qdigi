@@ -7,6 +7,7 @@
 #include "kvdiagram.h"
 #include "settings.h"
 #include "gdrive.h"
+QNetworkAccessManager manager;
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -89,7 +90,6 @@ int main(int argc, char *argv[])
     }
         #*/
     a.exec();
-    QNetworkAccessManager manager;
     QNetworkRequest req;
     QUrlQuery query;
     if(1==1)

@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList args=QApplication::arguments();
     if(args.length()>1)
     {
-        ui->digiView->load(QDir().absoluteFilePath(args[1]));
+        ui->digiView->load(QUrl::fromLocalFile(QDir().absoluteFilePath(args[1])));
         Settings::final()->addLastChanged(QUrl::fromLocalFile(QDir().absoluteFilePath(args[1])));
     }
     ui->toolBox->setCurrentWidget(ui->page_base);

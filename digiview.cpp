@@ -147,6 +147,7 @@ void DigiView::paintEvent(QPaintEvent* event)
     for(int i=0;i<selectedLines.length();i++)
     {
         QRect rect(lines[selectedLines[i]].line.p1()*Settings::final()->gridSize(),lines[selectedLines[i]].line.p2()*Settings::final()->gridSize());
+        rect=rect.normalized();
         rect.setWidth(fmax(1,rect.width()));
         rect.setHeight(fmax(1,rect.height()));
         rect.setX(rect.x()-4);
@@ -375,7 +376,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         }
     dragged=false;
     QWidget::mousePressEvent(event);
-    if(event->button()==Qt::LeftButton)
+    if((event->button()==Qt::LeftButton)&&(event->modifiers()==Qt::NoModifier))
     {
         bool clear=true;
         startPoint=toGrid(event->pos());
@@ -427,6 +428,10 @@ void DigiView::mousePressEvent(QMouseEvent *event)
                 }
             }
         }
+    }
+    if((event->button()==Qt::LeftButton)&&(event->modifiers()==Qt::CTRL))
+    {
+
     }
     update();
 }
@@ -587,7 +592,6 @@ bool DigiView::save(QUrl where)
             }
         }
     }
-
     return true;
 }
 

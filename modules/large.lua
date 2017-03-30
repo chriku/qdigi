@@ -40,10 +40,14 @@ function keyPress(key)
     end
   end
   if key=="+" then
-    stat=stat+1
-    print("KEY PLUS")
-  else
-    print("KEY",key)
+    if stat<(2^16) then
+      stat=stat+1
+    end
+  end
+  if key=="-" then
+    if stat>0 then
+      stat=stat-1
+    end
   end
   for i=1,16 do
     state[i]=(stat&(1<<(i-1)))>0

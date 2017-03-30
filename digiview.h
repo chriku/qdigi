@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPaintEvent>
 #include "blocklist.h"
+#include "impulsedialog.h"
 #include <QTimer>
 #include <QPicture>
 #include <QTime>
@@ -32,6 +33,7 @@ class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    ImpulseDialog dialog;
     bool error;
     QList<int> linesAtPoint(QPoint point);
     QList<QPair<QColor,QString> > loadColorProfile();
@@ -39,6 +41,8 @@ public:
     QList<int> selectedBlocks;
     QList<int> selectedLines;
     QList<int> selectedTexts;
+    bool recording;
+    int recorder;
     void clearSelection();
     void deleteSelection();
     QUrl fileName;

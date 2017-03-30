@@ -20,5 +20,5 @@ if os.execute("sudo ./build") then
   message="Neues Update:\n"..U:read("*a")
   U:close()
   print(socket.request("https://api.telegram.org/bot324897373:AAGKPfQHDUqWPIE7EyT_ScgeCLfU2iaWvHg/sendMessage?chat_id="..chat_id.."&text="..urlencode(message)))
-  os.execute("rm -rf win;")
+  os.execute("rm -rf win qdigi")
 end

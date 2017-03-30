@@ -32,6 +32,23 @@ function onkey(pos)
     state[pos]=not state[pos]
   end
 end
+function keyPress(key)
+  stat=0
+  for i=1,16 do
+    if state[i] then
+      stat=stat|(1<<(i-1))
+    end
+  end
+  if key=="+" then
+    stat=stat+1
+    print("KEY PLUS")
+  else
+    print("KEY",key)
+  end
+  for i=1,16 do
+    state[i]=(stat&(1<<(i-1)))>0
+  end
+end
 function getState(pin)
   return state[pin]
 end

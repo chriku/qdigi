@@ -6,6 +6,7 @@ ImpulseDialog::ImpulseDialog(QWidget *parent) :
     ui(new Ui::ImpulseDialog)
 {
     ui->setupUi(this);
+    widget=ui->widget;
 }
 
 ImpulseDialog::~ImpulseDialog()

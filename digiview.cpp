@@ -1,3 +1,4 @@
+#include "impulsedialog.h"
 #include "remotedrivelist.h"
 #include "gdrive.h"
 #include <QApplication>
@@ -26,6 +27,7 @@ int lastSel=-1;
 
 DigiView::DigiView(QWidget *parent) : QWidget(parent)
 {
+    recording=false;
     setFocus();
     lastContext=QTime::currentTime();
     startPoint=QPoint(-1,-1);
@@ -161,6 +163,7 @@ void DigiView::paintEvent(QPaintEvent* event)
             if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
             {
                 QRect rect(startPoint*Settings::final()->gridSize(),curPoint*Settings::final()->gridSize());
+                rect.normalized();
                 painter.drawRect(rect);
             }
     if(lastSel>=0)
@@ -431,7 +434,49 @@ void DigiView::mousePressEvent(QMouseEvent *event)
     }
     if((event->button()==Qt::LeftButton)&&(event->modifiers()==Qt::CTRL))
     {
-
+        QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
+        int block=-1;
+        for(int i=0;i<blocks.length();i++)
+            if(QRectF(blocks[i]->rect()).contains(pf))
+                block=i;
+        if(block>=0)
+        {
+            if(selectedBlocks.contains(block))
+                selectedBlocks.removeAll(block);
+            else
+                selectedBlocks.append(block);
+        }
+        QPoint p=toGrid(event->pos());
+        int line=-1;
+        for(int i=0;i<lines.length();i++)
+            if(onLine(lines[i].line,p))
+            {
+                line=i;
+            }
+        if(line>=0)
+        {
+            if(selectedLines.contains(line))
+                selectedLines.removeAll(line);
+            else
+                selectedLines.append(line);
+        }
+        int text=-1;
+        for(int i=0;i<texts.length();i++)
+        {
+            text_t cur=texts[i];
+            QRectF rect(cur.pos.x(),cur.pos.y()-1.0,cur.len,1.0);
+            if(rect.contains(pf))
+            {
+                text=i;
+            }
+        }
+        if(text>=0)
+        {
+            if(selectedTexts.contains(text))
+                selectedTexts.removeAll(text);
+            else
+                selectedTexts.append(text);
+        }
     }
     update();
 }
@@ -449,7 +494,7 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
     if(!event->buttons())
         return;
     QWidget::mouseMoveEvent(event);
-    if(event->buttons()&Qt::LeftButton)
+    if((event->buttons()==Qt::LeftButton)&&(event->modifiers()==Qt::NoModifier))
     {
         curPoint=toGrid(event->pos());
         if(drag)
@@ -484,7 +529,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
         }
     qDebug()<<"EVENTR";
     QWidget::mouseReleaseEvent(event);
-    if(event->button()==Qt::LeftButton)
+    if((event->button()==Qt::LeftButton)&&(event->modifiers()==Qt::NoModifier))
     {
         QPointF pf=QPointF(event->pos())/Settings::final()->gridSize();
         //clearSelection();
@@ -786,6 +831,25 @@ void DigiView::timeout()
         for(int i=0;i<offen.length();i++)
             blocks[offen[i].first]->block->pins[offen[i].second].state=2;
     }
+    if(recording==true)
+    {
+        for(int i=0;i<blocks.length();i++)
+        {
+            if(blocks[i]->block->name=="OUT")
+            {
+                dialog.widget->pushValue(i,blocks[i]->block->pins.first().state);
+            }
+        }
+        for(int i=0;i<blocks[recorder]->block->pins.length();i++)
+        {
+            QPoint p=blocks[recorder]->block->pins[i].pos();
+            if(getNet(QLine(p,p)).length()>0)
+            {
+                dialog.widget->pushValue(-1-i,blocks[recorder]->block->getState(i));
+            }
+        }
+        dialog.widget->nextField();
+    }
     update();
 }
 
@@ -927,7 +991,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         }
         if(cnt>0)
             menu.addSeparator();
-        if(blocks[block]->block->checkable)
+        if(blocks[block]->block->name=="Large-IN")
         {
             impulseBlockAct=menu.addAction("Impulsdiagramm erstellen");
         }
@@ -1039,6 +1103,12 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 blocks.removeAt(block);
                 emit changed();
                 clearSelection();
+            }
+            if(act==impulseBlockAct)
+            {
+                dialog.show();
+                recording=true;
+                recorder=block;
             }
             for(int i=0;i<alt.length();i++)
                 if(altAction[i]==act)

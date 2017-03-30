@@ -975,6 +975,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QAction* addTextAct=NULL;
     QMap<QAction*,int> blockDefAct;
     QMap<QAction*,QColor> setTextColorAction;
+    QMap<QAction*,QColor> setSelectionColorAction;
     QMap<QAction*,QColor> setLineColorAction;
     QMap<QAction*,QColor> setBlockColorAction;
     QList<QAction*> altAction;
@@ -1005,6 +1006,15 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     if(selectedBlocks.length()>0)
     {
         delSelAct=menu.addAction("Auswahl löschen");
+        QList<QPair<QColor,QString> > colors=loadColorProfile();
+        QMenu* cm=menu.addMenu("Auswahlfarbe ändern");
+        for(int i=0;i<colors.length();i++)
+        {
+            QPixmap map(24,24);
+            map.fill(colors[i].first);
+            QAction* act=cm->addAction(QIcon(map),colors[i].second);
+            setSelectionColorAction.insert(act,colors[i].first);
+        }
         ok=true;
     }
     addTextAct=menu.addAction("Text hinzufügen");
@@ -1128,6 +1138,18 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             {
                 lastSel=-1;
                 deleteSelection();
+            }
+            if(setSelectionColorAction.contains(act))
+            {
+                QColor c=setSelectionColorAction[act];
+                for(auto text:selectedTexts)
+                    texts[text].color=c;
+                for(auto block:selectedBlocks)
+                    blocks[block]->color=c;
+                for(auto line:selectedLines)
+                    lines[line].color=c;
+                emit changed();
+                clearSelection();
             }
         }
         if(act==addTextAct)

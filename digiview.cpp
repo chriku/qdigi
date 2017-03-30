@@ -602,6 +602,7 @@ void DigiView::load(QUrl where)
         blocks[i]->block->deleteLater();
     blocks.clear();
     vias.clear();
+    texts.clear();
     if(where.scheme()=="file")
     {
         QFile file(where.toLocalFile());
@@ -1492,14 +1493,14 @@ void DigiView::zoomOut()
 QImage DigiView::exportImage()
 {
     double grid=Settings::final()->gridSize();
-    Settings::final()->setGridSize(10);
+    Settings::final()->setGridSize(100);
     QPicture pic=exportPicture();
-    QImage ret((pic.boundingRect().size()*10)+QSize(20,20),QImage::Format_ARGB32);
+    QImage ret((pic.boundingRect().size())+QSize(200,200),QImage::Format_ARGB32);
     ret.fill(Qt::transparent);
     QPainter painter(&ret);
-    painter.setWorldTransform(QTransform().translate(-pic.boundingRect().topLeft().x()*10,-pic.boundingRect().topLeft().y()*10));
-    painter.scale(10,10);
-    painter.drawPicture(1,1,pic);
+    painter.setWorldTransform(QTransform().translate(-pic.boundingRect().topLeft().x(),-pic.boundingRect().topLeft().y()));
+    //painter.scale(10,10);
+    painter.drawPicture(100,100,pic);
     painter.end();
     Settings::final()->setGridSize(grid);
     return ret;
@@ -1518,6 +1519,17 @@ QPicture DigiView::exportPicture()
         line.setColor(lines[i].color);
         painter.setPen(line);
         painter.drawLine(lines[i].line.p1()*Settings::final()->gridSize(),lines[i].line.p2()*Settings::final()->gridSize());
+    }
+    for(int i=0;i<texts.length();i++)
+    {
+        QFont font("Arial");
+        font.setPixelSize(Settings::final()->gridSize());
+        painter.setFont(font);
+        text_t cur=texts[i];
+        line.setColor(texts[i].color);
+        painter.setPen(line);
+        QRect rect((cur.pos.x()*Settings::final()->gridSize()),(cur.pos.y()*Settings::final()->gridSize())-Settings::final()->gridSize(),texts[i].len*Settings::final()->gridSize(),Settings::final()->gridSize());
+        painter.drawText(rect,Qt::AlignBottom|Qt::AlignLeft,cur.text);
     }
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::black);

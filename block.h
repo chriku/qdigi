@@ -37,25 +37,25 @@ public:
     void pushGlobal(lua_State*L);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
     QString category;
-QPicture drawBlock(QColor color,bool plain=false);
-QString name;
-int width;
-int height;
-QString fileName;
-Block* clone();
-void onclick(QPointF where);
-void onpress(QPointF where);
-void onrelease(QPointF where);
-void execContext(int idx);
-bool getState(int pin);
-static void init(Block* blk);
-~Block();
-QFileSystemWatcher watcher;
+    QPicture drawBlock(QColor color,bool plain=false);
+    QString name;
+    int width;
+    int height;
+    QString fileName;
+    Block* clone();
+    void onclick(QPointF where);
+    void onpress(QPointF where);
+    void onrelease(QPointF where);
+    void execContext(int idx);
+    bool getState(int pin);
+    static void init(Block* blk);
+    ~Block();
+    QFileSystemWatcher watcher;
 
 signals:
 
 public slots:
-void fileChanged(const QString &path);
+    void fileChanged(const QString &path);
 };
 class block_t {
 public:

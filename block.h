@@ -20,6 +20,7 @@ class Block : public QObject
 {
     Q_OBJECT
 public:
+    bool valid;
     bool useFake;
     QMap<QString,int> contextMenu;
     QList<bool> fake;

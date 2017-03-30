@@ -7,24 +7,9 @@
 #include <QInputDialog>
 
 extern QNetworkAccessManager manager;
-
-Updater::Updater(QObject *parent) : QObject(parent),
-    screen(QPixmap(":/splash.png"))
+QNetworkReply*grep;
+Updater::Updater(QObject *parent) : QObject(parent)
 {
-    connect(&manager,SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),this,SLOT(authenticationRequired(QNetworkProxy,QAuthenticator*)));
-    screen.setMask(QBitmap(":/mask.png"));
-    screen.show();
-}
-
-void Updater::update()
-{
-    QDateTime startTime=QDateTime::currentDateTime();
-    if(Settings::final()->license().isEmpty())
-        return;
-    QFile rfile(QApplication::applicationFilePath()+".old");
-    if(rfile.exists())
-        rfile.remove();
-    screen.showMessage("Auf Updates prüfen...",Qt::AlignCenter);
 #ifdef Q_OS_LINUX
     QString platform="linux";
 #endif
@@ -33,14 +18,22 @@ void Updater::update()
 #endif
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
     req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
-    qDebug()<<"1"<<QDateTime::currentDateTime().msecsTo(startTime);
-    QNetworkReply*rep=manager.get(req);
+    grep=manager.get(req);
+    if(Settings::final()->license().isEmpty())
+        return;
+    QFile rfile(QApplication::applicationFilePath()+".old");
+    if(rfile.exists())
+        rfile.remove();
+    connect(grep,SIGNAL(finished()),this,SLOT(update()));
+    connect(&manager,SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),this,SLOT(authenticationRequired(QNetworkProxy,QAuthenticator*)));
+}
+
+void Updater::update()
+{
     QEventLoop loop;
-    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-    loop.exec();
-    if(rep->error()==QNetworkReply::NoError)
+    if(grep->error()==QNetworkReply::NoError)
     {
-        QByteArray resp=rep->readAll();
+        QByteArray resp=grep->readAll();
         //qDebug()<<resp;
         QJsonParseError error;
         QJsonDocument doc=QJsonDocument::fromJson(resp,&error);
@@ -57,6 +50,7 @@ void Updater::update()
             }
             QString nhash=root["app"].toString();
             QString fname=QApplication::applicationFilePath();
+            bool updateExe=false;
             if(fname.endsWith(".exe"))
             {
                 QCryptographicHash hash(QCryptographicHash::Sha512);
@@ -67,28 +61,7 @@ void Updater::update()
                 QString chash=hash.result().toHex();
                 if(chash.length()==nhash.length())
                     if(chash!=nhash)
-                        if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
-                        {
-                            screen.showMessage("Herunterladen...",Qt::AlignCenter);
-                            QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
-                            req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
-                            QNetworkReply* rep=manager.get(req);
-                            connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                            loop.exec();
-                            if(rep->error()==QNetworkReply::NoError)
-                            {
-                                QByteArray newExe=rep->readAll();
-                                QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
-                                QDir dir(QApplication::applicationDirPath());
-                                dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
-                                QFile file(path);
-                                file.open(QFile::WriteOnly|QFile::Truncate);
-                                file.write(newExe);
-                                file.close();
-                                QMessageBox::information(NULL,"Update fetig","Update Fertig, bitte nocheinmal starten.");
-                                exit(0);
-                            }
-                        }
+                        updateExe=true;
             }
             QJsonArray files=root["files"].toArray();
             QStringList requestFiles;
@@ -110,47 +83,68 @@ void Updater::update()
                 else
                     requestFiles.append(curFile["name"].toString());
             }
-            if(requestFiles.length()==0)
+
+            if((requestFiles.length()>0)||updateExe)
             {
-                qDebug()<<"3"<<QDateTime::currentDateTime().msecsTo(startTime);
-                return;
-            }
-            screen.showMessage(""+QString::number(requestFiles.length())+" Dateien werden heruntergeladen",Qt::AlignCenter);
-            for(int i=0;i<requestFiles.length();i++)
-            {
-                QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
-                req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
-                QNetworkReply* rep=manager.get(req);
-                connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                loop.exec();
-                if(rep->error()==QNetworkReply::NoError)
+                if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
                 {
-                    QByteArray data=rep->readAll();
-                    QString name=toPath(requestFiles[i]);
-                    QFile file(name);
-                    file.open(QFile::WriteOnly|QFile::Truncate);
-                    file.write(data);
-                    file.flush();
-                    file.close();
+                    if(updateExe)
+                    {
+                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
+                        req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+                        QNetworkReply* rep=manager.get(req);
+                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                        loop.exec();
+                        if(rep->error()==QNetworkReply::NoError)
+                        {
+                            QByteArray newExe=rep->readAll();
+                            QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
+                            QDir dir(QApplication::applicationDirPath());
+                            dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
+                            QFile file(path);
+                            file.open(QFile::WriteOnly|QFile::Truncate);
+                            file.write(newExe);
+                            file.close();
+                        }
+                    }
+                    for(int i=0;i<requestFiles.length();i++)
+                    {
+                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
+                        req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+                        QNetworkReply* rep=manager.get(req);
+                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                        loop.exec();
+                        if(rep->error()==QNetworkReply::NoError)
+                        {
+                            QByteArray data=rep->readAll();
+                            QString name=toPath(requestFiles[i]);
+                            QFile file(name);
+                            file.open(QFile::WriteOnly|QFile::Truncate);
+                            file.write(data);
+                            file.flush();
+                            file.close();
+                        }
+                        else
+                            qDebug()<<rep->errorString();
+                    }
+                    QMessageBox::information(NULL,"Update fetig","Update Fertig, bitte noch einmal starten.");
+                    exit(0);
                 }
                 else
-                    qDebug()<<rep->errorString();
-                screen.showMessage(QString::number(i+1)+" von "+QString::number(requestFiles.length())+" Dateien sind heruntergeladen",Qt::AlignCenter);
-                qDebug()<<"4"<<QDateTime::currentDateTime().msecsTo(startTime);
-            }
-        }else
-            screen.showMessage("Internal Error",Qt::AlignCenter);
-    }else if(rep->error()==QNetworkReply::AuthenticationRequiredError){
+                    return;
+            }else
+                return;
+        }
+    }else if(grep->error()==QNetworkReply::AuthenticationRequiredError){
         Settings::final()->setLicense("");
         QMessageBox::warning(NULL,"QDigi","Falscher Lizenzschlüssel\nBitte beim nächsten Start Gültigen Schlüssel eingeben");
         exit(0);
     }
     else
     {
-        qDebug()<<rep->errorString();
-        screen.showMessage("Kein Netzwerk?",Qt::AlignCenter);
+        qDebug()<<grep->errorString();
     }
-    QTimer::singleShot(1000,&loop,SLOT(quit()));
+    //QTimer::singleShot(1000,&loop,SLOT(quit()));
     //loop.exec();
 }
 

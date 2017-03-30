@@ -10,13 +10,12 @@ class Updater : public QObject
     Q_OBJECT
 public:
     explicit Updater(QObject *parent = 0);
-QSplashScreen screen;
-void update();
 static void registerReg();
 QString toPath(QString in);
 signals:
 
 public slots:
+void update();
 void authenticationRequired(QNetworkProxy proxy, QAuthenticator* auth);
 };
 

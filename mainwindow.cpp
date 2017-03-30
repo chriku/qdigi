@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    updater=new Updater;
     QMenu* remSave=new QMenu;
     RemoteDriveList rlist;
     for(int i=0;i<rlist.drives.length();i++)

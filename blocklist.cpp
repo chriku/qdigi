@@ -16,7 +16,8 @@ BlockList::BlockList(QObject *parent) : QObject(parent)
             {
                 Block*b=new Block;
                 b->load(dir.absoluteFilePath(files[i]));
-                blocks.append(b);
+                if(b->valid)
+                    blocks.append(b);
             }
     }
     bool done=false;

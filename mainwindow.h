@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMap>
+#include "updater.h"
 namespace Ui {
 class MainWindow;
 }
@@ -16,7 +17,7 @@ public:
     ~MainWindow();
 bool isChanged;
 QMap<QAction*,QUrl> lastChangedActions;
-
+Updater* updater;//Pointer, damit Proxy immer gehandelt
 private slots:
 void keyPressEvent(QKeyEvent* event);
     void on_actionSpeichern_triggered();

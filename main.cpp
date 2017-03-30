@@ -69,10 +69,7 @@ int main(int argc, char *argv[])
             diagram.exec();
             exit(0);
         }*/
-    Updater updater;
-    updater.update();
     MainWindow w;
-    updater.screen.finish(&w);
     w.show();
     /*    long unsigned int len=1024*1024;
     char value[len];

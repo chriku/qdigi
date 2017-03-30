@@ -793,7 +793,6 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
 {
     event->accept();
     int lastTime=lastContext.msecsTo(QTime::currentTime());
-    qDebug()<<lastTime;
     if((lastTime<10)&&(lastTime>=0))
         return;
     int block=-1;
@@ -901,6 +900,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         }
     }
     QAction* delBlockAct=NULL;
+    QAction* impulseBlockAct=NULL;
     QAction* addViaAct=NULL;
     QAction* delLineAct=NULL;
     QAction* delSelAct=NULL;
@@ -927,6 +927,10 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         }
         if(cnt>0)
             menu.addSeparator();
+        if(blocks[block]->block->checkable)
+        {
+            impulseBlockAct=menu.addAction("Impulsdiagramm erstellen");
+        }
         ok=true;
     }
     if(lcnt>=2)

@@ -301,10 +301,16 @@ Block::~Block()
 
 void Block::init(Block *blk)
 {
+    blk->valid=true;
     blk->checkable=false;
     lua_State*L=blk->L;
     lua_rawgeti(L,LUA_REGISTRYINDEX,blk->mainRef);
     if (lua_pcall(L, 0, 1, 0) == LUA_OK) {
+        if(!lua_istable(L,-1))
+        {
+            blk->valid=false;
+            return;
+        }
         lua_getfield(L, -1, "pins");
         lua_pushnil(L);
         while (lua_next(L, -2)) {

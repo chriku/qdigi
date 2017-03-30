@@ -28,4 +28,5 @@ cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libstdc++-6.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libzip-4.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/ssleay32.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/zlib1.dll qdigi
+cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libpng16-16.dll qdigi
 rm -f qdigi.zip && zip -r qdigi.zip qdigi

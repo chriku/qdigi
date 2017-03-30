@@ -93,13 +93,10 @@ WORKDIR /src
 
 # Now build the project
 RUN qmake qdigi.pro && make -j 8
-RUN rm -f qdigi
-RUN mkdir  qdigi
-RUN cp -r release/qdigi.exe qdigi
-RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
-RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
-RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
-RUN rm -f qdigi.zip && zip -r qdigi.zip qdigi
+#RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
+#RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
+#RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
+RUN ./copy.sh
 #RUN make
 #RUN find / |grep qwindows.dll
 #RUN find / |grep qt|grep .dll

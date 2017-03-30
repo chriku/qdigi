@@ -107,7 +107,9 @@ SOURCES += main.cpp\
     luahttp.cpp \
     luasettings.cpp \
     luadesktop.cpp \
-    luahttpserver.cpp
+    luahttpserver.cpp \
+    impulsedialog.cpp \
+    impulsewidget.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -173,14 +175,17 @@ HEADERS  += mainwindow.h \
     luahttp.h \
     luasettings.h \
     luadesktop.h \
-    luahttpserver.h
+    luahttpserver.h \
+    impulsedialog.h \
+    impulsewidget.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
     settingsdialog.ui \
     passworddialog.ui \
     kvdiagram.ui \
-    filechoose.ui
+    filechoose.ui \
+    impulsedialog.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc \
     misc.qrc

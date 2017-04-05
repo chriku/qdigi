@@ -1114,12 +1114,13 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 emit changed();
                 clearSelection();
             }
-            if(act==impulseBlockAct)
-            {
-                dialog.show();
-                recording=true;
-                recorder=block;
-            }
+            if(blocks[block]->block->name=="Large-IN")
+                if(act==impulseBlockAct)
+                {
+                    dialog.show();
+                    recording=true;
+                    recorder=block;
+                }
             for(int i=0;i<alt.length();i++)
                 if(altAction[i]==act)
                 {

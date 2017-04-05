@@ -1,3 +1,4 @@
+set -e
 #ls /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
 #ls /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
 ls /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
@@ -29,4 +30,5 @@ cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libzip-4.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/ssleay32.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/zlib1.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libpng16-16.dll qdigi
+TZ="Europe/Berlin" date "+%A, %d. %B %Y %H:%M:%S.%N %Z (%::z)" > qdigi/buildDate.txt
 rm -f qdigi.zip && zip -r qdigi.zip qdigi

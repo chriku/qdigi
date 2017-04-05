@@ -6,6 +6,9 @@ function paintEvent(painter,color)
   if pins[2] and not pins[1] then
     state=false
   end
+  if pins[2] and pins[1] then
+    state=0
+  end
   painter:setPen(color)
   painter:setBrush()
   painter:drawRect(0.5,0.5,3,3)

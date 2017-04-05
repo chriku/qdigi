@@ -17,8 +17,11 @@ if os.execute("sudo ./build") then
   os.execute("cd win && unzip ../qdigi.zip")
   os.execute("cp -r win/qdigi/* ~/mnt/")
   U=io.open("/tmp/message")
-  message="Neues Update:\n"..U:read("*a")
+  message=U:read("*a")
   U:close()
-  print(socket.request("https://api.telegram.org/bot324897373:AAGKPfQHDUqWPIE7EyT_ScgeCLfU2iaWvHg/sendMessage?chat_id="..chat_id.."&text="..urlencode(message)))
+  if message:len()>0 then
+    message="Neues Update:\n"..message
+    print(socket.request("https://api.telegram.org/bot324897373:AAGKPfQHDUqWPIE7EyT_ScgeCLfU2iaWvHg/sendMessage?chat_id="..chat_id.."&text="..urlencode(message)))
+  end
   os.execute("rm -rf win qdigi")
 end

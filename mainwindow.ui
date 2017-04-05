@@ -683,6 +683,7 @@
      <string>Anderes</string>
     </property>
     <addaction name="actionLogiktabelle"/>
+    <addaction name="actionAuf_Updates_pr_fen"/>
    </widget>
    <addaction name="menuDatei"/>
    <addaction name="menuAnsicht"/>
@@ -790,6 +791,21 @@
   <action name="actionEntfernt_Speichern_Unter">
    <property name="text">
     <string>Entfernt Speichern Unter...</string>
+   </property>
+  </action>
+  <action name="actionAud_Update">
+   <property name="text">
+    <string>Auf Update Checken</string>
+   </property>
+  </action>
+  <action name="actionAuf_Update_Checken">
+   <property name="text">
+    <string>Auf Update Checken</string>
+   </property>
+  </action>
+  <action name="actionAuf_Updates_pr_fen">
+   <property name="text">
+    <string>Auf Updates prüfen</string>
    </property>
   </action>
  </widget>

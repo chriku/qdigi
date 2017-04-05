@@ -52,23 +52,23 @@ public:
     QString license();
     QColor background();
     QString refresh_token();
-GRID gridType();
-QList<QColor> colors();
-void setRefresh_token(QString token);
-void setBackground(QColor back,bool session=false);
-void setColors(QList<QColor> col,bool session=false);
-void setApplicationDir(QString dir,bool session=false);
-void setLicense(QString lic,bool session=false);
-void setPenWidth(double wid,bool session=false);
-void setRasterSize(int size,bool session=false);
-void setLastFile(QUrl file,bool session=false);
-void setGridSize(double size,bool session=false);
-void setDefaultSimu(bool on, bool session=false);
-void setGridType(GRID type,bool session=false);
-QString m_applicationDir;
-void clear();
-void setLua(QString key,QString value);
-QString getLua(QString key);
+    GRID gridType();
+    QList<QColor> colors();
+    void setRefresh_token(QString token);
+    void setBackground(QColor back,bool session=false);
+    void setColors(QList<QColor> col,bool session=false);
+    void setApplicationDir(QString dir,bool session=false);
+    void setLicense(QString lic,bool session=false);
+    void setPenWidth(double wid,bool session=false);
+    void setRasterSize(int size,bool session=false);
+    void setLastFile(QUrl file,bool session=false);
+    void setGridSize(double size,bool session=false);
+    void setDefaultSimu(bool on, bool session=false);
+    void setGridType(GRID type,bool session=false);
+    QString m_applicationDir;
+    void clear();
+    void setLua(QString key,QString value);
+    QString getLua(QString key);
 signals:
 
 public slots:

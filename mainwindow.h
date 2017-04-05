@@ -50,6 +50,8 @@ void keyPressEvent(QKeyEvent* event);
 
     void on_actionLogiktabelle_triggered();
     void onRemoteSave();
+    void on_actionAuf_Updates_pr_fen_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

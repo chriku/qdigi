@@ -69,6 +69,7 @@ QPicture Block::drawBlock(QColor color, bool plain) {
             dir = QPoint(-Settings::final()->gridSize() / 2.0, 0);
         if (pins[i].type == true) {
             double rad = abs(dir.x()) / 4.0;
+            qpainter.setBrush(Qt::NoBrush);
             qpainter.drawEllipse(
                         (QPointF(pins[i].m_point * Settings::final()->gridSize())) +
                         ((dir / 4.0) * 3.0),

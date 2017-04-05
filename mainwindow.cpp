@@ -12,6 +12,7 @@
 #include "remotedrivelist.h"
 
 QMap<QAction*,RemoteDrive*> actionMap;
+QTimer utimer;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -75,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBox->setCurrentWidget(ui->page_base);
     isChanged=false;
     updateLc();
+    connect(updater,SIGNAL(showMessage(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));
 }
 
 MainWindow::~MainWindow()
@@ -279,4 +281,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     qDebug()<<"REDIRECT"<<event->key();
     ui->digiView->keyPressEvent(event);
     update();
+}
+
+void MainWindow::on_actionAuf_Updates_pr_fen_triggered()
+{
+    updater->startUpdate();
 }

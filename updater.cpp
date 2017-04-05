@@ -10,22 +10,8 @@ extern QNetworkAccessManager manager;
 QNetworkReply*grep;
 Updater::Updater(QObject *parent) : QObject(parent)
 {
-#ifdef Q_OS_LINUX
-    QString platform="linux";
-#endif
-#ifdef Q_OS_WIN32
-    QString platform="windows";
-#endif
-    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
-    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
-    grep=manager.get(req);
-    if(Settings::final()->license().isEmpty())
-        return;
-    QFile rfile(QApplication::applicationFilePath()+".old");
-    if(rfile.exists())
-        rfile.remove();
-    connect(grep,SIGNAL(finished()),this,SLOT(update()));
-    connect(&manager,SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),this,SLOT(authenticationRequired(QNetworkProxy,QAuthenticator*)));
+    startUpdate();
+    authCount++;
 }
 
 void Updater::update()
@@ -133,7 +119,10 @@ void Updater::update()
                 else
                     return;
             }else
+            {
+                emit showMessage("Keine Neuen Updates",10);
                 return;
+            }
         }
     }else if(grep->error()==QNetworkReply::AuthenticationRequiredError){
         Settings::final()->setLicense("");
@@ -187,14 +176,43 @@ QString Updater::toPath(QString in)
 
 void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 {
-    *auth=QAuthenticator();
-    bool ok;
-    QString username=QInputDialog::getText(NULL,"Login","Username",QLineEdit::Normal,"",&ok);
-    if(!ok)
+    if(authCount==0)
+    {
+        *auth=QAuthenticator();
+        bool ok;
+        QString username=QInputDialog::getText(NULL,"Login","Username",QLineEdit::Normal,"",&ok);
+        if(!ok)
+        {
+            authCount=2;
+            return;
+        }
+        QString password=QInputDialog::getText(NULL,"Login","Passwort",QLineEdit::Password,"",&ok);
+        if(!ok)
+        {
+            authCount=2;
+            return;
+        }
+        auth->setUser(username);
+        auth->setPassword(password);
+    }
+}
+
+void Updater::startUpdate()
+{
+#ifdef Q_OS_LINUX
+    QString platform="linux";
+#endif
+#ifdef Q_OS_WIN32
+    QString platform="windows";
+#endif
+    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
+    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+    grep=manager.get(req);
+    if(Settings::final()->license().isEmpty())
         return;
-    QString password=QInputDialog::getText(NULL,"Login","Passwort",QLineEdit::Password,"",&ok);
-    if(!ok)
-        return;
-    auth->setUser(username);
-    auth->setPassword(password);
+    QFile rfile(QApplication::applicationFilePath()+".old");
+    if(rfile.exists())
+        rfile.remove();
+    connect(grep,SIGNAL(finished()),this,SLOT(update()));
+    connect(&manager,SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),this,SLOT(authenticationRequired(QNetworkProxy,QAuthenticator*)));
 }

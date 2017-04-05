@@ -176,25 +176,21 @@ QString Updater::toPath(QString in)
 
 void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 {
-    if(authCount==0)
+    bool ok;
+    QString username=QInputDialog::getText(NULL,"Login","Username",QLineEdit::Normal,"",&ok);
+    if(!ok)
     {
-        *auth=QAuthenticator();
-        bool ok;
-        QString username=QInputDialog::getText(NULL,"Login","Username",QLineEdit::Normal,"",&ok);
-        if(!ok)
-        {
-            authCount=2;
-            return;
-        }
-        QString password=QInputDialog::getText(NULL,"Login","Passwort",QLineEdit::Password,"",&ok);
-        if(!ok)
-        {
-            authCount=2;
-            return;
-        }
-        auth->setUser(username);
-        auth->setPassword(password);
+        authCount=2;
+        return;
     }
+    QString password=QInputDialog::getText(NULL,"Login","Passwort",QLineEdit::Password,"",&ok);
+    if(!ok)
+    {
+        authCount=2;
+        return;
+    }
+    auth->setUser(username);
+    auth->setPassword(password);
 }
 
 void Updater::startUpdate()

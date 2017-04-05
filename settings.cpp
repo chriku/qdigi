@@ -24,7 +24,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
         saveFile=new QSettings(QDir(mainPath).absoluteFilePath("settings.ini"),QSettings::IniFormat);
     m_gridSize=saveFile->value("gridSize",20).toInt();
     m_gridType=(GRID)saveFile->value("gridType",GRID_LINES).toInt();
-    m_defaultSimu=saveFile->value("defaultSimu",false).toBool();
+    m_defaultSimu=saveFile->value("defaultSimu",true).toBool();
     m_applicationDir=saveFile->value("applicationDir",mainPath).toString();
     m_lastFile=saveFile->value("lastFile","").toUrl();
     m_rasterSize=saveFile->value("rasterSize",5).toInt();

@@ -163,6 +163,7 @@ void MainWindow::on_simulation_clicked()
 void MainWindow::on_actionNeu_triggered()
 {
     ui->digiView->load(QUrl(""));
+    ui->digiView->fileName.clear();
     setWindowTitle("QDigi");
 }
 

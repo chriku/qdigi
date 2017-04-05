@@ -1099,178 +1099,181 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     if(ok)
     {
         QAction* act=menu.exec(event->globalPos());
-        if(block>=0)
+        if(act!=NULL)
         {
-            if(blockDefAct.contains(act))
+            if(block>=0)
             {
-                int func=blockDefAct[act];
-                blocks[block]->block->execContext(func);
-            }
-            if(act==delBlockAct)
-            {
-                lastSel=-1;
-                blocks[block]->block->deleteLater();
-                blocks.removeAt(block);
-                emit changed();
-                clearSelection();
-            }
-            if(blocks[block]->block->name=="Large-IN")
-                if(act==impulseBlockAct)
+                if(blockDefAct.contains(act))
                 {
-                    dialog.show();
-                    recording=true;
-                    recorder=block;
+                    int func=blockDefAct[act];
+                    blocks[block]->block->execContext(func);
                 }
-            for(int i=0;i<alt.length();i++)
-                if(altAction[i]==act)
+                if(act==delBlockAct)
                 {
+                    lastSel=-1;
                     blocks[block]->block->deleteLater();
-                    blocks[block]->block=BlockList::newBlock(alt[i]);
-                    block_t* blk=blocks[block];
-                    for(int i=0;i<blk->block->pins.length();i++)
-                        blk->block->pins[i].parent=blk;
+                    blocks.removeAt(block);
                     emit changed();
                     clearSelection();
                 }
-        }
-        if(selectedBlocks.length()>0)
-        {
-            if(act==delSelAct)
+                if(blocks[block]->block->name=="Large-IN")
+                    if(act==impulseBlockAct)
+                    {
+                        dialog.show();
+                        recording=true;
+                        recorder=block;
+                    }
+                for(int i=0;i<alt.length();i++)
+                    if(altAction[i]==act)
+                    {
+                        blocks[block]->block->deleteLater();
+                        blocks[block]->block=BlockList::newBlock(alt[i]);
+                        block_t* blk=blocks[block];
+                        for(int i=0;i<blk->block->pins.length();i++)
+                            blk->block->pins[i].parent=blk;
+                        emit changed();
+                        clearSelection();
+                    }
+            }
+            if(selectedBlocks.length()>0)
             {
-                lastSel=-1;
+                if(act==delSelAct)
+                {
+                    lastSel=-1;
+                    deleteSelection();
+                }
+                if(setSelectionColorAction.contains(act))
+                {
+                    QColor c=setSelectionColorAction[act];
+                    for(auto text:selectedTexts)
+                        texts[text].color=c;
+                    for(auto block:selectedBlocks)
+                        blocks[block]->color=c;
+                    for(auto line:selectedLines)
+                        lines[line].color=c;
+                    emit changed();
+                    clearSelection();
+                }
+            }
+            if(act==addTextAct)
+            {
+                bool ok;
+                QString message=QInputDialog::getText(NULL,"QDigi","Text Einfügen",QLineEdit::Normal,QString(),&ok);
+                if(ok)
+                {
+                    text_t text;
+                    text.pos=p;
+                    text.len=1000.0;
+                    text.text=message;
+                    texts.append(text);
+                }
                 deleteSelection();
             }
-            if(setSelectionColorAction.contains(act))
-            {
-                QColor c=setSelectionColorAction[act];
-                for(auto text:selectedTexts)
-                    texts[text].color=c;
-                for(auto block:selectedBlocks)
-                    blocks[block]->color=c;
-                for(auto line:selectedLines)
-                    lines[line].color=c;
-                emit changed();
-                clearSelection();
-            }
-        }
-        if(act==addTextAct)
-        {
-            bool ok;
-            QString message=QInputDialog::getText(NULL,"QDigi","Text Einfügen",QLineEdit::Normal,QString(),&ok);
-            if(ok)
-            {
-                text_t text;
-                text.pos=p;
-                text.len=1000.0;
-                text.text=message;
-                texts.append(text);
-            }
-            deleteSelection();
-        }
-        if(via>=0)
-            if(act==delViaAct)
-            {
-                vias.removeAt(via);
-                emit changed();
-                clearSelection();
-            }
-        if(pin>=0)
-            if(act==changePinAct)
-            {
-                blocks[pblock]->block->pins[pin].type=!blocks[pblock]->block->pins[pin].type;
-                emit changed();
-                clearSelection();
-            }
-        if(text>=0)
-            if(act==delTextAct)
-            {
-                texts.removeAt(text);
-                emit changed();
-                clearSelection();
-            }
-        if(lcnt==2)
-            if(act==addViaAct)
-            {
-                vias.append(p);
-                emit changed();
-                clearSelection();
-            }
-        if(line>=0)
-            if(act==delLineAct)
-            {
-                lines.removeAt(line);
-                emit changed();
-                clearSelection();
-            }
-        if(line>=0)
-            if(setLineColorAction.contains(act))
-            {
-                QList<int> net=getNet(lines[line].line);
-                net.append(line);
-                QColor c=setLineColorAction[act];
-                for(int i=0;i<net.length();i++)
-                    lines[net[i]].color=c;
-                lines[line].color=c;
-                emit changed();
-                clearSelection();
-            }
-        if(text>=0)
-            if(setTextColorAction.contains(act))
-            {
-                QColor c=setTextColorAction[act];
-                qDebug()<<c;
-                texts[text].color=c;
-                emit changed();
-                clearSelection();
-            }
-        if(block>=0)
-            if(setBlockColorAction.contains(act))
-            {
-                QColor c=setBlockColorAction[act];
-                blocks[block]->color=c;
-                emit changed();
-                clearSelection();
-            }
-        if(line>=0)
-            if(act==delLineNetAct)
-            {
-                clearSelection();
-                QList<QPoint> points;
-                points.append(lines[line].line.p1());
-                points.append(lines[line].line.p2());
-                lines.removeAt(line);
-                while(points.length()>0)
+            if(via>=0)
+                if(act==delViaAct)
                 {
-                    int cnt=0;
-                    int del=-1;
-                    QPoint point=points.takeFirst();
-                    for(int i=0;i<lines.length();i++)
-                    {
-                        if(onLine(lines[i].line,point,true))
-                            cnt=100;
-                        if(lines[i].line.p1()==point)
-                        {
-                            cnt++;
-                            del=i;
-                        }
-                        else if(lines[i].line.p2()==point)
-                        {
-                            del=i;
-                            cnt++;
-                        }
-                    }
-                    for(int i=0;i<vias.length();i++)
-                        if(vias[i]==point)
-                            cnt=100;
-                    if(cnt==1)
-                    {
-                        points.append(lines[del].line.p1());
-                        points.append(lines[del].line.p2());
-                        lines.removeAt(del);
-                    }
+                    vias.removeAt(via);
+                    emit changed();
+                    clearSelection();
                 }
-                emit changed();
-            }
+            if(pin>=0)
+                if(act==changePinAct)
+                {
+                    blocks[pblock]->block->pins[pin].type=!blocks[pblock]->block->pins[pin].type;
+                    emit changed();
+                    clearSelection();
+                }
+            if(text>=0)
+                if(act==delTextAct)
+                {
+                    texts.removeAt(text);
+                    emit changed();
+                    clearSelection();
+                }
+            if(lcnt==2)
+                if(act==addViaAct)
+                {
+                    vias.append(p);
+                    emit changed();
+                    clearSelection();
+                }
+            if(line>=0)
+                if(act==delLineAct)
+                {
+                    lines.removeAt(line);
+                    emit changed();
+                    clearSelection();
+                }
+            if(line>=0)
+                if(setLineColorAction.contains(act))
+                {
+                    QList<int> net=getNet(lines[line].line);
+                    net.append(line);
+                    QColor c=setLineColorAction[act];
+                    for(int i=0;i<net.length();i++)
+                        lines[net[i]].color=c;
+                    lines[line].color=c;
+                    emit changed();
+                    clearSelection();
+                }
+            if(text>=0)
+                if(setTextColorAction.contains(act))
+                {
+                    QColor c=setTextColorAction[act];
+                    qDebug()<<c;
+                    texts[text].color=c;
+                    emit changed();
+                    clearSelection();
+                }
+            if(block>=0)
+                if(setBlockColorAction.contains(act))
+                {
+                    QColor c=setBlockColorAction[act];
+                    blocks[block]->color=c;
+                    emit changed();
+                    clearSelection();
+                }
+            if(line>=0)
+                if(act==delLineNetAct)
+                {
+                    clearSelection();
+                    QList<QPoint> points;
+                    points.append(lines[line].line.p1());
+                    points.append(lines[line].line.p2());
+                    lines.removeAt(line);
+                    while(points.length()>0)
+                    {
+                        int cnt=0;
+                        int del=-1;
+                        QPoint point=points.takeFirst();
+                        for(int i=0;i<lines.length();i++)
+                        {
+                            if(onLine(lines[i].line,point,true))
+                                cnt=100;
+                            if(lines[i].line.p1()==point)
+                            {
+                                cnt++;
+                                del=i;
+                            }
+                            else if(lines[i].line.p2()==point)
+                            {
+                                del=i;
+                                cnt++;
+                            }
+                        }
+                        for(int i=0;i<vias.length();i++)
+                            if(vias[i]==point)
+                                cnt=100;
+                        if(cnt==1)
+                        {
+                            points.append(lines[del].line.p1());
+                            points.append(lines[del].line.p2());
+                            lines.removeAt(del);
+                        }
+                    }
+                    emit changed();
+                }
+        }
     }
     cleanUp();
     update();

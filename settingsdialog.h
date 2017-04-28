@@ -33,6 +33,8 @@ private slots:
 
     void on_background_clicked();
 
+    void on_simulationTime_valueChanged(int arg1);
+
 private:
     Ui::SettingsDialog *ui;
 };

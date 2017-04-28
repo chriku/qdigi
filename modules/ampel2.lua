@@ -68,17 +68,4 @@ function paintEvent(painter,color)
   painter:drawRect(4.95,2.5,0.05,2)
   painter:drawRect(6,2.5,0.05,2)
 end
-function getState(pin)
-  if (num>>(pin-1))%2==1 then
-    return true
-  end
-  return false
-end
-function onclick(x,y)
-  if y<2.5 then
-    num=(num+1)%16
-  else
-    num=(num+15)%16
-  end
-end
 return {width=10,height=6,name="Ampel 2",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,5,"INPUT"},{0,6,"INPUT"}},category="other",description="Ampel mit Fußgängerüberweg"}

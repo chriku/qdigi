@@ -18,6 +18,9 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 {
     QString txt;
     switch (type) {
+    case QtInfoMsg:
+        txt = QString("Info: %1").arg(msg);
+        break;
     case QtDebugMsg:
         txt = QString("Debug: %1").arg(msg);
         break;

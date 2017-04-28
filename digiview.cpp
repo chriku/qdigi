@@ -35,7 +35,7 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
     BlockList list;
     setAcceptDrops(true);
     connect(&timer,SIGNAL(timeout()),this,SLOT(timeout()));
-    timer.setInterval(100);
+    timer.setInterval(Settings::final()->simulationTime());
     setContextMenuPolicy(Qt::DefaultContextMenu);
     resizeNow();
     setMouseTracking(true);
@@ -502,17 +502,25 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
             dragged=true;
             if(blkIdx>=0)
             {
-                blocks[blkIdx]->m_pos+=curPoint-startPoint;
+                if(!(((blocks[blkIdx]->m_pos+curPoint-startPoint).x()<0)||((blocks[blkIdx]->m_pos+curPoint-startPoint).y()<0)))
+                    blocks[blkIdx]->m_pos+=curPoint-startPoint;
                 for(int i=0;i<selectedBlocks.length();i++)
                     if(selectedBlocks[i]!=blkIdx)
-                        blocks[selectedBlocks[i]]->m_pos+=curPoint-startPoint;
+                    {
+                        qDebug()<<blocks[selectedBlocks[i]]->m_pos+(curPoint-startPoint);
+                        if(!(((blocks[selectedBlocks[i]]->m_pos+(curPoint-startPoint)).x()<0)||((blocks[selectedBlocks[i]]->m_pos+curPoint-startPoint).y()<0)))
+                            blocks[selectedBlocks[i]]->m_pos+=curPoint-startPoint;
+                    }
                 for(int i=0;i<selectedLines.length();i++)
                     lines[selectedLines[i]].line.translate(curPoint-startPoint);
                 for(int i=0;i<selectedTexts.length();i++)
                     texts[selectedTexts[i]].pos+=curPoint-startPoint;
             }
             if(texIdx>=0)
-                texts[texIdx].pos+=curPoint-startPoint;
+            {
+                if(!(((texts[texIdx].pos+curPoint-startPoint).x()<0)||((texts[texIdx].pos+curPoint-startPoint).y()<0)))
+                    texts[texIdx].pos+=curPoint-startPoint;
+            }
             startPoint=curPoint;
         }
         else
@@ -722,7 +730,6 @@ QPoint DigiView::toGrid(QPoint in)
 
 void DigiView::timeout()
 {
-
     error=false;
     QList<QList<bool> > done;
     bool ok=true;
@@ -737,7 +744,12 @@ void DigiView::timeout()
                 done[i].append(false);
         }
     }
+    QMap<QPair<int,int>,bool> cache;
     QMap<QPair<int,int>,QPair<bool,QColor> > states;
+    for(int i=0;i<blocks.length();i++)
+        for(int j=0;j<blocks[i]->block->pins.length();j++)
+            if(blocks[i]->block->pins[j].direction==2)
+                cache.insert(QPair<int,int>(i,j),blocks[i]->block->getState(j));
     for(int i=0;i<blocks.length();i++)
         for(int j=0;j<blocks[i]->block->pins.length();j++)
             if(blocks[i]->block->pins[j].direction==2)
@@ -745,7 +757,8 @@ void DigiView::timeout()
                 QList<QPair<QPoint,QColor> > points;
                 points.append(QPair<QPoint,QColor> (blocks[i]->block->pins[j].pos(),Qt::black));
                 QPoint sp=blocks[i]->block->pins[j].pos();
-                bool state=blocks[i]->block->getState(j);
+                QPair<int,int> idx(i,j);
+                bool state=cache[idx];
                 if(blocks[i]->block->pins[j].type)
                     state=!state;
                 QList<int> linesVisited;
@@ -1107,14 +1120,16 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 {
                     int func=blockDefAct[act];
                     blocks[block]->block->execContext(func);
+                    return;
                 }
                 if(act==delBlockAct)
                 {
+                    clearSelection();
                     lastSel=-1;
                     blocks[block]->block->deleteLater();
                     blocks.removeAt(block);
                     emit changed();
-                    clearSelection();
+                    return;
                 }
                 if(blocks[block]->block->name=="Large-IN")
                     if(act==impulseBlockAct)
@@ -1122,10 +1137,12 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                         dialog.show();
                         recording=true;
                         recorder=block;
+                        return;
                     }
                 for(int i=0;i<alt.length();i++)
                     if(altAction[i]==act)
                     {
+                        clearSelection();
                         blocks[block]->block->deleteLater();
                         blocks[block]->block=BlockList::newBlock(alt[i]);
                         block_t* blk=blocks[block];
@@ -1133,6 +1150,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                             blk->block->pins[i].parent=blk;
                         emit changed();
                         clearSelection();
+                        return;
                     }
             }
             if(selectedBlocks.length()>0)
@@ -1141,6 +1159,8 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 {
                     lastSel=-1;
                     deleteSelection();
+                    clearSelection();
+                    return;
                 }
                 if(setSelectionColorAction.contains(act))
                 {
@@ -1153,10 +1173,12 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                         lines[line].color=c;
                     emit changed();
                     clearSelection();
+                    return;
                 }
             }
             if(act==addTextAct)
             {
+                clearSelection();
                 bool ok;
                 QString message=QInputDialog::getText(NULL,"QDigi","Text Einfügen",QLineEdit::Normal,QString(),&ok);
                 if(ok)
@@ -1168,45 +1190,52 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     texts.append(text);
                 }
                 deleteSelection();
+                return;
             }
             if(via>=0)
                 if(act==delViaAct)
                 {
+                    clearSelection();
                     vias.removeAt(via);
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(pin>=0)
                 if(act==changePinAct)
                 {
+                    clearSelection();
                     blocks[pblock]->block->pins[pin].type=!blocks[pblock]->block->pins[pin].type;
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(text>=0)
                 if(act==delTextAct)
                 {
+                    clearSelection();
                     texts.removeAt(text);
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(lcnt==2)
                 if(act==addViaAct)
                 {
+                    clearSelection();
                     vias.append(p);
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(line>=0)
                 if(act==delLineAct)
                 {
+                    clearSelection();
                     lines.removeAt(line);
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(line>=0)
                 if(setLineColorAction.contains(act))
                 {
+                    clearSelection();
                     QList<int> net=getNet(lines[line].line);
                     net.append(line);
                     QColor c=setLineColorAction[act];
@@ -1214,24 +1243,27 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                         lines[net[i]].color=c;
                     lines[line].color=c;
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(text>=0)
                 if(setTextColorAction.contains(act))
                 {
+                    clearSelection();
                     QColor c=setTextColorAction[act];
                     qDebug()<<c;
                     texts[text].color=c;
                     emit changed();
-                    clearSelection();
+                    return;
                 }
             if(block>=0)
                 if(setBlockColorAction.contains(act))
                 {
+                    clearSelection();
                     QColor c=setBlockColorAction[act];
                     blocks[block]->color=c;
                     emit changed();
                     clearSelection();
+                    return;
                 }
             if(line>=0)
                 if(act==delLineNetAct)
@@ -1272,6 +1304,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                         }
                     }
                     emit changed();
+                    return;
                 }
         }
     }

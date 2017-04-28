@@ -32,6 +32,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
     m_license=saveFile->value("licenseKey","").toString();
     m_background=saveFile->value("background",QColor(Qt::white)).value<QColor>();
     m_refresh_token=saveFile->value("refresh_token","").toString();
+    m_simulationTime=saveFile->value("simulationTime",10).toInt();
 }
 
 Settings* Settings::final()
@@ -78,6 +79,10 @@ QString Settings::applicationDir()
 QColor Settings::background()
 {
     return m_background;
+}
+int Settings::simulationTime()
+{
+    return m_simulationTime;
 }
 
 QString Settings::refresh_token()
@@ -127,6 +132,13 @@ void Settings::setGridType(GRID type, bool session)
 {
     if(!session)
         saveFile->setValue("gridType",type);
+    m_gridType=type;
+}
+
+void Settings::setSimulationTime(int time, bool session)
+{
+    if(!session)
+        saveFile->setValue("simulationTime",time);
     m_gridType=type;
 }
 

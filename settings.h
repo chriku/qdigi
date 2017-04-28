@@ -30,7 +30,9 @@ public:
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
     Q_PROPERTY(QColor background READ background WRITE setBackground)
     Q_PROPERTY(QList<QColor> colors READ colors WRITE setColors)
+    Q_PROPERTY(int simulationTime READ simulationTime WRITE setSimulationTime)
     QList<QUrl> lastChanged();
+    int simulationTime();
     void addLastChanged(QUrl what);
     explicit Settings(QObject *parent = 0);
     QString m_refresh_token;
@@ -56,6 +58,7 @@ public:
     QList<QColor> colors();
     void setRefresh_token(QString token);
     void setBackground(QColor back,bool session=false);
+    void setSimulationTime(int time,bool session=false);
     void setColors(QList<QColor> col,bool session=false);
     void setApplicationDir(QString dir,bool session=false);
     void setLicense(QString lic,bool session=false);
@@ -69,6 +72,7 @@ public:
     void clear();
     void setLua(QString key,QString value);
     QString getLua(QString key);
+    int m_simulationTime;
 signals:
 
 public slots:

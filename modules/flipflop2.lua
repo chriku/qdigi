@@ -8,10 +8,12 @@ function paintEvent(painter,color)
   painter:setBrush()
   painter:setPen(color)
   painter:drawRect(0.5,0.5,3,3)
+  painter:drawLine(0.5,2.6,1,3.0)
+  painter:drawLine(0.5,3.4,1,3.0)
   painter:setPen("black")
   painter:setFont(nil,1)
-  painter:drawText("D",0.5,0.5,1,1)
-  painter:drawText("C",0.5,2.5,1,1)
+  painter:drawText("1D",1,0.5,1.4,1)
+  painter:drawText("C1",1,2.5,1.4,1)
   painter:drawText("Q",2.5,0.5,1,1)
 end
 function getState(pin)
@@ -21,4 +23,4 @@ function getState(pin)
     return not state[1]
   end
 end
-return {width=3,height=3,name="DC-FlipFlop",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="flip",description="FlipFlop mit Daten und Clock"}
+return {width=3,height=3,name="D-FlipFlop",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="flip",description="FlipFlop mit Daten und Clock"}

@@ -95,7 +95,7 @@
        <item row="3" column="1">
         <widget class="QDoubleSpinBox" name="penWidth">
          <property name="maximum">
-          <double>25.0000000000000</double>
+          <double>25.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.050000000000000</double>
@@ -127,6 +127,26 @@
         <widget class="QLabel" name="backgroundLabel">
          <property name="text">
           <string>Hintergrund</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QSpinBox" name="simulationTime">
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="singleStep">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="simulationTimeLabel">
+         <property name="text">
+          <string>simulationTime</string>
          </property>
         </widget>
        </item>

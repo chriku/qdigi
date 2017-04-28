@@ -53,6 +53,7 @@ void SettingsDialog::load()
     ui->defaultSimu->setChecked(Settings::final()->defaultSimu());
     ui->rasterSize->setValue(Settings::final()->rasterSize());
     ui->penWidth->setValue(Settings::final()->penWidth());
+    ui->simulationTime->setValue(Settings::final()->simulationTime());
 }
 
 void SettingsDialog::on_changeLicense_clicked()
@@ -69,4 +70,9 @@ void SettingsDialog::on_changeLicense_clicked()
 void SettingsDialog::on_background_clicked()
 {
     Settings::final()->setBackground(QColorDialog::getColor(Settings::final()->background(),NULL,"QDigi"));
+}
+
+void SettingsDialog::on_simulationTime_valueChanged(int arg1)
+{
+    Settings::final()->setSimulationTime(arg1);
 }

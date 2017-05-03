@@ -38,7 +38,10 @@ void ImpulseWidget::paintEvent(QPaintEvent *event)
             keys.removeAll(key);
             keys.append(key);
         }
-    double pperc=height()/keys.length();
+    double kl=keys.length();
+    if(kl<0.001)
+        kl=1.0;
+    double pperc=height()/kl;
     for(int i=0;i<values.length();i++)
     {
         QMap<int,bool> time=values[i];

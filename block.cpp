@@ -34,6 +34,8 @@ QPicture Block::drawBlock(QColor color, bool plain) {
                               Settings::final()->gridSize() + 1,
                               (height * Settings::final()->gridSize()) + 1 +
                               Settings::final()->gridSize()));
+    if(!valid)
+        return ret;
     QPainter qpainter(&ret);
     qpainter.setPen(Qt::black);
     pushGlobal(L);
@@ -56,7 +58,11 @@ QPicture Block::drawBlock(QColor color, bool plain) {
         lua_getglobal(L,"state");
         lua_rawseti(L,LUA_REGISTRYINDEX,state);
     } else
+    {
         qDebug() << "ERR3" << lua_tostring(L, -1);
+        valid=false;
+        return ret;
+    }
     qpainter.setPen(Qt::black);
     for (int i = 0; i < pins.length(); i++) {
         QPen pen(pins[i].color);
@@ -103,7 +109,7 @@ QPicture Block::drawBlock(QColor color, bool plain) {
         // qDebug()<<(pins[i].point*10)<<pins[i].direction<<width;
     }
 
-
+    lua_gc(L,LUA_GCCOLLECT,0);
 
 
 
@@ -121,6 +127,8 @@ Block *Block::clone() {
 }
 
 void Block::onclick(QPointF where) {
+    if(!valid)
+        return;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
 
@@ -132,13 +140,18 @@ void Block::onclick(QPointF where) {
             lua_getglobal(L,"state");
             lua_rawseti(L,LUA_REGISTRYINDEX,state);
         } else
+        {
             qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
+            valid=false;
+        }
     }
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 
 void Block::onpress(QPointF where) {
+    if(!valid)
+        return;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
     lua_getglobal(L, "onpress");
@@ -155,6 +168,8 @@ void Block::onpress(QPointF where) {
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 void Block::keyPress(int pos) {
+    if(!valid)
+        return;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
     lua_getglobal(L, "onkey");
@@ -170,6 +185,8 @@ void Block::keyPress(int pos) {
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
 void Block::keyPressNorm(QString key) {
+    if(!valid)
+        return;
     qDebug()<<"Sending Key to"<<name;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     qDebug()<<"1"<<name<<key;
@@ -201,6 +218,8 @@ void Block::keyPressNorm(QString key) {
 }
 
 void Block::onrelease(QPointF where) {
+    if(!valid)
+        return;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
     lua_getglobal(L, "onrelease");
@@ -218,6 +237,8 @@ void Block::onrelease(QPointF where) {
 }
 
 void Block::execContext(int idx) {
+    if(!valid)
+        return;
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
     lua_geti(L,LUA_REGISTRYINDEX,idx);
@@ -233,6 +254,8 @@ void Block::execContext(int idx) {
 }
 
 bool Block::getState(int pin) {
+    if(!valid)
+        return false;
     if(!useFake)
     {
         lua_rawgeti(L,LUA_REGISTRYINDEX,state);
@@ -255,6 +278,7 @@ bool Block::getState(int pin) {
     }
     else
         return fake[pin];
+    lua_gc(L,LUA_GCCOLLECT,0);
     return false;
 }
 

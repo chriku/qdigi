@@ -37,7 +37,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     std::cout<<txt.toStdString() << std::endl;
     QFile outFile("out.txt");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    std::cout<<outFile.errorString().toUtf8().data()<<std::endl;
+    //std::cout<<outFile.errorString().toUtf8().data()<<std::endl;
     QTextStream ts(&outFile);
     ts << txt << endl;
     outFile.close();

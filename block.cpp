@@ -29,6 +29,10 @@ void Block::load(QString fileName) {
 }
 
 QPicture Block::drawBlock(QColor color, bool plain) {
+    if(lua_gettop(L)!=0)
+    {
+        qDebug()<<"TOP ERROR";
+    }
     QPicture ret;
     ret.setBoundingRect(QRect(0,0,(width * Settings::final()->gridSize()) +
                               Settings::final()->gridSize() + 1,
@@ -53,16 +57,17 @@ QPicture Block::drawBlock(QColor color, bool plain) {
     qpainter.setRenderHint(QPainter::Antialiasing, true);
     painter.pushMe(L);
     lua_pushstring(L,color.name().toUtf8().data());
-    if (lua_pcall(L, 2, 0, 0) == LUA_OK) {
-        qpainter.setRenderHint(QPainter::Antialiasing, false);
-        lua_getglobal(L,"state");
-        lua_rawseti(L,LUA_REGISTRYINDEX,state);
-    } else
+    lua_call(L, 2, 0);
+    //if (lua_pcall(L, 2, 0, 0) == LUA_OK) {*/
+    qpainter.setRenderHint(QPainter::Antialiasing, false);
+    lua_getglobal(L,"state");
+    lua_rawseti(L,LUA_REGISTRYINDEX,state);
+    /*} else
     {
         qDebug() << "ERR3" << lua_tostring(L, -1);
         valid=false;
         return ret;
-    }
+    }*/
     qpainter.setPen(Qt::black);
     for (int i = 0; i < pins.length(); i++) {
         QPen pen(pins[i].color);
@@ -145,6 +150,8 @@ void Block::onclick(QPointF where) {
             valid=false;
         }
     }
+    else
+        lua_pop(L,1);
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
@@ -152,20 +159,24 @@ void Block::onclick(QPointF where) {
 void Block::onpress(QPointF where) {
     if(!valid)
         return;
+    qDebug()<<"TOP1"<<lua_gettop(L);
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
+    qDebug()<<"TOP2"<<lua_gettop(L);
     lua_getglobal(L, "onpress");
     if (!lua_isnil(L, -1)) {
         lua_pushnumber(L, where.x());
         lua_pushnumber(L, where.y());
         if (lua_pcall(L, 2, 0, 0) == LUA_OK) {
-            lua_getglobal(L,"state");
-            lua_rawseti(L,LUA_REGISTRYINDEX,state);
+            qDebug()<<"TOP3"<<lua_gettop(L);
         } else
             qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     }
+    else
+        lua_pop(L,1);
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
+    qDebug()<<"TOP4"<<lua_gettop(L);
 }
 void Block::keyPress(int pos) {
     if(!valid)
@@ -181,6 +192,8 @@ void Block::keyPress(int pos) {
         } else
             qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     }
+    else
+        lua_pop(L,1);
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
@@ -211,7 +224,10 @@ void Block::keyPressNorm(QString key) {
         qDebug()<<"10"<<name<<key;
     }
     else
+    {
         qDebug()<<"Doesn't handle Key Press"<<name;
+        lua_pop(L,1);
+}
     qDebug()<<"11"<<name<<key;
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
@@ -232,6 +248,8 @@ void Block::onrelease(QPointF where) {
         } else
             qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
     }
+    else
+        lua_pop(L,1);
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
@@ -249,6 +267,8 @@ void Block::execContext(int idx) {
         } else
             qDebug() << "ERR5" << lua_tostring(L, -1)<<name;
     }
+    else
+        lua_pop(L,1);
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
 }
@@ -267,7 +287,9 @@ bool Block::getState(int pin) {
             if (lua_pcall(L, 1, 1, 0) == LUA_OK) {
                 lua_getglobal(L,"state");
                 lua_rawseti(L,LUA_REGISTRYINDEX,state);
-                return lua_toboolean(L, -1);
+                bool ret=lua_toboolean(L, -1);
+                lua_pop(L,1);
+                return ret;
             } else
                 qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
         } else

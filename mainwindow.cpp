@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBox->setCurrentWidget(ui->page_base);
     isChanged=false;
     updateLc();
-    connect(updater,SIGNAL(showMessage(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));
+    connect(updater,SIGNAL(showMessage(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));   
 }
 
 MainWindow::~MainWindow()

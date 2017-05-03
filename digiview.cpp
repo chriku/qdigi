@@ -356,7 +356,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             for(int i=0;i<blk->block->pins.length();i++)
                 blk->block->pins[i].parent=blk;
             blk->m_pos=dragPos.toPoint();
-            if(dragGate=="Large-IN")
+            /*if(dragGate=="Large-IN")
             {
                 for(int i=0;i<blocks.length();i++)
                     if(blocks[i]->block->name=="Large-IN")
@@ -364,7 +364,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
                         dragGate="";
                         return;
                     }
-            }
+            }*/
             if(event->button()!=Qt::LeftButton)
                 dragGate="";
             for(int i=0;i<blocks.length();i++)
@@ -1964,6 +1964,9 @@ void DigiView::keyPressEvent(QKeyEvent *event)
         {
         case Qt::Key_A:
             largeIn(0);
+            break;
+        case Qt::Key_Escape:
+            dragGate="";
             break;
         case Qt::Key_B:
             largeIn(1);

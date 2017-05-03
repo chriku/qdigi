@@ -120,7 +120,8 @@ void Updater::update()
                     return;
             }else
             {
-                emit showMessage("Keine Neuen Updates",10);
+                emit showMessage("Keine Neuen Updates",10*1000);
+                qDebug()<<"NO NEW UPDATES";
                 return;
             }
         }

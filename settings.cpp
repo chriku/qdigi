@@ -139,7 +139,7 @@ void Settings::setSimulationTime(int time, bool session)
 {
     if(!session)
         saveFile->setValue("simulationTime",time);
-    m_gridType=type;
+    m_simulationTime=time;
 }
 
 void Settings::setDefaultSimu(bool on, bool session)

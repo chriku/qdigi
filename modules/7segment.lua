@@ -4,6 +4,15 @@ function paintEvent(painter,color)
   painter:setPen(color)
   painter:drawRect(0.5,0.5,4,7)
   w=0.2
+  painter:setPen("#bbbbbb",w)
+  painter:drawLine(1.5,1.5,3.5,1.5)--a
+  painter:drawLine(3.5,1.5,3.5,4)--b
+  painter:drawLine(3.5,6.5,3.5,4)--c
+  painter:drawLine(1.5,6.5,3.5,6.5)--d
+  painter:drawLine(1.5,6.5,1.5,4)--e
+  painter:drawLine(1.5,1.5,1.5,4)--f
+  painter:drawLine(1.5,4,3.5,4)--g
+
   if pins[1] then painter:setPen("black",w) else painter:setPen("transparent",w) end
   painter:drawLine(1.5,1.5,3.5,1.5)--a
   if pins[2] then painter:setPen("black",w) else painter:setPen("transparent",w) end

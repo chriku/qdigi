@@ -50,7 +50,6 @@ public:
     bool getState(int pin);
     static void init(Block* blk);
     ~Block();
-    QFileSystemWatcher* watcher;
     QRectF clickRect();
     //QRectF pinsRect();
     QPointF unmap(QPointF p);

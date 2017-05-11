@@ -4,17 +4,17 @@
 
 Line::Line()
 {
-
+state=false;
 }
 
 QRectF Line::clickRect()
 {
     QRectF rect(line.p1(),line.p2());
-    if(rect.height()==0)
+    if(rect.height()<0.1)
     {
         rect=QRectF(rect.x(),rect.y()-0.5,rect.width(),1.0);
     }
-    if(rect.width()==0)
+    if(rect.width()<0.1)
     {
         rect=QRectF(rect.x()-0.5,rect.y(),1.0,rect.height());
     }
@@ -32,6 +32,8 @@ QPicture Line::draw(bool values)
     painter.setPen(pen);
     painter.drawLine(QLineF(line.x1()*s,line.y1()*s,line.x2()*s,line.y2()*s));
     pen.setColor(Qt::red);
+    pen.setWidth(Settings::final()->gridSize()*Settings::final()->penWidth());
+    pen.setStyle(Qt::DotLine);
     painter.setPen(pen);
     if(state)
         painter.drawLine(QLineF(line.x1()*s,line.y1()*s,line.x2()*s,line.y2()*s));

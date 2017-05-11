@@ -270,7 +270,8 @@ void DigiView::dropEvent(QDropEvent *event)
     clearSelection();
     dragPos=toGrid(event->pos())-QPoint(1,1);
     addBlock(dragPos.toPoint(),dragGate);
-    dragGate="";
+    if(!dragMany)
+        dragGate="";
     update();
 }
 
@@ -564,6 +565,7 @@ QPoint DigiView::toGrid(QPoint in)
 
 void DigiView::timeout()
 {
+    timer.setInterval(Settings::final()->simulationTime());
     error=false;
     QList<QList<bool> > done;
     bool ok=true;
@@ -589,6 +591,7 @@ void DigiView::timeout()
             if(blocks[i]->pins[j].direction==2)
             {
                 bool state=cache[QPair<int,int>(i,j)];
+                blocks[i]->pins[j].state=state;
                 QList<int> list;
                 QList<QPair<int,int> > inputs=getItemsForOutput(blocks[i]->pins[j].pos(),&list);
                 for(auto item:list)
@@ -619,7 +622,10 @@ void DigiView::timeout()
                         if(!((i==k)&&(j==l)))
                         {
                             ok=false;
+                            blocks[k]->pins[l].state=2;
+                            blocks[i]->pins[j].state=2;
                             bar->showMessage("Zwei Ausgänge",1000);
+                            return;
                         }
                     }
                 }
@@ -726,8 +732,9 @@ void DigiView::timeout()
         for(int i=0;i<blocks[recorder]->pins.length();i++)
         {
             QPoint p=blocks[recorder]->pins[i].pos();
-            if(getNet(QLine(p,p)).length()>0)
+            if(getItemsForOutput(p,NULL).length()>1)
             {
+
                 dialog.widget->pushValue(-1-i,blocks[recorder]->getState(i));
             }
         }
@@ -803,6 +810,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     Via* via=NULL;
     Text* text=NULL;
     bool colorC=false;
+    bool lineC=false;
     for(auto clicked:clickedItems)
     {
         Item* item=items[clicked];
@@ -863,8 +871,9 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             delTextAct=menu.addAction("Text Löschen");
             ok=true;
         }
-        if(isLine(item))
+        if(isLine(item)&&(!lineC))
         {
+            lineC=true;
             line=(Line*)item;
             delLineAct=menu.addAction("Linie Löschen");
             delLineNetAct=menu.addAction("Linien bis Knotenpunk löschen");
@@ -924,7 +933,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     {
                         dialog.show();
                         recording=true;
-                        recorder=block;
+                        recorder=blocks.indexOf(blk);
                         return;
                     }
                 for(int i=0;i<alt.length();i++)
@@ -988,6 +997,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     clearSelection();
                     vias.removeAll(via);
                     items.removeAll(via);
+                    via->deleteLater();
                     emit changed();
                     return;
                 }
@@ -1018,6 +1028,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     clearSelection();
                     texts.removeAll(text);
                     items.removeAll(text);
+                    text->deleteLater();
                     emit changed();
                     return;
                 }
@@ -1026,8 +1037,10 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 {
                     clearSelection();
                     Via* via=new Via;
+                    via->pos=p;
                     vias.append(via);
                     items.append(via);
+                    cleanUp();
                     emit changed();
                     return;
                 }
@@ -1037,6 +1050,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     clearSelection();
                     lines.removeAll(line);
                     items.removeAll(line);
+                    line->deleteLater();
                     emit changed();
                     return;
                 }
@@ -1044,11 +1058,13 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 if(act==delLineNetAct)
                 {
                     clearSelection();
+                    cleanUp();
                     QList<QPoint> points;
                     points.append(line->line.p1());
                     points.append(line->line.p2());
                     lines.removeAll(line);
                     items.removeAll(line);
+                    line->deleteLater();
                     while(points.length()>0)
                     {
                         int cnt=0;
@@ -1076,9 +1092,13 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                         {
                             points.append(lines[del]->line.p1());
                             points.append(lines[del]->line.p2());
+                            lines[del]->deleteLater();
+                            items.removeAll(lines[del]);
                             lines.removeAt(del);
                         }
                     }
+
+                    cleanUp();
                     emit changed();
                     return;
                 }
@@ -1154,7 +1174,13 @@ bool DigiView::onLine(QLine line, QPoint point, bool proper)
 
 void DigiView::cleanUp()
 {
-
+    check();
+    for(auto line:lines)
+    {
+        line->line.setP1(line->line.p1()+line->pos);
+        line->line.setP2(line->line.p2()+line->pos);
+        line->pos=QPoint(0,0);
+    }
     for(int gcnt=0;gcnt<3;gcnt++)
     {
         for(int i=0;i<lines.length();i++)
@@ -1166,10 +1192,12 @@ void DigiView::cleanUp()
                             if(onLine(lines[i]->line,lines[j]->line.p1()))
                                 if(onLine(lines[i]->line,lines[j]->line.p2()))
                                 {
+                                    lines[i]->deleteLater();
                                     items.removeAll((Item*)lines[i]);
                                     lines.removeAt(i);
                                     if(j>i)
                                         j--;
+                                    lines[j]->deleteLater();
                                     items.removeAll((Item*)lines[j]);
                                     lines.removeAt(j);
                                     i--;
@@ -1268,11 +1296,13 @@ void DigiView::cleanUp()
                                 line->color=lines[i]->color;
                                 lines.append(line);
                                 items.append(line);
+                                lines[i]->deleteLater();
                                 items.removeAll(lines[i]);
                                 lines.removeAt(i);
                                 if(j>i)
                                     j--;
                                 i--;
+                                lines[j]->deleteLater();
                                 items.removeAll(lines[j]);
                                 lines.removeAt(j);
                                 j=lines.length();
@@ -1343,6 +1373,7 @@ void DigiView::cleanUp()
                         {
                             Line* line=lines.takeAt(i);
                             items.removeAll(line);
+                            line->deleteLater();
                             i--;
                             Line* l1=new Line;
                             l1->state=line->state;
@@ -1524,9 +1555,12 @@ void DigiView::clearSelection()
 void DigiView::deleteSelection()
 {
     lastSel=-1;
+    QList<Item*> del;
+    for(int i=0;i<selection.length();i++)
+        del.append(items[selection[i]]);
     for(int i=0;i<selection.length();i++)
     {
-        Item* item=items[selection[i]];
+        Item* item=del[i];
         item->deleteLater();
         texts.removeAll((Text*)item);
         vias.removeAll((Via*)item);
@@ -1923,18 +1957,21 @@ QList<QPair<int,int> > DigiView::getItemsForOutput(QPoint pos, QList<int> *witem
             if(lines[i]->line.p1()==point)
             {
                 points.append(lines[i]->line.p2());
-                witems->append(items.indexOf(lines[i]));
+                if(witems!=NULL)
+                    witems->append(items.indexOf(lines[i]));
             }
             if(lines[i]->line.p2()==point)
             {
                 points.append(lines[i]->line.p1());
-                witems->append(items.indexOf(lines[i]));
+                if(witems!=NULL)
+                    witems->append(items.indexOf(lines[i]));
             }
         }
         for(int i=0;i<vias.length();i++)
         {
             if(vias[i]->pos==point)
-                witems->append(items.indexOf(vias[i]));
+                if(witems!=NULL)
+                    witems->append(items.indexOf(vias[i]));
         }
         for(int i=0;i<blocks.length();i++)
             for(int j=0;j<blocks[i]->pins.length();j++)

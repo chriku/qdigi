@@ -1,4 +1,5 @@
 #include "block.h"
+#include <QDir>
 #include "painter.h"
 #include "settings.h"
 #include <QDebug>
@@ -11,7 +12,6 @@ extern "C" {
 }
 
 Block::Block(QObject *parent) : Item(parent) {
-    //connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));
     useFake=false;
     color=Qt::black;
 }
@@ -295,6 +295,8 @@ bool Block::getState(int pin) {
                 lua_rawseti(L,LUA_REGISTRYINDEX,state);
                 bool ret=lua_toboolean(L, -1);
                 lua_pop(L,1);
+                if(pins[pin].type)
+                    ret=!ret;
                 return ret;
             } else
                 qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
@@ -446,6 +448,7 @@ void Block::init(Block *blk)
 
 void Block::fileChanged(const QString &path)
 {
+    qDebug()<<path;
     //load(path);
 }
 

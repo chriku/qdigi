@@ -3,14 +3,15 @@ text={"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"}
 text[0]="0"
 function paintEvent(painter,color)
   painter:setBrush(nil)
+  painter:setPen(color)
+  painter:drawRect(0.5,0.5,2,4)
+  painter:setBrush(nil)
   painter:setFont(nil,3)
   painter:setPen("black")
   painter:drawText(text[state],0.5,0.5,2,4)
   painter:setFont(nil,1)
   painter:drawText("+",0.5,0.5,2,1)
   painter:drawText("-",0.5,3.5,2,1)
-  painter:setPen(color)
-  painter:drawRect(0.5,0.5,2,4)
 end
 function getState(pin)
   if (state>>(pin-1))%2==1 then

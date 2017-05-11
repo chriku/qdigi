@@ -12,11 +12,11 @@ extern "C" {
 }
 #include <QMap>
 #include <QPoint>
+#include "item.h"
 class Block;
-class block_t;
 class pin_t;
 
-class Block : public QObject
+class Block : public Item
 {
     Q_OBJECT
 public:
@@ -38,7 +38,6 @@ public:
     void pushGlobal(lua_State*L);
     QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
     QString category;
-    QPicture drawBlock(QColor color,bool plain=false);
     QString name;
     int width;
     int height;
@@ -51,49 +50,28 @@ public:
     bool getState(int pin);
     static void init(Block* blk);
     ~Block();
-    QFileSystemWatcher watcher;
+    QFileSystemWatcher* watcher;
+    QRectF clickRect();
+    //QRectF pinsRect();
+    QPointF unmap(QPointF p);
+    QPicture draw(bool values);
 
 signals:
 
 public slots:
     void fileChanged(const QString &path);
 };
-class block_t {
-public:
-    Block* block;
-    QColor color;
-    block_t()
-    {
-        color=Qt::black;
-    }
-    QPoint m_pos;
-    QRectF rect()
-    {
-        QRectF rect(m_pos.x()+0.5,m_pos.y()+0.5,block->width,block->height);
-        return rect;
-    }
-    QRectF pinsRect()
-    {
-        QRectF rect(m_pos.x(),m_pos.y(),block->width+1,block->height+1.0);
-        return rect;
-    }
-
-    QPointF unmap(QPointF p)
-    {
-        return p-m_pos;
-    }
-};
 class pin_t {
 public:
     QPoint pos(){
-        return parent->m_pos+m_point;
+        return parent->pos+m_point;
     }
 
     int direction;
     int state;
-    bool type;
+    bool type;//Inverted
     QColor color;
-    block_t* parent;
+    Block* parent;
     pin_t()
     {
         state=false;

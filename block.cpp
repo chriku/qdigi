@@ -10,9 +10,14 @@ extern "C" {
 #include "luasocket.h"
 }
 
-Block::Block(QObject *parent) : QObject(parent) { L = luaL_newstate(); connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));useFake=false;}
+Block::Block(QObject *parent) : Item(parent) {
+    //connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChanged(QString)));
+    useFake=false;
+    color=Qt::black;
+}
 
 void Block::load(QString fileName) {
+    L = luaL_newstate();
     //watcher.addPath(fileName);
     Block::fileName = fileName;
     QFile file(fileName);
@@ -28,7 +33,8 @@ void Block::load(QString fileName) {
         qDebug() << "ERR2" << lua_tostring(L, -1);
 }
 
-QPicture Block::drawBlock(QColor color, bool plain) {
+QPicture Block::draw(bool plain) {
+    plain=!plain;
     if(lua_gettop(L)!=0)
     {
         qDebug()<<"TOP ERROR";
@@ -227,7 +233,7 @@ void Block::keyPressNorm(QString key) {
     {
         qDebug()<<"Doesn't handle Key Press"<<name;
         lua_pop(L,1);
-}
+    }
     qDebug()<<"11"<<name<<key;
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
@@ -441,4 +447,15 @@ void Block::init(Block *blk)
 void Block::fileChanged(const QString &path)
 {
     //load(path);
+}
+
+QRectF Block::clickRect()
+{
+    QRectF rect(pos.x(),pos.y()+0.5,width+1,height);
+    return rect;
+}
+
+QPointF Block::unmap(QPointF p)
+{
+    return p-pos;
 }

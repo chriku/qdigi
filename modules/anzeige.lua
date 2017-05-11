@@ -9,12 +9,13 @@ function paintEvent(painter,color)
       num=num|1
     end
   end
-  painter:setPen("black")
   painter:setBrush(nil)
-  painter:setFont(nil,3)
-  painter:drawText(text[num],0.5,0.5,2,4)
   painter:setPen(color)
   painter:drawRect(0.5,0.5,2,4)
+  painter:setPen("black")
+  painter:setBrush("black")
+  painter:setFont(nil,3)
+  painter:drawText(text[num],0.5,0.5,2,4)
 end
 function getState(pin)
 

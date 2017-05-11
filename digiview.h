@@ -8,9 +8,13 @@
 #include <QTimer>
 #include <QPicture>
 #include <QTime>
+#include <QList>
+#include "line.h"
+#include "text.h"
+#include "via.h"
 
 
-struct text_t {
+/*struct text_t {
     QPoint pos;
     QString text;
     double len;
@@ -27,7 +31,7 @@ struct line_t {
     QLine line;
     bool state;
     QColor color;
-};
+};*/
 
 class DigiView : public QWidget
 {
@@ -35,12 +39,22 @@ class DigiView : public QWidget
 public:
     ImpulseDialog dialog;
     bool error;
-    QList<int> linesAtPoint(QPoint point);
     QList<QPair<QColor,QString> > loadColorProfile();
+    QList<int> selection;
+
+    QList<Block*> blocks;
+    QList<Line*> lines;
+    QList<Text*> texts;
+    QList<Via*> vias;
+    QList<Item*> items;
+
+    bool isBlock(Item* item);
+    bool isLine(Item* item);
+    bool isText(Item* item);
+    bool isVia(Item* item);
+
+    QList<QPair<int,int> > getItemsForOutput(QPoint pos, QList<int> *witems);
     QList<int> getNet(QLine in);
-    QList<int> selectedBlocks;
-    QList<int> selectedLines;
-    QList<int> selectedTexts;
     bool recording;
     int recorder;
     void clearSelection();
@@ -57,12 +71,10 @@ public:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-    QList<QPoint> vias;
     QPointF dragPos;
     QString dragGate;
     bool dragMany;
     QTime lastContext;
-    QList<block_t*> blocks;
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -73,11 +85,8 @@ public:
     QPoint curPoint;
     bool drag;
     bool dragged;
-    int blkIdx;
-    int texIdx;
+    int dragIdx;
     QPoint startBlock;
-    QList<line_t> lines;
-    QList<text_t> texts;
     bool save(QUrl where=QUrl());
     void load(QUrl where);
     QPoint toGrid(QPoint in);
@@ -91,9 +100,13 @@ public:
     QImage exportImage();
     void loadJson(QByteArray json);
     void resizeNow();
-QJsonObject exportJSON();
+    QJsonObject exportJSON();
     void createTable();
     void resizeEvent(QResizeEvent *event);
+    void addBlock(QPoint pos, QString type);
+    QPoint toScreen(QPointF pos);
+    void check();
+    int lastSel;
 signals:
     void changed();
 public slots:

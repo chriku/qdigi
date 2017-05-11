@@ -109,7 +109,12 @@ SOURCES += main.cpp\
     luadesktop.cpp \
     luahttpserver.cpp \
     impulsedialog.cpp \
-    impulsewidget.cpp
+    impulsewidget.cpp \
+    item.cpp \
+    line.cpp \
+    text.cpp \
+    via.cpp \
+    schematic.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -177,7 +182,12 @@ HEADERS  += mainwindow.h \
     luadesktop.h \
     luahttpserver.h \
     impulsedialog.h \
-    impulsewidget.h
+    impulsewidget.h \
+    item.h \
+    line.h \
+    text.h \
+    via.h \
+    schematic.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \

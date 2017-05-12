@@ -52,8 +52,7 @@ int main(int argc, char *argv[])
     outFile.write("Start Logging\r\n");
     outFile.close();
     QApplication a(argc, argv);
-    HelpDialog::help("blocks");
-    /*
+    //HelpDialog::help("blocks");
     qInstallMessageHandler(myMessageHandler);
     if(Settings::final()->license().isEmpty())
     {
@@ -75,8 +74,8 @@ int main(int argc, char *argv[])
             diagram.exec();
             exit(0);
         }*/
-    //MainWindow w;
-    //w.show();
+    MainWindow w;
+    w.show();
     /*    long unsigned int len=1024*1024;
     char value[len];
     for(int i=0;i<len;i++)
@@ -92,8 +91,10 @@ int main(int argc, char *argv[])
     qDebug()<<val;
     }
         #*/
+    qDebug()<<"EXEC";
     a.exec();
-    /*QNetworkRequest req;
+    qDebug()<<"DONE";
+    QNetworkRequest req;
     QUrlQuery query;
     if(1==1)
     {
@@ -109,5 +110,5 @@ int main(int argc, char *argv[])
         QObject::connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
         loop.exec();
         std::cerr<<rep->errorString().toStdString()<<std::endl<<rep->readAll().data()<<std::endl;
-    }*/
+    }
 }

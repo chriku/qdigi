@@ -315,9 +315,11 @@ void DigiView::mousePressEvent(QMouseEvent *event)
         dragIdx=-1;
         for(int i=0;i<items.length();i++)
             if(items[i]->clickRect().contains(curPoint))
-            {
-                dragIdx=i;
-            }
+                if(isText(items[i]))
+                {
+                    dragIdx=i;
+                    drag=true;
+                }
         if((pin==-1)&&(idx>=0))
         {
             clear=false;

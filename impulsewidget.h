@@ -9,10 +9,10 @@ class ImpulseWidget : public QWidget
     Q_OBJECT
 public:
     explicit ImpulseWidget(QWidget *parent = 0);
-    void pushValue(int pin,bool state);
+    void pushValue(QString pin,bool state);
     void nextField();
-    QList<QMap<int,bool> > values;
-    QMap<int,bool> cur;
+    QList<QMap<QString,bool> > values;
+    QMap<QString,bool> cur;
     void paintEvent(QPaintEvent *event);
 signals:
 

@@ -493,6 +493,7 @@ void DigiView::load(QUrl where)
     vias.clear();
     texts.clear();
     items.clear();
+    impulseLabels.clear();
     if(where.scheme()=="file")
     {
         QFile file(where.toLocalFile());
@@ -609,6 +610,11 @@ void DigiView::timeout()
                         Via* via=(Via*)cur;
                         via->state=state;
                     }
+                    if(isImpulseLabel(cur))
+                    {
+                        ImpulseLabel* label=(ImpulseLabel*)cur;
+                        label->state=state;
+                    }
                 }
                 for(auto input:inputs)
                 {
@@ -724,22 +730,8 @@ void DigiView::timeout()
     }
     if(recording==true)
     {
-        for(int i=0;i<blocks.length();i++)
-        {
-            if(blocks[i]->name=="OUT")
-            {
-                dialog.widget->pushValue(i,blocks[i]->pins.first().state);
-            }
-        }
-        for(int i=0;i<blocks[recorder]->pins.length();i++)
-        {
-            QPoint p=blocks[recorder]->pins[i].pos();
-            if(getItemsForOutput(p,NULL).length()>1)
-            {
-
-                dialog.widget->pushValue(-1-i,blocks[recorder]->getState(i));
-            }
-        }
+        for(auto label:impulseLabels)
+            dialog.widget->pushValue(label->name,label->state);
         dialog.widget->nextField();
     }
     update();
@@ -781,7 +773,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             clickedItems.append(i);
     }
     QAction* delBlockAct=NULL;
-    QAction* impulseBlockAct=NULL;
+    QAction* delILAct=NULL;
     QAction* addViaAct=NULL;
     QAction* delLineAct=NULL;
     QAction* delSelAct=NULL;
@@ -790,6 +782,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     QAction* delTextAct=NULL;
     QAction* changePinAct=NULL;
     QAction* addTextAct=NULL;
+    QAction* addILAct=NULL;
     QMap<QAction*,int> blockDefAct;
     QMap<QAction*,QColor> setColorAction;
     QMap<QAction*,QColor> setSelectionColorAction;
@@ -809,6 +802,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
     }
     Block* blk=NULL;
     Line* line=NULL;
+    ImpulseLabel* impulseLabel=NULL;
     Via* via=NULL;
     Text* text=NULL;
     bool colorC=false;
@@ -831,10 +825,6 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             }
             if(cnt>0)
                 menu.addSeparator();
-            if(blk->name=="Large-IN")
-            {
-                impulseBlockAct=menu.addAction("Impulsdiagramm erstellen");
-            }
             delBlockAct=menu.addAction("Block Löschen");
             if(alt.length()>0)
             {
@@ -873,6 +863,12 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
             delTextAct=menu.addAction("Text Löschen");
             ok=true;
         }
+        if(isImpulseLabel(item))
+        {
+            impulseLabel=(ImpulseLabel*)item;
+            delILAct=menu.addAction("Label Löschen");
+            ok=true;
+        }
         if(isLine(item)&&(!lineC))
         {
             lineC=true;
@@ -902,6 +898,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
         ok=true;
     }
     addTextAct=menu.addAction("Text hinzufügen");
+    addILAct=menu.addAction("Impuls Label hinzufügen");
     ok=true;
     if(pin>=0)
     {
@@ -930,14 +927,6 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     emit changed();
                     return;
                 }
-                if(blk->name=="Large-IN")
-                    if(act==impulseBlockAct)
-                    {
-                        dialog.show();
-                        recording=true;
-                        recorder=blocks.indexOf(blk);
-                        return;
-                    }
                 for(int i=0;i<alt.length();i++)
                     if(altAction[i]==act)
                     {
@@ -993,6 +982,22 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 deleteSelection();
                 return;
             }
+            if(act==addILAct)
+            {
+                clearSelection();
+                bool ok;
+                QString message=QInputDialog::getText(NULL,"QDigi","Label Einfügen",QLineEdit::Normal,QString(),&ok);
+                if(ok)
+                {
+                    ImpulseLabel* il=new ImpulseLabel;
+                    il->pos=p;
+                    il->name=message;
+                    impulseLabels.append(il);
+                    items.append(il);
+                }
+                deleteSelection();
+                return;
+            }
             if(via!=NULL)
                 if(act==delViaAct)
                 {
@@ -1031,6 +1036,16 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     texts.removeAll(text);
                     items.removeAll(text);
                     text->deleteLater();
+                    emit changed();
+                    return;
+                }
+            if(impulseLabel!=NULL)
+                if(act==delILAct)
+                {
+                    clearSelection();
+                    impulseLabels.removeAll(impulseLabel);
+                    items.removeAll(impulseLabel);
+                    impulseLabel->deleteLater();
                     emit changed();
                     return;
                 }
@@ -1515,6 +1530,15 @@ void DigiView::loadJson(QByteArray json)
         vias.append(c);
         items.append(c);
     }
+    QJsonArray j=root["impulseLabels"].toArray();
+    for(int i=0;i<j.size();i++)
+    {
+        ImpulseLabel* c=new ImpulseLabel;
+        c->pos=QPoint(j[i].toObject()["x"].toInt(),j[i].toObject()["y"].toInt());
+        c->name=j[i].toObject()["name"].toString();
+        impulseLabels.append(c);
+        items.append(c);
+    }
     QJsonArray g=root["blocks"].toArray();
     for(int i=0;i<g.size();i++)
     {
@@ -1566,6 +1590,7 @@ void DigiView::deleteSelection()
         item->deleteLater();
         texts.removeAll((Text*)item);
         vias.removeAll((Via*)item);
+        impulseLabels.removeAll((ImpulseLabel*)item);
         lines.removeAll((Line*)item);
         blocks.removeAll((Block*)item);
         items.removeAll(item);
@@ -1863,6 +1888,16 @@ QJsonObject DigiView::exportJSON()
         t.append(c);
     }
     root.insert("texts",t);
+    QJsonArray j;
+    for(int i=0;i<impulseLabels.length();i++)
+    {
+        QJsonObject c;
+        c.insert("x",impulseLabels[i]->pos.x());
+        c.insert("y",impulseLabels[i]->pos.y());
+        c.insert("name",impulseLabels[i]->name);
+        j.append(c);
+    }
+    root.insert("impulseLabels",j);
     QJsonArray g;
     for(int i=0;i<blocks.length();i++)
     {
@@ -1975,13 +2010,18 @@ QList<QPair<int,int> > DigiView::getItemsForOutput(QPoint pos, QList<int> *witem
                 if(witems!=NULL)
                     witems->append(items.indexOf(vias[i]));
         }
+        for(int i=0;i<impulseLabels.length();i++)
+        {
+            if(impulseLabels[i]->pos==point)
+                if(witems!=NULL)
+                    witems->append(items.indexOf(impulseLabels[i]));
+        }
         for(int i=0;i<blocks.length();i++)
             for(int j=0;j<blocks[i]->pins.length();j++)
             {
                 if(blocks[i]->pins[j].pos()==point)
                     ret.append(QPair<int,int>(i,j));
             }
-
         for(auto p:done)
             points.removeAll(p);
     }
@@ -1999,6 +2039,13 @@ bool DigiView::isLine(Item *item)
 bool DigiView::isText(Item *item)
 {
     if(texts.contains((Text*)item))
+        return true;
+    return false;
+}
+
+bool DigiView::isImpulseLabel(Item *item)
+{
+    if(impulseLabels.contains((ImpulseLabel*)item))
         return true;
     return false;
 }
@@ -2028,7 +2075,7 @@ void DigiView::check()
 {
     for(auto item:items)
     {
-        if(!(isText(item)||isBlock(item)||isVia(item)||isLine(item)))
+        if(!(isText(item)||isBlock(item)||isVia(item)||isLine(item)||isImpulseLabel(item)))
         {
             qDebug()<<"INVALID ITEM"<<item;
             exit(1);
@@ -2047,6 +2094,14 @@ void DigiView::check()
         if(!items.contains(text))
         {
             qDebug()<<"INVALID TEXT"<<text->text;
+            exit(1);
+        }
+    }
+    for(auto il:impulseLabels)
+    {
+        if(!items.contains(il))
+        {
+            qDebug()<<"INVALID IMPULSELABEL"<<il->name;
             exit(1);
         }
     }

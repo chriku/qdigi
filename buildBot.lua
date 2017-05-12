@@ -1,5 +1,6 @@
 socket=require"ssl.https"
 chat_id="-182420953"
+chat_id="-213111483"
 function urlencode(str)
    if (str) then
       str = string.gsub (str, "\n", "\r\n")

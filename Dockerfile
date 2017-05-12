@@ -72,6 +72,9 @@ RUN git clone https://github.com/mxe/mxe.git
 RUN cd mxe -j8 && make MXE_TARGETS=i686-w64-mingw32.shared qtbase
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtmultimedia
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared libzip
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared yaml-cpp
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtsvg
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared file
 
 # TODO: Cleanup all unneeded stuff to make a slim image
 

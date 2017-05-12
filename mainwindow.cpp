@@ -1,4 +1,5 @@
 #include <QInputDialog>
+#include "helpdialog.h"
 #include "updater.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -287,4 +288,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 void MainWindow::on_actionAuf_Updates_pr_fen_triggered()
 {
     updater->startUpdate();
+}
+
+void MainWindow::on_actionImpulsdiagramm_erstellen_triggered()
+{
+    ui->digiView->dialog.widget->values.clear();
+    ui->digiView->recording=true;
+    ui->digiView->dialog.show();
+}
+
+void MainWindow::on_helpBlock_clicked()
+{
+    HelpDialog::help("blocks");
 }

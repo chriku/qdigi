@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include "blocklist.h"
 #include "impulsedialog.h"
+#include "impulselabel.h"
 #include <QTimer>
 #include <QPicture>
 #include <QTime>
@@ -46,17 +47,18 @@ public:
     QList<Line*> lines;
     QList<Text*> texts;
     QList<Via*> vias;
+    QList<ImpulseLabel*> impulseLabels;
     QList<Item*> items;
 
     bool isBlock(Item* item);
     bool isLine(Item* item);
     bool isText(Item* item);
     bool isVia(Item* item);
+    bool isImpulseLabel(Item* item);
 
     QList<QPair<int,int> > getItemsForOutput(QPoint pos, QList<int> *witems);
     QList<int> getNet(QLine in);
     bool recording;
-    int recorder;
     void clearSelection();
     void deleteSelection();
     QUrl fileName;

@@ -52,6 +52,10 @@ void keyPressEvent(QKeyEvent* event);
     void onRemoteSave();
     void on_actionAuf_Updates_pr_fen_triggered();
 
+    void on_actionImpulsdiagramm_erstellen_triggered();
+
+    void on_helpBlock_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

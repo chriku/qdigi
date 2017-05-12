@@ -8,18 +8,26 @@ ImpulseWidget::ImpulseWidget(QWidget *parent) : QWidget(parent)
 
 void ImpulseWidget::nextField()
 {
-    QMap<int,bool> c=cur;
+    QMap<QString,bool> c=cur;
     //cur.clear();
     if(values.length()>0)
-        if(values.last()==c)
+    {
+        if(c.contains("C")&&values.last().contains("C"))
         {
-            return;
+            if(values.last()["C"]==c["C"])
+                return;
         }
+        else
+            if(values.last()==c)
+            {
+                return;
+            }
+    }
     values.append(c);
     update();
 }
 
-void ImpulseWidget::pushValue(int pin, bool state)
+void ImpulseWidget::pushValue(QString pin, bool state)
 {
     cur.insert(pin,state);
 }
@@ -31,20 +39,32 @@ void ImpulseWidget::paintEvent(QPaintEvent *event)
     if(values.length()==0)
         return;
     double ppert=width()/values.length();
-    QList<int> keys;
+    QList<QString> keys;
     for(auto map:values)
         for(auto key:map.keys())
         {
             keys.removeAll(key);
             keys.append(key);
         }
+    if(keys.contains("C"))
+    {
+        keys.removeAll("C");
+        keys.prepend("C");
+    }
     double kl=keys.length();
     if(kl<0.001)
         kl=1.0;
-    double pperc=height()/kl;
+    double pperc=(height()-10)/kl;
+    for(int i=0;i<keys.length();i++)
+    {
+        double py=(i*pperc)+((pperc/3.0)*1.0);
+        double h=pperc/3.0;
+        painter.setPen(Qt::red);
+        painter.drawText(0,py,100,h,Qt::AlignLeft|Qt::AlignVCenter,keys[i]);
+    }
     for(int i=0;i<values.length();i++)
     {
-        QMap<int,bool> time=values[i];
+        QMap<QString,bool> time=values[i];
         double px=i*ppert;
         painter.setPen(Qt::lightGray);
         painter.drawLine(px,0,px,height());
@@ -62,14 +82,14 @@ void ImpulseWidget::paintEvent(QPaintEvent *event)
                 double ch=py;
                 if(!time[keys[j]])
                     ch+=h;
-                    painter.drawLine(px,ch,px+ppert,ch);
-                    if(i>0)
-                    {
-                        double oh=py;
-                        if(!values[i-1][keys[j]])
-                            oh+=h;
-                        painter.drawLine(px,ch,px,oh);
-                    }
+                painter.drawLine(px,ch,px+ppert,ch);
+                if(i>0)
+                {
+                    double oh=py;
+                    if(!values[i-1][keys[j]])
+                        oh+=h;
+                    painter.drawLine(px,ch,px,oh);
+                }
             }
         }
     }

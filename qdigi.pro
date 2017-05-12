@@ -114,7 +114,10 @@ SOURCES += main.cpp\
     line.cpp \
     text.cpp \
     via.cpp \
-    schematic.cpp
+    schematic.cpp \
+    impulselabel.cpp \
+    helpdialog.cpp \
+    markdownwidget.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -187,7 +190,10 @@ HEADERS  += mainwindow.h \
     line.h \
     text.h \
     via.h \
-    schematic.h
+    schematic.h \
+    impulselabel.h \
+    helpdialog.h \
+    markdownwidget.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
@@ -195,10 +201,12 @@ FORMS    += mainwindow.ui \
     passworddialog.ui \
     kvdiagram.ui \
     filechoose.ui \
-    impulsedialog.ui
+    impulsedialog.ui \
+    helpdialog.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc \
-    misc.qrc
+    misc.qrc \
+    res.qrc
 DEFINES += LUASOCKET_API="'__attribute__((visibility(\"default\")))'"
 win32:DEFINES += LUASOCKET_INET_PTON
 win32:DEFINES += WINVER=0x0501

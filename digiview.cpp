@@ -107,12 +107,12 @@ void DigiView::paintEvent(QPaintEvent* event)
                 block=BlockList::blocks[i];
         if(block!=NULL)
         {
-            painter.drawPicture(dragPos.x()*Settings::final()->gridSize(),dragPos.y()*Settings::final()->gridSize(),block->draw(false));
+            painter.drawPicture(dragPos.x()*Settings::final()->gridSize(),dragPos.y()*Settings::final()->gridSize(),block->draw());
         }
     }
     for(auto item:items)
     {
-        painter.drawPicture(toScreen(item->pos),item->draw(true));
+        painter.drawPicture(toScreen(item->pos),item->draw());
     }
     QPen pen(Qt::green);
     QBrush brush(Qt::green);
@@ -1067,35 +1067,35 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     line->deleteLater();
                     while(points.length()>0)
                     {
-                        int cnt=0;
-                        int del=-1;
+                        bool ok=false;
+                        QList<Line*> del;
                         QPoint point=points.takeFirst();
                         for(int i=0;i<lines.length();i++)
                         {
-                            if(onLine(lines[i]->line,point,true))
-                                cnt=100;
-                            if(line->line.p1()==point)
+                            if(lines[i]->line.p1()==point)
                             {
-                                cnt++;
-                                del=i;
+                                del.append(lines[i]);
+                                ok=true;
                             }
-                            else if(line->line.p2()==point)
+                            else if(lines[i]->line.p2()==point)
                             {
-                                del=i;
-                                cnt++;
+                                del.append(lines[i]);
+                                ok=true;
                             }
                         }
                         for(int i=0;i<vias.length();i++)
                             if(vias[i]->pos==point)
-                                cnt=100;
-                        if(cnt==1)
-                        {
-                            points.append(lines[del]->line.p1());
-                            points.append(lines[del]->line.p2());
-                            lines[del]->deleteLater();
-                            items.removeAll(lines[del]);
-                            lines.removeAt(del);
-                        }
+                                ok=false;
+                        qDebug()<<ok<<del;
+                        if(ok)
+                            for(auto l:del)
+                            {
+                                points.append(l->line.p1());
+                                points.append(l->line.p2());
+                                l->deleteLater();
+                                items.removeAll(l);
+                                lines.removeAll(l);
+                            }
                     }
 
                     cleanUp();
@@ -1476,7 +1476,7 @@ QPicture DigiView::exportPicture()
     QPicture picture;
     QPainter painter(&picture);
     for(int i=0;i<items.length();i++)
-        painter.drawPicture(items[i]->pos*Settings::final()->gridSize(),blocks[i]->draw(false));
+        painter.drawPicture(items[i]->pos*Settings::final()->gridSize(),items[i]->draw());
     painter.end();
     return picture;
 }

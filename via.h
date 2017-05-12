@@ -10,7 +10,7 @@ class Via : public Item
 public:
     explicit Via(QObject *parent = 0);
     QRectF clickRect();
-    QPicture draw(bool values);
+    QPicture draw();
     bool state;
 
 signals:

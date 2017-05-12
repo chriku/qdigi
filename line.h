@@ -11,7 +11,7 @@ class Line : public Item
 public:
     Line();
     QRectF clickRect();
-    QPicture draw(bool values);
+    QPicture draw();
     QLine line;
     bool state;
 };

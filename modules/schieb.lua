@@ -1,6 +1,6 @@
 state={false,false,false,false,old=false,read=false}
 function paintEvent(painter,color)
-  painter:setFont(nil,1)
+  painter:setFont(nil,0.75)
   painter:setBrush()
   painter:setPen(color)
   painter:drawLine(0.5,0.5,3.5,0.5)

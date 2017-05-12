@@ -12,7 +12,7 @@ QRectF Via::clickRect()
     return QRectF(pos.x()-0.5,pos.y()-0.5,1,1);
 }
 
-QPicture Via::draw(bool values)
+QPicture Via::draw()
 {
     QPicture picture;
     QPainter painter(&picture);

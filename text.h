@@ -10,7 +10,7 @@ class Text : public Item
 public:
     Text();
     QRectF clickRect();
-    QPicture draw(bool values);
+    QPicture draw();
     QString text;
 };
 

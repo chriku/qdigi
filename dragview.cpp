@@ -26,7 +26,7 @@ void DragView::makeCols()
     setRowCount(ceil(double(blockList.length())/wid));
     for(int i=0;i<blockList.length();i++)
     {
-        QPicture pic=blockList[i]->draw(false);;
+        QPicture pic=blockList[i]->draw();
         QPixmap pix(pic.boundingRect().size());
         pix.fill(Qt::transparent);
         QPainter painter(&pix);

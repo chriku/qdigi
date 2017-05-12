@@ -11,6 +11,8 @@ extern "C" {
 #include "luasocket.h"
 }
 
+QFileSystemWatcher *watcher=NULL;
+
 Block::Block(QObject *parent) : Item(parent) {
     useFake=false;
     color=Qt::black;
@@ -33,8 +35,8 @@ void Block::load(QString fileName) {
         qDebug() << "ERR2" << lua_tostring(L, -1);
 }
 
-QPicture Block::draw(bool plain) {
-    plain=!plain;
+QPicture Block::draw() {
+    bool plain=false;
     if(lua_gettop(L)!=0)
     {
         qDebug()<<"TOP ERROR";
@@ -444,12 +446,6 @@ void Block::init(Block *blk)
         blk->state=luaL_ref(L,LUA_REGISTRYINDEX);
     } else
         qDebug() << "ERR1" << lua_tostring(L, -1);
-}
-
-void Block::fileChanged(const QString &path)
-{
-    qDebug()<<path;
-    //load(path);
 }
 
 QRectF Block::clickRect()

@@ -23,7 +23,7 @@ QRectF Text::clickRect()
     return ret;
 }
 
-QPicture Text::draw(bool values)
+QPicture Text::draw()
 {
     QPicture picture;
     QPainter painter(&picture);

@@ -53,12 +53,10 @@ public:
     QRectF clickRect();
     //QRectF pinsRect();
     QPointF unmap(QPointF p);
-    QPicture draw(bool values);
+    QPicture draw();
 
 signals:
 
-public slots:
-    void fileChanged(const QString &path);
 };
 class pin_t {
 public:

@@ -69,7 +69,6 @@ void Updater::update()
                 else
                     requestFiles.append(curFile["name"].toString());
             }
-
             if((requestFiles.length()>0)||updateExe)
             {
                 if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)

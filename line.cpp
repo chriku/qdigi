@@ -4,12 +4,25 @@
 
 Line::Line()
 {
-state=false;
+    state=false;
 }
 
 QRectF Line::clickRect()
 {
+    if(line.p1().x()>line.p2().x())
+    {
+        QPoint a=line.p2();
+        line.setP2(line.p1());
+        line.setP1(a);
+    }
+    if(line.p1().y()>line.p2().y())
+    {
+        QPoint a=line.p2();
+        line.setP2(line.p1());
+        line.setP1(a);
+    }
     QRectF rect(line.p1(),line.p2());
+    rect.normalized();
     if(rect.height()<0.1)
     {
         rect=QRectF(rect.x(),rect.y()-0.5,rect.width(),1.0);
@@ -22,8 +35,20 @@ QRectF Line::clickRect()
     return rect;
 }
 
-QPicture Line::draw(bool values)
+QPicture Line::draw()
 {
+    if(line.p1().x()>line.p2().x())
+    {
+        QPoint a=line.p2();
+        line.setP2(line.p1());
+        line.setP1(a);
+    }
+    if(line.p1().y()>line.p2().y())
+    {
+        QPoint a=line.p2();
+        line.setP2(line.p1());
+        line.setP1(a);
+    }
     QPicture picture;
     QPainter painter(&picture);
     double s=Settings::final()->gridSize();

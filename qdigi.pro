@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network webkitwidgets
 
 RC_FILE = app.rc
 
@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qdigi
 TEMPLATE = app
 win32:LIBS += -lws2_32
-#CONFIG += console
+CONFIG += console
 SOURCES += main.cpp\
         mainwindow.cpp \
     digiview.cpp \
@@ -117,7 +117,9 @@ SOURCES += main.cpp\
     schematic.cpp \
     impulselabel.cpp \
     helpdialog.cpp \
-    markdownwidget.cpp
+    markdownwidget.cpp \
+    helpmanager.cpp \
+    helpreply.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -193,7 +195,9 @@ HEADERS  += mainwindow.h \
     schematic.h \
     impulselabel.h \
     helpdialog.h \
-    markdownwidget.h
+    markdownwidget.h \
+    helpmanager.h \
+    helpreply.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \

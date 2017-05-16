@@ -38,6 +38,7 @@ class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    void simulate();
     ImpulseDialog dialog;
     bool error;
     QList<QPair<QColor,QString> > loadColorProfile();

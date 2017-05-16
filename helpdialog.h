@@ -17,7 +17,7 @@ public:
     static void help(QString about);
     void showHelp(QString about);
 public slots:
-    void loadFile(QString fileName);
+    void titleChanged(QString title);
 private:
     Ui::HelpDialog *ui;
 };

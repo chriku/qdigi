@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qdigi
 TEMPLATE = app
 win32:LIBS += -lws2_32
-CONFIG += console
+#CONFIG += console
 SOURCES += main.cpp\
         mainwindow.cpp \
     digiview.cpp \
@@ -205,8 +205,7 @@ FORMS    += mainwindow.ui \
     passworddialog.ui \
     kvdiagram.ui \
     filechoose.ui \
-    impulsedialog.ui \
-    helpdialog.ui
+    impulsedialog.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc \
     misc.qrc \

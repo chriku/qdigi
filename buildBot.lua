@@ -13,7 +13,7 @@ end
 os.execute("nano /tmp/message")
 os.execute("cd .. && sudo umount mnt")
 os.execute("cd .. && sshfs root@a20-olimex:/media/usb-stick/site/q/downloads mnt")
-if 1==1 or os.execute("sudo ./build") then
+if os.execute("sudo ./build") then
   os.execute("rm -rf win;mkdir win")
   os.execute("cd win && unzip ../qdigi.zip")
   os.execute("cp -r win/qdigi/* ~/mnt/")

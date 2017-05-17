@@ -1683,7 +1683,7 @@ void DigiView::createTable()
     else
     {
         int cnt=0;
-        QList<QLine> pins;
+        QList<QPoint> pins;
         QMap<int,int> fakeGates;
         QList<int> outputs;
         for(int i=0;i<blocks.length();i++)
@@ -1692,9 +1692,9 @@ void DigiView::createTable()
         while(cnt<16)
         {
             QPoint pin(pos+QPoint(2,cnt+1));
-            if(getNet(QLine(QPoint(-1,-1),pin)).length()==0)
+            if(getItemsForOutput(pin,NULL).length()<=1)
                 break;
-            pins.append(QLine(QPoint(-1,-1),pin));
+            pins.append(pin);
             cnt++;
         }
         lin->useFake=true;

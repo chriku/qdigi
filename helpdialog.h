@@ -2,12 +2,13 @@
 #define HELPDIALOG_H
 
 #include <QDialog>
+#include <QWebView>
 
 namespace Ui {
 class HelpDialog;
 }
 
-class HelpDialog : public QDialog
+class HelpDialog : public QWebView
 {
     Q_OBJECT
 
@@ -18,8 +19,6 @@ public:
     void showHelp(QString about);
 public slots:
     void titleChanged(QString title);
-private:
-    Ui::HelpDialog *ui;
 };
 
 #endif // HELPDIALOG_H

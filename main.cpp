@@ -52,8 +52,7 @@ int main(int argc, char *argv[])
     outFile.write("Start Logging\r\n");
     outFile.close();
     QApplication a(argc, argv);
-    //HelpDialog::help("blocks");
-    qInstallMessageHandler(myMessageHandler);
+    //qInstallMessageHandler(myMessageHandler);
     if(Settings::final()->license().isEmpty())
     {
         QInputDialog dialog;
@@ -74,6 +73,8 @@ int main(int argc, char *argv[])
             diagram.exec();
             exit(0);
         }*/
+    HelpDialog dialog;
+    dialog.showHelp("blocks");
     MainWindow w;
     w.show();
     /*    long unsigned int len=1024*1024;

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network webkitwidgets
+QT       += core gui network
 
 RC_FILE = app.rc
 
@@ -13,6 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qdigi
 TEMPLATE = app
 win32:LIBS += -lws2_32
+
 #CONFIG += console
 SOURCES += main.cpp\
         mainwindow.cpp \

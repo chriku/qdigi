@@ -11,6 +11,7 @@ public:
     void abort();
     qint64 bytesAvailable() const;
     bool isSequential() const;
+    QString isValid(QString html);
 signals:
 
 public slots:

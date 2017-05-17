@@ -2,21 +2,20 @@
 #define HELPDIALOG_H
 
 #include <QDialog>
-#include <QWebView>
+#include <QTextBrowser>
 
 namespace Ui {
 class HelpDialog;
 }
 
-class HelpDialog : public QWebView
+class HelpDialog : public QTextBrowser
 {
     Q_OBJECT
-
 public:
     explicit HelpDialog(QWidget *parent = 0);
-    ~HelpDialog();
-    static void help(QString about);
     void showHelp(QString about);
+    static void help(QString about);
+    QString getText(QUrl url);
 public slots:
     void titleChanged(QString title);
 };

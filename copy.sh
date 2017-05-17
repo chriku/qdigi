@@ -2,27 +2,32 @@ set -e
 #ls /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
 #ls /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
 #mkdir -p qdigi/additional
-#cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi/additional
-#cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi/additional
-#cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi/additional
+rm -rf qdigi/*
+
+
+#cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
 #cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
+#cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
+
+
+
 cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/platforms qdigi
 cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/imageformats qdigi
 #cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
 cp -r release/qdigi.exe qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5WebKit.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5WebKitWidgets.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5WebKit.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5WebKitWidgets.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Core.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Gui.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Network.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Widgets.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Multimedia.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5MultimediaWidgets.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Qml.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5OpenGL.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5PrintSupport.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Quick.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Sql.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Multimedia.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5MultimediaWidgets.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Qml.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5OpenGL.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5PrintSupport.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Quick.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Sql.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libbz2.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/icuin56.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/icuuc56.dll qdigi

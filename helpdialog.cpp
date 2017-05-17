@@ -1,37 +1,27 @@
 #include "helpdialog.h"
 #include <QFile>
-#include <QTimer>
-#include <QDebug>
 #include <QDir>
 #include "settings.h"
-#include "helpmanager.h"
-#include <QPainter>
 #include "blocklist.h"
+#include "ui_helpdialog.h"
 
-HelpDialog::HelpDialog(QWidget *parent):
-    QDialog(parent)
+HelpDialog::HelpDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::HelpDialog)
 {
+    ui->setupUi(this);
+    connect(ui->mainContent,SIGNAL(anchorClicked(QUrl)),this,SLOT(openLink(QUrl)));
 }
 
-
-void HelpDialog::showHelp(QString about)
+HelpDialog::~HelpDialog()
 {
-    setHtml(getText(QUrl("help://"+about)));
+    delete ui;
 }
 
-void HelpDialog::titleChanged(QString title)
-{
-}
-
-void HelpDialog::help(QString about)
-{
-    //dialog->show();
-}
-
-QString HelpDialog::getText(QUrl url)
+void HelpDialog::openLink(QUrl link)
 {
     QString data;
-    QString file=url.toString();
+    QString file=link.toString();
     file.remove(0,7);
     QDir dir(Settings::final()->applicationDir());
     dir.cd("help");
@@ -90,4 +80,5 @@ QString HelpDialog::getText(QUrl url)
     {
         data="Not Found";
     }
+    ui->mainContent->setHtml(data);
 }

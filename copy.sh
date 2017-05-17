@@ -21,7 +21,7 @@ cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Core.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Gui.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Network.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Widgets.dll qdigi
-#cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Multimedia.dll qdigi
+cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Multimedia.dll qdigi
 #cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5MultimediaWidgets.dll qdigi
 #cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Qml.dll qdigi
 #cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5OpenGL.dll qdigi

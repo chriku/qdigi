@@ -117,10 +117,8 @@ SOURCES += main.cpp\
     via.cpp \
     schematic.cpp \
     impulselabel.cpp \
-    helpdialog.cpp \
     markdownwidget.cpp \
-    helpmanager.cpp \
-    helpreply.cpp
+    helpdialog.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -195,10 +193,8 @@ HEADERS  += mainwindow.h \
     via.h \
     schematic.h \
     impulselabel.h \
-    helpdialog.h \
     markdownwidget.h \
-    helpmanager.h \
-    helpreply.h
+    helpdialog.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
@@ -206,7 +202,8 @@ FORMS    += mainwindow.ui \
     passworddialog.ui \
     kvdiagram.ui \
     filechoose.ui \
-    impulsedialog.ui
+    impulsedialog.ui \
+    helpdialog.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc \
     misc.qrc \

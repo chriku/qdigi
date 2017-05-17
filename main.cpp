@@ -73,8 +73,6 @@ int main(int argc, char *argv[])
             diagram.exec();
             exit(0);
         }*/
-    HelpDialog dialog;
-    dialog.showHelp("blocks");
     MainWindow w;
     w.show();
     /*    long unsigned int len=1024*1024;

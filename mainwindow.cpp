@@ -300,6 +300,6 @@ void MainWindow::on_actionImpulsdiagramm_erstellen_triggered()
 void MainWindow::on_helpBlock_clicked()
 {
     HelpDialog *dialog=new HelpDialog;
-    dialog->openLink(QUrl("help://blocks"));
+    dialog->openLink("help://blocks");
     dialog->show();
 }

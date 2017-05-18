@@ -15,8 +15,12 @@ class HelpDialog : public QDialog
 public:
     explicit HelpDialog(QWidget *parent = 0);
     ~HelpDialog();
+    QStringList last;
 public slots:
-    void openLink(QUrl link);
+    void openLink(QString link);
+    QString getFile(QString url);
+private slots:
+    void on_back_clicked();
 
 private:
     Ui::HelpDialog *ui;

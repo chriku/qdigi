@@ -20,7 +20,7 @@ if os.execute("sudo ./build") then
   U=io.open("/tmp/message")
   message=U:read("*a")
   U:close()
-  if message:len()>0 then
+  if (message:gsub("\n","")):len()>0 then
     message="Neues Update:\n"..message
     print(socket.request("https://api.telegram.org/bot324897373:AAGKPfQHDUqWPIE7EyT_ScgeCLfU2iaWvHg/sendMessage?chat_id="..chat_id.."&text="..urlencode(message)))
   end

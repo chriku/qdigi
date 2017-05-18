@@ -1,8 +1,12 @@
 #include "markdownwidget.h"
 #include <QDebug>
+#include <QApplication>
+#include <math.h>
+#include <QScreen>
 #include <QMouseEvent>
 #include <QPicture>
 #include <QPainter>
+#include "helpdialog.h"
 
 MarkDownWidget::MarkDownWidget(QWidget *parent) : QWidget(parent)
 {
@@ -11,35 +15,64 @@ MarkDownWidget::MarkDownWidget(QWidget *parent) : QWidget(parent)
 
 void MarkDownWidget::setText(QString text)
 {
-    update();
     this->text=text;
+    content=render();
+    update();
 }
 
 void MarkDownWidget::resize(int w, int h)
 {
+    qDebug()<<width()<<w;
+    content=render();
     update();
     //render();
 }
-enum TYPE {
-    TYPE_EMPTY,
-    TYPE_TEXT,
-    TYPE_HEADLINE_1,
-    TYPE_HEADLINE_2,
-    TYPE_HEADLINE_3,
-    TYPE_HEADLINE_4,
-    TYPE_HEADLINE_5,
-    TYPE_HEADLINE_6,
-    TYPE_HR,
-    TYPE_OL,
-    TYPE_UL
-};
-struct line_t {
-    TYPE type;
-    QString content;
-};
+
+void operator<<(QDebug& debug,const line_t line)
+{
+    switch(line.type)
+    {
+    case TYPE_EMPTY:
+        debug<<"Empty(";
+        break;
+    case TYPE_TEXT:
+        debug<<"TEXT(";
+        break;
+    case TYPE_HEADLINE_1:
+        debug<<"Headline 1(";
+        break;
+    case TYPE_HEADLINE_2:
+        debug<<"Headline 2(";
+        break;
+    case TYPE_HEADLINE_3:
+        debug<<"Headline 3(";
+        break;
+    case TYPE_HEADLINE_4:
+        debug<<"Headline 4(";
+        break;
+    case TYPE_HEADLINE_5:
+        debug<<"Headline 5(";
+        break;
+    case TYPE_HEADLINE_6:
+        debug<<"Headline 6(";
+        break;
+    case TYPE_HR:
+        debug<<"HR(";
+        break;
+    case TYPE_OL:
+        debug<<"OL(";
+        break;
+    case TYPE_UL:
+        debug<<"UL(";
+        break;
+    }
+    debug<<line.content;
+    debug<<")";
+}
 
 QPixmap MarkDownWidget::render()
 {
+    links.clear();
     QStringList lines=text.split('\n');
     QList<line_t> lineTypes;
     for(int i=0;i<lines.length();i++)
@@ -98,11 +131,7 @@ QPixmap MarkDownWidget::render()
             out.type=TYPE_HEADLINE_1;
             lineTypes.append(out);
         }
-        else if(in.startsWith("  "))
-        {
-            lineTypes.last().content.append(in);
-        }
-        else if((in=="---")||(in=="___")||(in=="***"))
+        else if(in=="---")
         {
             out.content="";
             out.type=TYPE_HR;
@@ -133,7 +162,10 @@ QPixmap MarkDownWidget::render()
         }
         else
         {
-            lineTypes.append(out);
+            if((lineTypes.length()>0)&&(lineTypes.last().type==TYPE_TEXT))
+                lineTypes.last().content.append(" "+in);
+            else
+                lineTypes.append(out);
         }
     }
     int w=width();
@@ -149,41 +181,17 @@ QPixmap MarkDownWidget::render()
             paragraphs.append(QPixmap());
         }
             break;
+        case TYPE_HEADLINE_1:
+        case TYPE_HEADLINE_2:
+        case TYPE_HEADLINE_3:
+        case TYPE_HEADLINE_4:
+        case TYPE_HEADLINE_5:
+        case TYPE_HEADLINE_6:
         case TYPE_TEXT:
         {
             QList<QPair<QRect,QString> > linkPi;
-            paragraphs.append(renderText(lineTypes[i].content,width,&(linkPi)));
+            paragraphs.append(renderText(lineTypes[i].content,width,&(linkPi),getFontSize(lineTypes[i].type)));
             linkP.insert(i,linkPi);
-        }
-            break;
-        case TYPE_HEADLINE_1:
-        {
-            paragraphs.append(renderHeadline(lineTypes[i].content,width,1));
-        }
-            break;
-        case TYPE_HEADLINE_2:
-        {
-            paragraphs.append(renderHeadline(lineTypes[i].content,width,2));
-        }
-            break;
-        case TYPE_HEADLINE_3:
-        {
-            paragraphs.append(renderHeadline(lineTypes[i].content,width,3));
-        }
-            break;
-        case TYPE_HEADLINE_4:
-        {
-            paragraphs.append(renderHeadline(lineTypes[i].content,width,4));
-        }
-            break;
-        case TYPE_HEADLINE_5:
-        {
-            paragraphs.append(renderHeadline(lineTypes[i].content,width,5));
-        }
-            break;
-        case TYPE_HEADLINE_6:
-        {
-            paragraphs.append(renderHeadline(lineTypes[i].content,width,6));
         }
             break;
         case TYPE_HR:
@@ -267,8 +275,10 @@ QPixmap MarkDownWidget::render()
             QList<QPair<QRect,QString> > linkPi=linkP[i];
             for(int i=0;i<linkPi.length();i++)
             {
-                QRect r=linkPi[i].first;
-                r.translate(QPoint(0,y));
+                QRect r=linkPi[i].first.normalized();
+                int h=r.height();
+                r.setY(r.y()+y);
+                r.setHeight(h);
                 links.removeAll(QPair<QRect,QString>(r,linkPi[i].second));
                 links.append(QPair<QRect,QString>(r,linkPi[i].second));
             }
@@ -276,17 +286,31 @@ QPixmap MarkDownWidget::render()
         painter.drawPixmap(0,y,paragraphs[i]);
         y+=paragraphs[i].height()+5;
     }
+    /*painter.setBrush(Qt::green);
+    painter.setFont(QFont("Arial",5));
+    QBrush brush=painter.brush();
+    brush.setStyle(Qt::Dense7Pattern);
+    painter.setBrush(brush);
+    for(int i=0;i<links.length();i++)
+    {
+        painter.setPen(Qt::green);
+        painter.drawRect(links[i].first);
+        painter.setPen(Qt::red);
+        painter.drawText(links[i].first,Qt::AlignCenter,links[i].second);
+    }*/
     return ret;
 }
 
 void MarkDownWidget::paintEvent(QPaintEvent *event)
 {
+    if(width()!=content.width())
+        content=render();
     QPainter painter(this);
-    painter.drawPixmap(0,0,render());
+    painter.drawPixmap(0,0,content);
     painter.end();
 }
 
-QPixmap MarkDownWidget::renderHeadline(QString text, int width, int size)
+/*QPixmap MarkDownWidget::renderHeadline(QString text, int width, int size)
 {
     int sizes[6]={40,32,28,24,20,16};
     QPixmap ret(width,100);
@@ -298,7 +322,7 @@ QPixmap MarkDownWidget::renderHeadline(QString text, int width, int size)
     painter.drawText(0,0,width,100,Qt::AlignHCenter|Qt::AlignTop,text,&br);
     painter.end();
     return ret.copy(0,0,width,br.height());
-}
+}*/
 
 QPixmap MarkDownWidget::renderLine(int width)
 {
@@ -319,15 +343,15 @@ QPixmap MarkDownWidget::renderUL(QStringList items,int width, QList<QPair<QRect,
     for(int i=0;i<items.length();i++)
     {
         QList<QPair<QRect, QString> > linkPi;
-        QPixmap cur=renderText(items[i],width-20,&linkPi);
+        QPixmap cur=renderText(items[i],width-20,&linkPi,getFontSize(TYPE_UL));
         for(int j=0;j<linkPi.length();j++)
         {
-            linkPi[j].first.translate(20,y);
+            linkPi[j].first.moveCenter(linkPi[j].first.center()+QPoint(20,y));
             linkP->append(linkPi[j]);
         }
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::black);
-        painter.drawRect(7,y+3,6,6);
+        painter.drawRect(7,y+fmin(cur.height()/2.0,getFontSize(TYPE_UL))-3,6,6);
         painter.drawPixmap(20,y,cur);
         y+=cur.height()+5;
     }
@@ -343,30 +367,25 @@ QPixmap MarkDownWidget::renderOL(QStringList items,int width, QList<QPair<QRect,
     for(int i=0;i<items.length();i++)
     {
         QList<QPair<QRect, QString> > linkPi;
-        QPixmap cur=renderText(items[i],width-20,&linkPi);
+        QPixmap cur=renderText(items[i],width-20,&linkPi,getFontSize(TYPE_OL));
         for(int j=0;j<linkPi.length();j++)
         {
             linkPi[j].first.translate(20,y);
             linkP->append(linkPi[j]);
         }
+        QFont font("Arial");
+        font.setPixelSize(getFontSize(TYPE_OL));
+        painter.setFont(font);
         painter.setPen(Qt::black);
-        painter.drawText(0,y,20,cur.height(),Qt::AlignCenter,QString::number(i+1)+".");
+        painter.drawText(0,y,fmin(cur.height()/2.0,getFontSize(TYPE_OL)),cur.height(),Qt::AlignCenter,QString::number(i+1)+".");
         painter.drawPixmap(20,y,cur);
         y+=cur.height()+5;
     }
     return ret.copy(0,0,width,y-5);
 }
 
-struct word_t {
-    QString text;
-    bool bold;
-    bool italic;
-    int link;
-    QString linkT;
-    QPixmap rendered;
-};
 
-QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, QString> > *linkP)
+QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, QString> > *linkP, int fontSize)
 {
     QList<word_t> words;
     int pos=0;
@@ -435,6 +454,7 @@ QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, Q
         }
         else if(c==' ')
         {
+            cur.append(c);
             add=true;
         }
         else
@@ -458,7 +478,7 @@ QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, Q
             words[i].linkT=links[words[i].link];
         }
     }
-    int fh=12;
+    int fh=fontSize;
     for(int i=0;i<words.length();i++)
     {
         QColor color=Qt::black;
@@ -470,9 +490,12 @@ QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, Q
         if(words[i].link>=0)
         {
             font.setUnderline(true);
+            if(hd->getFile(words[i].linkT).length()>0)
             color=Qt::blue;
+            else
+                color=Qt::red;
         }
-        QPixmap pm(width,fh+5);
+        QPixmap pm(width,fh*1.5);
         pm.fill(Qt::transparent);
         QPainter painter(&pm);
         painter.setFont(font);
@@ -493,10 +516,10 @@ QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, Q
         }
         if(words[i].link>=0)
         {
-            linkP->append(QPair<QRect,QString>(QRect(px,(lines.length()-1)*(fh+5),words[i].rendered.width(),words[i].rendered.height()),words[i].linkT));
+            linkP->append(QPair<QRect,QString>(QRect(px,(lines.length()-1)*(fh),words[i].rendered.width(),words[i].rendered.height()),words[i].linkT));
         }
         lines.last().append(words[i].rendered);
-        px+=words[i].rendered.width()+5;
+        px+=words[i].rendered.width();
     }
     QPixmap ret(width,lines.length()*(fh+5));
     ret.fill(Qt::white);
@@ -508,9 +531,9 @@ QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, Q
         for(int j=0;j<lines[i].length();j++)
         {
             painter.drawPixmap(px,py,lines[i][j]);
-            px+=lines[i][j].width()+5;
+            px+=lines[i][j].width();
         }
-        py+=fh+5;
+        py+=fh;
     }
     return ret;
 }
@@ -525,6 +548,7 @@ void MarkDownWidget::mouseMoveEvent(QMouseEvent *event)
             setCursor(Qt::PointingHandCursor);
         }
     }
+    update();
 }
 
 void MarkDownWidget::mousePressEvent(QMouseEvent *event)
@@ -535,7 +559,42 @@ void MarkDownWidget::mousePressEvent(QMouseEvent *event)
         {
             qDebug()<<"LINK"<<link.second;
             emit linkClicked(link.second);
+            update();
+            return;
         }
     }
+    update();
 }
 
+int MarkDownWidget::getFontSize(TYPE what)
+{
+    double mm=0;
+    for(auto screen:QApplication::screens())
+        mm+=screen->physicalDotsPerInch();
+    mm/=QApplication::screens().length();
+    mm/=25.4;
+    switch(what)
+    {
+    case TYPE_TEXT:
+        break;
+    case TYPE_HEADLINE_1:
+        return mm*15.0;
+        break;
+    case TYPE_HEADLINE_2:
+        return mm*13.0;
+        break;
+    case TYPE_HEADLINE_3:
+        return mm*11.0;
+        break;
+    case TYPE_HEADLINE_4:
+        return mm*9.0;
+        break;
+    case TYPE_HEADLINE_5:
+        return mm*7.0;
+        break;
+    case TYPE_HEADLINE_6:
+        return mm*5.0;
+        break;
+    }
+    return mm*3.0;
+}

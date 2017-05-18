@@ -10,7 +10,7 @@ HelpDialog::HelpDialog(QWidget *parent) :
     ui(new Ui::HelpDialog)
 {
     ui->setupUi(this);
-    connect(ui->mainContent,SIGNAL(anchorClicked(QUrl)),this,SLOT(openLink(QUrl)));
+    connect(ui->mainContent,SIGNAL(linkClicked(QString)),this,SLOT(openLink(QString)));
 }
 
 HelpDialog::~HelpDialog()
@@ -18,20 +18,30 @@ HelpDialog::~HelpDialog()
     delete ui;
 }
 
-void HelpDialog::openLink(QUrl link)
+void HelpDialog::openLink(QString link)
 {
+    QString data=getFile(link);
+    if(data.isEmpty())
+        data="ERROR";
+    ui->mainContent->setText(data);
+}
+
+QString HelpDialog::getFile(QString url)
+{
+    if(!((last.length()>0)&&(last.last()==url)))
+        last.append(url);
     QString data;
-    QString file=link.toString();
+    QString file=url;
     file.remove(0,7);
     QDir dir(Settings::final()->applicationDir());
     dir.cd("help");
     if(file=="blocks")
     {
-        QFile file(dir.absoluteFilePath("blocks.html"));
+        QFile file(dir.absoluteFilePath("blocks.md"));
         file.open(QFile::ReadOnly);
         data=file.readAll();
         file.close();
-        QByteArray list="<ul>";
+        QByteArray list;
         dir.cd("blocks");
         for(auto block:BlockList::blocks)
         {
@@ -39,10 +49,7 @@ void HelpDialog::openLink(QUrl link)
             dir2.cdUp();
             QString fn=dir2.relativeFilePath(block->fileName);
             fn.replace(".lua","");
-            if(QFile(dir.absoluteFilePath(fn+".html")).exists())
-                list+="<li><a class=\"block\" href=\"help://blocks/"+fn+"\">"+block->name+"</a></li>";
-            else
-                list+="<li><span class=\"block\" href=\"help://blocks/"+fn+"\">"+block->name+"</span></li>";
+            list+="- ["+block->name+"](help://blocks/"+fn+")\n";
         }
         list+="</ul>";
         data.replace("__BLOCKS__",list);
@@ -51,7 +58,7 @@ void HelpDialog::openLink(QUrl link)
     {
         dir.cd("blocks");
         file.remove(0,7);
-        QFile filef(dir.absoluteFilePath(file+".html"));
+        QFile filef(dir.absoluteFilePath(file+".md"));
         qDebug()<<file;
         filef.open(QFile::ReadOnly);
         data=filef.readAll();
@@ -80,5 +87,10 @@ void HelpDialog::openLink(QUrl link)
     {
         data="Not Found";
     }
-    ui->mainContent->setHtml(data);
+    return data;
+}
+
+void HelpDialog::on_back_clicked()
+{
+    openLink(last.takeLast());
 }

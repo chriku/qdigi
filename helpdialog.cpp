@@ -10,6 +10,7 @@ HelpDialog::HelpDialog(QWidget *parent) :
     ui(new Ui::HelpDialog)
 {
     ui->setupUi(this);
+    ui->mainContent->hd=this;
     connect(ui->mainContent,SIGNAL(linkClicked(QString)),this,SLOT(openLink(QString)));
 }
 
@@ -20,6 +21,8 @@ HelpDialog::~HelpDialog()
 
 void HelpDialog::openLink(QString link)
 {
+    if(!((last.length()>0)&&(last.last()==link)))
+        last.append(link);
     QString data=getFile(link);
     if(data.isEmpty())
         data="ERROR";
@@ -28,8 +31,6 @@ void HelpDialog::openLink(QString link)
 
 QString HelpDialog::getFile(QString url)
 {
-    if(!((last.length()>0)&&(last.last()==url)))
-        last.append(url);
     QString data;
     QString file=url;
     file.remove(0,7);
@@ -92,5 +93,9 @@ QString HelpDialog::getFile(QString url)
 
 void HelpDialog::on_back_clicked()
 {
-    openLink(last.takeLast());
+    if(last.length()>1)
+    {
+        last.removeLast();
+        openLink(last.takeLast());
+    }
 }

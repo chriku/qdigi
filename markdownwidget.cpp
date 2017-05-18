@@ -73,6 +73,7 @@ void operator<<(QDebug& debug,const line_t line)
 QPixmap MarkDownWidget::render()
 {
     links.clear();
+    text.replace("\r\n","\n");
     QStringList lines=text.split('\n');
     QList<line_t> lineTypes;
     for(int i=0;i<lines.length();i++)

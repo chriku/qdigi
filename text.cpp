@@ -19,7 +19,7 @@ QRectF Text::clickRect()
     pen.setWidth(100);
     painter.setPen(pen);
     double w=painter.boundingRect(QRectF(0,0,1000,Settings::final()->gridSize()),Qt::AlignLeft|Qt::AlignVCenter,text).width();
-    QRectF ret=QRectF(pos.x(),pos.y(),w/Settings::final()->gridSize(),1.0);
+    QRectF ret=QRectF(pos.x(),pos.y()-0.5,w/Settings::final()->gridSize(),1.0);
     return ret;
 }
 
@@ -33,6 +33,6 @@ QPicture Text::draw()
     QPen pen(Qt::black);
     pen.setWidth(100);
     painter.setPen(pen);
-    painter.drawText(0,0,1000,Settings::final()->gridSize(),Qt::AlignLeft|Qt::AlignVCenter,text);
+    painter.drawText(0,-0.5*Settings::final()->gridSize(),1000,Settings::final()->gridSize(),Qt::AlignLeft|Qt::AlignVCenter,text);
     return picture;
 }

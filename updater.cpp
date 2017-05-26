@@ -16,11 +16,12 @@ Updater::Updater(QObject *parent) : QObject(parent)
 
 void Updater::update()
 {
+    qDebug()<<"Update Finished"<<grep->errorString();
     QEventLoop loop;
     if(grep->error()==QNetworkReply::NoError)
     {
         QByteArray resp=grep->readAll();
-        //qDebug()<<resp;
+        qDebug()<<"Update data" <<resp;
         QJsonParseError error;
         QJsonDocument doc=QJsonDocument::fromJson(resp,&error);
         if(error.error==error.NoError)
@@ -201,6 +202,7 @@ void Updater::startUpdate()
 #ifdef Q_OS_WIN32
     QString platform="windows";
 #endif
+    qDebug()<<"Starting Update";
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
     req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
     grep=manager.get(req);

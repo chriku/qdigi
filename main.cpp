@@ -43,6 +43,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     ts << txt << endl;
     outFile.close();
 }
+
 int main(int argc, char *argv[])
 {
     qDebug()<<"USING"<<QNetworkProxyFactory::usesSystemConfiguration();

@@ -6,6 +6,7 @@
 #include "blocklist.h"
 #include "impulsedialog.h"
 #include "impulselabel.h"
+#include "jumplabel.h"
 #include <QTimer>
 #include <QPicture>
 #include <QTime>
@@ -49,6 +50,7 @@ public:
     QList<Text*> texts;
     QList<Via*> vias;
     QList<ImpulseLabel*> impulseLabels;
+    QList<JumpLabel*> jumpLabels;
     QList<Item*> items;
 
     bool isBlock(Item* item);
@@ -56,6 +58,7 @@ public:
     bool isText(Item* item);
     bool isVia(Item* item);
     bool isImpulseLabel(Item* item);
+    bool isJumpLabel(Item* item);
 
     QList<QPair<int,int> > getItemsForOutput(QPoint pos, QList<int> *witems);
     QList<int> getNet(QLine in);

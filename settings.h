@@ -52,6 +52,7 @@ public:
     bool defaultSimu();
     static Settings* final();
     QString license();
+    bool licensePay();
     QColor background();
     QString refresh_token();
     GRID gridType();

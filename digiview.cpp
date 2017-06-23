@@ -35,10 +35,12 @@ DigiView::DigiView(QWidget *parent) : QWidget(parent)
     BlockList list;
     setAcceptDrops(true);
     connect(&timer,SIGNAL(timeout()),this,SLOT(timeout()));
+    connect(&timer2,SIGNAL(timeout()),this,SLOT(update()));
     timer.setInterval(Settings::final()->simulationTime());
     setContextMenuPolicy(Qt::DefaultContextMenu);
     resizeNow();
     setMouseTracking(true);
+    timer2.start(40);
 }
 
 void DigiView::paintEvent(QPaintEvent* event)
@@ -270,6 +272,7 @@ void DigiView::dropEvent(QDropEvent *event)
     clearSelection();
     dragPos=toGrid(event->pos())-QPoint(1,1);
     addBlock(dragPos.toPoint(),dragGate);
+    change();
     if(!dragMany)
         dragGate="";
     update();
@@ -284,6 +287,7 @@ void DigiView::mousePressEvent(QMouseEvent *event)
             event->accept();
             dragPos=toGrid(event->pos())-QPoint(1,1);
             addBlock(dragPos.toPoint(),dragGate);
+            change();
             if(event->button()!=Qt::LeftButton)
                 dragGate="";
             update();
@@ -356,6 +360,7 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
     if(dragGate!="")
         if(dragMany)
         {
+            change();
             clearSelection();
             dragPos=toGrid(event->pos())-QPoint(1,1);
             update();
@@ -369,6 +374,7 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
         curPoint=toGrid(event->pos());
         if(drag)
         {
+            change();
             dragged=true;
             if(dragIdx>=0)
                 items[dragIdx]->pos+=curPoint-startPoint;
@@ -408,7 +414,7 @@ void DigiView::mouseReleaseEvent(QMouseEvent *event)
                     lines.append(line);
                     items.append(line);
                     cleanUp();
-                    emit changed();
+                    change();
                 }
             if(curPoint!=startPoint)
                 if(!(((curPoint.x()!=startPoint.x())&&(curPoint.y()==startPoint.y()))||((curPoint.y()!=startPoint.y())&&(curPoint.x()==startPoint.x()))))
@@ -486,15 +492,6 @@ bool DigiView::save(QUrl where)
 
 void DigiView::load(QUrl where)
 {
-    lines.clear();
-    for(int i=0;i<blocks.length();i++)
-        blocks[i]->deleteLater();
-    blocks.clear();
-    vias.clear();
-    texts.clear();
-    items.clear();
-    impulseLabels.clear();
-    jumpLabels.clear();
     if(where.scheme()=="file")
     {
         QFile file(where.toLocalFile());
@@ -735,7 +732,6 @@ void DigiView::timeout()
             dialog.widget->pushValue(label->name,label->state);
         dialog.widget->nextField();
     }
-    update();
 }
 
 void DigiView::contextMenuEvent(QContextMenuEvent *event)
@@ -935,7 +931,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     blk->deleteLater();
                     blocks.removeAll(blk);
                     items.removeAll(blk);
-                    emit changed();
+                    change();
                     return;
                 }
                 for(int i=0;i<alt.length();i++)
@@ -945,13 +941,14 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                         items.removeAll(blk);
                         blocks.removeAll(blk);
                         addBlock(blk->pos,alt[i]);
+                        change();
                         Block* nblk=blocks.last();
                         for(int i=0;i<nblk->pins.length();i++)
                             nblk->pins[i].parent=nblk;
                         for(int i=0;i<nblk->pins.length();i++)
                             nblk->pins[i].type=blk->pins[i].type;
                         blk->deleteLater();
-                        emit changed();
+                        change();
                         clearSelection();
                         qDebug()<<blocks;
                         update();
@@ -965,6 +962,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     lastSel=-1;
                     deleteSelection();
                     clearSelection();
+                    change();
                     return;
                 }
                 if(setSelectionColorAction.contains(act))
@@ -972,7 +970,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     QColor c=setSelectionColorAction[act];
                     for(auto item:selection)
                         items[item]->color=c;
-                    emit changed();
+                    change();
                     clearSelection();
                     return;
                 }
@@ -990,7 +988,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     texts.append(text);
                     items.append(text);
                 }
-                deleteSelection();
+                change();
                 return;
             }
             if(act==addILAct)
@@ -1006,7 +1004,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     impulseLabels.append(il);
                     items.append(il);
                 }
-                deleteSelection();
+                change();
                 return;
             }
             if(act==addJLAct)
@@ -1022,7 +1020,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     jumpLabels.append(il);
                     items.append(il);
                 }
-                deleteSelection();
+                change();
                 return;
             }
             if(via!=NULL)
@@ -1032,7 +1030,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     vias.removeAll(via);
                     items.removeAll(via);
                     via->deleteLater();
-                    emit changed();
+                    change();
                     return;
                 }
             if(via==NULL)
@@ -1043,7 +1041,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     QColor c=setColorAction[act];
                     for(auto idx:clickedItems)
                         items[idx]->color=c;
-                    emit changed();
+                    change();
                     clearSelection();
                     return;
                 }
@@ -1053,7 +1051,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                 {
                     clearSelection();
                     blk->pins[pin].type=!blk->pins[pin].type;
-                    emit changed();
+                    change();
                     return;
                 }
             if(text!=NULL)
@@ -1063,7 +1061,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     texts.removeAll(text);
                     items.removeAll(text);
                     text->deleteLater();
-                    emit changed();
+                    change();
                     return;
                 }
             if(impulseLabel!=NULL)
@@ -1073,7 +1071,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     impulseLabels.removeAll(impulseLabel);
                     items.removeAll(impulseLabel);
                     impulseLabel->deleteLater();
-                    emit changed();
+                    change();
                     return;
                 }
             if(jumpLabel!=NULL)
@@ -1083,7 +1081,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     jumpLabels.removeAll(jumpLabel);
                     items.removeAll(jumpLabel);
                     jumpLabel->deleteLater();
-                    emit changed();
+                    change();
                     return;
                 }
             if(lcnt==2)
@@ -1095,7 +1093,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     vias.append(via);
                     items.append(via);
                     cleanUp();
-                    emit changed();
+                    change();
                     return;
                 }
             if(line!=NULL)
@@ -1105,7 +1103,7 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                     lines.removeAll(line);
                     items.removeAll(line);
                     line->deleteLater();
-                    emit changed();
+                    change();
                     return;
                 }
             if(line!=NULL)
@@ -1151,9 +1149,8 @@ void DigiView::contextMenuEvent(QContextMenuEvent *event)
                                 lines.removeAll(l);
                             }
                     }
-
                     cleanUp();
-                    emit changed();
+                    change();
                     return;
                 }
         }
@@ -1537,6 +1534,15 @@ QPicture DigiView::exportPicture()
 
 void DigiView::loadJson(QByteArray json)
 {
+    lines.clear();
+    for(int i=0;i<blocks.length();i++)
+        blocks[i]->deleteLater();
+    blocks.clear();
+    vias.clear();
+    texts.clear();
+    items.clear();
+    impulseLabels.clear();
+    jumpLabels.clear();
     lastSel=-1;
     QJsonObject root=QJsonDocument::fromJson(json).object();
     QJsonArray l=root["lines"].toArray();
@@ -1642,7 +1648,6 @@ void DigiView::deleteSelection()
         blocks.removeAll((Block*)item);
         items.removeAll(item);
     }
-    emit changed();
     clearSelection();
     cleanUp();
 }
@@ -2032,7 +2037,6 @@ void DigiView::addBlock(QPoint pos, QString type)
                 return;
     blocks.append(blk);
     items.append(blk);
-    emit changed();
     cleanUp();
 }
 
@@ -2209,5 +2213,39 @@ void DigiView::check()
             qDebug()<<"INVALID LINE"<<line->line;
             exit(1);
         }
+    }
+}
+
+void DigiView::change()
+{
+    emit changed();
+    qDebug()<<"Changed";
+    QByteArray data=QJsonDocument(exportJSON()).toJson(QJsonDocument::Compact);
+    if((undoBuf.length()==0)||(data!=undoBuf.last()))
+    {
+        redoBuf.clear();
+        undoBuf.append(data);
+    }
+    cleanUp();
+}
+
+void DigiView::undo()
+{
+    qDebug()<<undoBuf;
+    if(undoBuf.length()>1) {
+        undoBuf.removeLast();
+        QByteArray cur=undoBuf.last();
+        redoBuf.append(cur);
+        loadJson(cur);
+    }
+}
+
+void DigiView::redo()
+{
+    if(redoBuf.length()>1) {
+        redoBuf.removeLast();
+        QByteArray cur=redoBuf.last();
+        undoBuf.append(cur);
+        loadJson(cur);
     }
 }

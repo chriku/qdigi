@@ -127,8 +127,8 @@ void Updater::update()
         }
     }else if(grep->error()==QNetworkReply::AuthenticationRequiredError){
         Settings::final()->setLicense("");
-        QMessageBox::warning(NULL,"QDigi","Falscher Lizenzschlüssel\nBitte beim nächsten Start Gültigen Schlüssel eingeben");
-        exit(0);
+        //QMessageBox::warning(NULL,"QDigi","Falscher Lizenzschlüssel\nBitte beim nächsten Start Gültigen Schlüssel eingeben");
+        //exit(0);
     }
     else
     {
@@ -206,8 +206,8 @@ void Updater::startUpdate()
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
     req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
     grep=manager.get(req);
-    if(Settings::final()->license().isEmpty())
-        return;
+    //if(Settings::final()->license().isEmpty())
+    //    return;
     QFile rfile(QApplication::applicationFilePath()+".old");
     if(rfile.exists())
         rfile.remove();

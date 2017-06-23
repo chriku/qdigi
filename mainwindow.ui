@@ -29,41 +29,67 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QCheckBox" name="simulation">
-      <property name="text">
-       <string>Simulation</string>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <widget class="QCheckBox" name="simulation">
+        <property name="text">
+         <string>Simulation</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>5</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="DigiView" name="digiView">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>5000</width>
+           <height>5000</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>5000</width>
+           <height>5000</height>
+          </size>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <widget class="QScrollArea" name="scrollArea">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>5</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QWidget" name="ad" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>0</height>
+       </size>
       </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="DigiView" name="digiView">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>5000</width>
-         <height>5000</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>5000</width>
-         <height>5000</height>
-        </size>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Hier könnte ihre Werbung stehen</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -699,7 +725,15 @@
     <addaction name="actionAuf_Updates_pr_fen"/>
     <addaction name="actionImpulsdiagramm_erstellen"/>
    </widget>
+   <widget class="QMenu" name="menuBearbeiten">
+    <property name="title">
+     <string>Bearbeiten</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuDatei"/>
+   <addaction name="menuBearbeiten"/>
    <addaction name="menuAnsicht"/>
    <addaction name="menuAuswahl"/>
    <addaction name="menuAnderes"/>
@@ -825,6 +859,22 @@
   <action name="actionImpulsdiagramm_erstellen">
    <property name="text">
     <string>Impulsdiagramm erstellen</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Rückgängig</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Vorwärtsgängig</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y, Ctrl+Shift+Z</string>
    </property>
   </action>
  </widget>

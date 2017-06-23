@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    if(Settings::final()->licensePay())
+        ui->ad->hide();
     updater=new Updater;
     QMenu* remSave=new QMenu;
     RemoteDriveList rlist;
@@ -302,4 +304,14 @@ void MainWindow::on_helpBlock_clicked()
     HelpDialog *dialog=new HelpDialog;
     dialog->openLink("help://blocks");
     dialog->show();
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    ui->digiView->undo();
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+    ui->digiView->redo();
 }

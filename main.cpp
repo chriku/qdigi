@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
     outFile.close();
     QApplication a(argc, argv);
     //qInstallMessageHandler(myMessageHandler);
+    qDebug()<<Settings::final()->license();
     if(Settings::final()->license().isEmpty())
     {
         QInputDialog dialog;
@@ -62,8 +63,6 @@ int main(int argc, char *argv[])
         dialog.setLabelText("Lizenzschlüssel eingeben");
         dialog.exec();
         QString lic=dialog.textValue();
-        if(lic.isEmpty())
-            return 0;
         Settings::final()->setLicense(lic);
     }
     QString lic=Settings::final()->license();

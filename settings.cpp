@@ -22,6 +22,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
     mainPath=saveFile->value("appDirPath",mainPath).toString();
     if(omp!=mainPath)
         saveFile=new QSettings(QDir(mainPath).absoluteFilePath("settings.ini"),QSettings::IniFormat);
+    qDebug()<<saveFile->allKeys();
     m_gridSize=saveFile->value("gridSize",20).toInt();
     m_gridType=(GRID)saveFile->value("gridType",GRID_LINES).toInt();
     m_defaultSimu=saveFile->value("defaultSimu",true).toBool();
@@ -30,6 +31,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
     m_rasterSize=saveFile->value("rasterSize",5).toInt();
     m_penWidth=saveFile->value("penWidth",0.1).toDouble();
     m_license=saveFile->value("licenseKey","").toString();
+    qDebug()<<"LIC"<<m_license;
     m_background=saveFile->value("background",QColor(Qt::white)).value<QColor>();
     m_refresh_token=saveFile->value("refresh_token","").toString();
     m_simulationTime=saveFile->value("simulationTime",10).toInt();
@@ -226,4 +228,9 @@ QString Settings::getLua(QString key)
     QString value=saveFile->value(key).toString();
     saveFile->endGroup();
     return value;
+}
+
+bool Settings::licensePay()
+{
+    return !license().isEmpty();
 }

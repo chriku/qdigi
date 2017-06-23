@@ -56,6 +56,10 @@ void keyPressEvent(QKeyEvent* event);
 
     void on_helpBlock_clicked();
 
+    void on_actionUndo_triggered();
+
+    void on_actionRedo_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

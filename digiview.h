@@ -69,6 +69,7 @@ public:
     void cleanUp();
     explicit DigiView(QWidget *parent = 0);
     QTimer timer;
+    QTimer timer2;
     void largeIn(int o);
     void emitKey(QString key);
     void keyPressEvent(QKeyEvent* event);
@@ -113,6 +114,11 @@ public:
     QPoint toScreen(QPointF pos);
     void check();
     int lastSel;
+    void change();
+    QList<QByteArray> undoBuf;
+    QList<QByteArray> redoBuf;
+    void undo();
+    void redo();
 signals:
     void changed();
 public slots:

@@ -61,7 +61,7 @@ void SettingsDialog::on_changeLicense_clicked()
     QInputDialog dialog;
     dialog.setInputMode(QInputDialog::TextInput);
     dialog.setWindowTitle("QDigi");
-    dialog.setLabelText("Lizenzschlüssel eingeben\nAbbrechen für Offline-Arbeiten");
+    dialog.setLabelText("Lizenzschlüssel eingeben");
     dialog.exec();
     QString lic=dialog.textValue();
     Settings::final()->setLicense(lic);

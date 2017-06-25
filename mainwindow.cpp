@@ -1,4 +1,5 @@
 #include <QInputDialog>
+#include "subitemblock.h"
 #include "helpdialog.h"
 #include "updater.h"
 #include "mainwindow.h"
@@ -20,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->digiView->mwp=this;
     if(Settings::final()->licensePay())
         ui->ad->hide();
     updater=new Updater;
@@ -38,38 +40,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->digiView->load(Settings::final()->lastFile());
     setWindowTitle("QDigi "+ui->digiView->fileName.toDisplayString());
     connect(ui->digiView,SIGNAL(changed()),this,SLOT(changed()));
-    BlockList list;
-    QList<Block*> base;
-    QList<Block*> coder;
-    QList<Block*> multi;
-    QList<Block*> flip;
-    QList<Block*> other;
-    QList<Block*> inp;
-    QList<Block*> outp;
-    for(int i=0;i<list.blocks.length();i++)
-    {
-        if(list.blocks[i]->category=="base")
-            base.append(list.blocks[i]);
-        else if(list.blocks[i]->category=="coder")
-            coder.append(list.blocks[i]);
-        else if(list.blocks[i]->category=="multi")
-            multi.append(list.blocks[i]);
-        else if(list.blocks[i]->category=="flip")
-            flip.append(list.blocks[i]);
-        else if(list.blocks[i]->category=="in")
-            inp.append(list.blocks[i]);
-        else if(list.blocks[i]->category=="out")
-            outp.append(list.blocks[i]);
-        else
-            other.append(list.blocks[i]);
-    }
-    ui->base->blockList=base;
-    ui->flipflop->blockList=flip;
-    ui->coder->blockList=coder;
-    ui->other->blockList=other;
-    ui->multi->blockList=multi;
-    ui->input->blockList=inp;
-    ui->output->blockList=outp;
     QStringList args=QApplication::arguments();
     if(args.length()>1)
     {
@@ -79,7 +49,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBox->setCurrentWidget(ui->page_base);
     isChanged=false;
     updateLc();
-    connect(updater,SIGNAL(showMessage(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));   
+    connect(updater,SIGNAL(showMessage(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));
+    updateSchematicTree();
+    updateBlocks();
 }
 
 MainWindow::~MainWindow()
@@ -152,6 +124,8 @@ void MainWindow::on_action_ffnen_triggered()
         Settings::final()->addLastChanged(QUrl::fromLocalFile(fileName));
         setWindowTitle("QDigi "+ui->digiView->fileName.toDisplayString());
         updateLc();
+        updateSchematicTree();
+        updateBlocks();
     }
 }
 
@@ -168,6 +142,7 @@ void MainWindow::on_actionNeu_triggered()
     ui->digiView->load(QUrl(""));
     ui->digiView->fileName.clear();
     setWindowTitle("QDigi");
+    updateSchematicTree();
 }
 
 void MainWindow::changed()
@@ -243,6 +218,8 @@ void MainWindow::openRecent()
     QAction* send=(QAction*)sender();
     qDebug()<<"LAST"<<lastChangedActions[send];
     ui->digiView->load(lastChangedActions[send]);
+    updateSchematicTree();
+    updateBlocks();
 }
 
 void MainWindow::updateLc()
@@ -314,4 +291,97 @@ void MainWindow::on_actionUndo_triggered()
 void MainWindow::on_actionRedo_triggered()
 {
     ui->digiView->redo();
+}
+
+void MainWindow::updateSchematicTree()
+{
+    QTreeWidgetItem* root=new QTreeWidgetItem(QStringList()<<""<<"ROOT");
+    root->setIcon(0,QApplication::style()->standardIcon(QStyle::SP_FileIcon));
+    for(auto su:ui->digiView->childSchematics)
+    {
+        QTreeWidgetItem* child=new QTreeWidgetItem(QStringList()<<""<<su->name);
+        child->setIcon(0,QApplication::style()->standardIcon(QStyle::SP_FileIcon));
+        root->addChild(child);
+    }
+    ui->schematicTree->clear();
+    ui->schematicTree->setColumnCount(2);
+    ui->schematicTree->addTopLevelItem(root);
+}
+
+void MainWindow::on_addSchematic_clicked()
+{
+    Schematic* newSchema=new Schematic;
+    bool ok;
+    newSchema->name=QInputDialog::getText(NULL,"Name","Schaltplanname",QLineEdit::Normal,"",&ok);
+    if(ok)
+        ui->digiView->childSchematics.append(newSchema);
+    ui->digiView->curSchematic=newSchema;
+    updateSchematicTree();
+    updateBlocks();
+}
+
+void MainWindow::on_schematicTree_itemClicked(QTreeWidgetItem *item, int column)
+{
+    ui->digiView->purgeSchematic();
+    QString name=item->text(1);
+    if(name=="ROOT")
+        ui->digiView->curSchematic=ui->digiView->rootSchematic;
+    else
+    {
+        for(auto schema:ui->digiView->childSchematics)
+            if(schema->name==name)
+                ui->digiView->curSchematic=schema;
+    }
+    updateBlocks();
+}
+void MainWindow::updateBlocks()
+{
+    BlockList list;
+    QList<Block*> base;
+    QList<Block*> coder;
+    QList<Block*> multi;
+    QList<Block*> flip;
+    QList<Block*> other;
+    QList<Block*> inp;
+    QList<Block*> outp;
+    QList<Block*> sub;
+    for(int i=0;i<list.blocks.length();i++)
+    {
+        if(list.blocks[i]->category=="base")
+            base.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="coder")
+            coder.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="multi")
+            multi.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="flip")
+            flip.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="in")
+            inp.append(list.blocks[i]);
+        else if(list.blocks[i]->category=="out")
+            outp.append(list.blocks[i]);
+        else
+            other.append(list.blocks[i]);
+    }
+    for(int i=0;i<BlockList::blocks.length();i++)
+        if(BlockList::blocks[i]->subItem==true)
+        {
+            BlockList::blocks[i]->deleteLater();
+            BlockList::blocks.removeAt(i);
+            i--;
+        }
+    for(int i=0;i<ui->digiView->childSchematics.length();i++)
+    {
+        SubitemBlock*sb=new SubitemBlock(ui->digiView->childSchematics[i]);
+        sub.append(sb);
+        BlockList::blocks.append(sb);
+    }
+    ui->base->blockList=base;
+    ui->flipflop->blockList=flip;
+    ui->coder->blockList=coder;
+    ui->other->blockList=other;
+    ui->multi->blockList=multi;
+    ui->input->blockList=inp;
+    ui->output->blockList=outp;
+    ui->subItem->blockList=sub;
+    ui->subItem->makeCols();
 }

@@ -2,7 +2,7 @@
 #define BLOCKLIST_H
 
 #include <QObject>
-#include "block.h"
+#include "luablock.h"
 class BlockList : public QObject
 {
     Q_OBJECT

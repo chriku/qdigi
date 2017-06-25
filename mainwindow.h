@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QTreeWidgetItem>
 #include <QMainWindow>
 #include <QMap>
 #include "updater.h"
@@ -13,13 +14,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    void updateSchematicTree();
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-bool isChanged;
-QMap<QAction*,QUrl> lastChangedActions;
-Updater* updater;//Pointer, damit Proxy immer gehandelt
+    bool isChanged;
+    QMap<QAction*,QUrl> lastChangedActions;
+    Updater* updater;//Pointer, damit Proxy immer gehandelt
+    void updateBlocks();
 private slots:
-void keyPressEvent(QKeyEvent* event);
+    void keyPressEvent(QKeyEvent* event);
     void on_actionSpeichern_triggered();
 
     void on_actionEinstellungen_triggered();
@@ -59,6 +62,11 @@ void keyPressEvent(QKeyEvent* event);
     void on_actionUndo_triggered();
 
     void on_actionRedo_triggered();
+
+    void on_addSchematic_clicked();
+
+    void on_schematicTree_itemClicked(QTreeWidgetItem *item, int column);
+
 
 protected:
     void closeEvent(QCloseEvent *event) override;

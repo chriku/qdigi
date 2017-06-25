@@ -13,10 +13,10 @@ class LuaHttp : public QObject
     Q_OBJECT
 public:
     explicit LuaHttp(QObject *parent = 0);
-static void push(lua_State*L);
-static int lget(lua_State*L);
-static int lpost(lua_State*L);
-static QUrlQuery load(lua_State*L);
+    static void push(lua_State*L);
+    static int lget(lua_State*L);
+    static int lpost(lua_State*L);
+    static QUrlQuery load(lua_State*L);
 signals:
 
 public slots:

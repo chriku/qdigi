@@ -1,6 +1,7 @@
 #include "blocklist.h"
 #include <QDir>
 #include "settings.h"
+#include "luablock.h"
 
 QList<Block*> BlockList::blocks;
 
@@ -14,7 +15,7 @@ BlockList::BlockList(QObject *parent) : QObject(parent)
         for(int i=0;i<files.length();i++)
             if(files[i].endsWith(".lua"))
             {
-                Block*b=new Block;
+                LuaBlock* b=new LuaBlock;
                 b->load(dir.absoluteFilePath(files[i]));
                 if(b->valid)
                     blocks.append(b);
@@ -36,10 +37,11 @@ BlockList::BlockList(QObject *parent) : QObject(parent)
     while(done);
 }
 
-Block* BlockList::newBlock(QString name)
+Block *BlockList::newBlock(QString name)
 {
     for(int i=0;i<blocks.length();i++)
         if(blocks[i]->name==name)
             return blocks[i]->clone();
+    qDebug()<<"BLOCK"<<name<<"Not Found";
     return NULL;
 }

@@ -119,7 +119,9 @@ SOURCES += main.cpp\
     impulselabel.cpp \
     markdownwidget.cpp \
     helpdialog.cpp \
-    jumplabel.cpp
+    jumplabel.cpp \
+    subitemblock.cpp \
+    luablock.cpp
 
 QMAKE_INCDIR += ./lua
 
@@ -196,7 +198,9 @@ HEADERS  += mainwindow.h \
     impulselabel.h \
     markdownwidget.h \
     helpdialog.h \
-    jumplabel.h
+    jumplabel.h \
+    subitemblock.h \
+    luablock.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \

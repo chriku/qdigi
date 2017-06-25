@@ -2,18 +2,15 @@
 #define DIGIVIEW_H
 #include <QStatusBar>
 #include <QWidget>
+#include "mainwindow.h"
 #include <QPaintEvent>
 #include "blocklist.h"
-#include "impulsedialog.h"
-#include "impulselabel.h"
-#include "jumplabel.h"
 #include <QTimer>
 #include <QPicture>
 #include <QTime>
 #include <QList>
-#include "line.h"
-#include "text.h"
-#include "via.h"
+#include "impulsedialog.h"
+#include "schematic.h"
 
 
 /*struct text_t {
@@ -39,34 +36,20 @@ class DigiView : public QWidget
 {
     Q_OBJECT
 public:
+    MainWindow*mwp;
     void simulate();
+    Schematic* rootSchematic;
+    Schematic* curSchematic;
+    QList<Schematic*> childSchematics;
     ImpulseDialog dialog;
     bool error;
     QList<QPair<QColor,QString> > loadColorProfile();
     QList<int> selection;
 
-    QList<Block*> blocks;
-    QList<Line*> lines;
-    QList<Text*> texts;
-    QList<Via*> vias;
-    QList<ImpulseLabel*> impulseLabels;
-    QList<JumpLabel*> jumpLabels;
-    QList<Item*> items;
-
-    bool isBlock(Item* item);
-    bool isLine(Item* item);
-    bool isText(Item* item);
-    bool isVia(Item* item);
-    bool isImpulseLabel(Item* item);
-    bool isJumpLabel(Item* item);
-
-    QList<QPair<int,int> > getItemsForOutput(QPoint pos, QList<int> *witems);
-    QList<int> getNet(QLine in);
     bool recording;
     void clearSelection();
     void deleteSelection();
     QUrl fileName;
-    void cleanUp();
     explicit DigiView(QWidget *parent = 0);
     QTimer timer;
     QTimer timer2;
@@ -100,19 +83,14 @@ public:
     void contextMenuEvent(QContextMenuEvent *event);
     void wheelEvent(QWheelEvent *event);
     bool interLine(QLine l1,QLine l2);
-    bool onLine(QLine line,QPoint point,bool proper=false);
     QStatusBar* bar;
     QList<QPoint> allIntersect(QLine line);
     QPicture exportPicture();
     QImage exportImage();
-    void loadJson(QByteArray json);
     void resizeNow();
-    QJsonObject exportJSON();
     void createTable();
     void resizeEvent(QResizeEvent *event);
-    void addBlock(QPoint pos, QString type);
     QPoint toScreen(QPointF pos);
-    void check();
     int lastSel;
     void change();
     QList<QByteArray> undoBuf;
@@ -123,6 +101,7 @@ signals:
     void changed();
 public slots:
     void timeout();
+    void purgeSchematic();
 };
 
 #endif // DIGIVIEW_H

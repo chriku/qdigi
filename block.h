@@ -20,40 +20,37 @@ class Block : public Item
 {
     Q_OBJECT
 public:
-    bool valid;
+    bool subItem;
+    explicit Block(QObject *parent = 0);
+    virtual void keyPressNorm(QString key)=0;
+    virtual void keyPress(int pos)=0;
+    QString description;
+    QList<bool> fake;
     bool useFake;
     QMap<QString,int> contextMenu;
-    QList<bool> fake;
-    QString description;
     QStringList alt;
-    explicit Block(QObject *parent = 0);
-    void load(QString fileName);
-    lua_State*L;
-    int state;
     bool checkable;
-    void keyPressNorm(QString key);
-    void keyPress(int pos);
-    int mainRef;
-    QList<pin_t> pins;
-    void pushGlobal(lua_State*L);
-    QPointF pointAt(QPolygonF spline, double pos, bool cyclic);
     QString category;
     QString name;
+    QList<pin_t> pins;
+    virtual Block* clone()=0;
     int width;
     int height;
-    QString fileName;
-    Block* clone();
-    void onclick(QPointF where);
-    void onpress(QPointF where);
-    void onrelease(QPointF where);
-    void execContext(int idx);
-    bool getState(int pin);
-    static void init(Block* blk);
+    virtual void onclick(QPointF where)=0;
+    virtual void onpress(QPointF where)=0;
+    virtual void onrelease(QPointF where)=0;
+    virtual void execContext(int idx)=0;
+    virtual bool getState(int pin)=0;
+    virtual void simulate()=0;
     ~Block();
     QRectF clickRect();
-    //QRectF pinsRect();
     QPointF unmap(QPointF p);
     QPicture draw();
+    bool valid;
+
+
+
+    //QRectF pinsRect();
 
 signals:
 

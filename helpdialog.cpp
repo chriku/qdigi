@@ -45,10 +45,11 @@ QString HelpDialog::getFile(QString url)
         QByteArray list;
         dir.cd("blocks");
         for(auto block:BlockList::blocks)
+            if(block->subItem==false)
         {
-            QDir dir2(QFile(block->fileName).fileName());
+            QDir dir2(QFile(((LuaBlock*)block)->fileName).fileName());
             dir2.cdUp();
-            QString fn=dir2.relativeFilePath(block->fileName);
+            QString fn=dir2.relativeFilePath(((LuaBlock*)block)->fileName);
             fn.replace(".lua","");
             list+="- ["+block->name+"](help://blocks/"+fn+")\n";
         }
@@ -70,7 +71,7 @@ QString HelpDialog::getFile(QString url)
         Block* block=NULL;
         for(auto b2:BlockList::blocks)
         {
-            if(b2->fileName==search)
+            if(((LuaBlock*)b2)->fileName==search)
             {
                 block=b2;
             }

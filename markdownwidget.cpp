@@ -596,6 +596,9 @@ int MarkDownWidget::getFontSize(TYPE what)
     case TYPE_HEADLINE_6:
         return mm*5.0;
         break;
+    default:
+        return mm*3.0;
+break;
     }
     return mm*3.0;
 }

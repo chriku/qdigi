@@ -1,4 +1,5 @@
 #include "schematic.h"
+#include <math.h>
 #include <algorithm>
 #include <QJsonObject>
 #include <QJsonValue>

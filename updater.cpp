@@ -1,5 +1,6 @@
 #include "updater.h"
 #include <QMessageBox>
+#include "blocklist.h"
 #include <QBitmap>
 #include <QDir>
 #include <QApplication>
@@ -70,54 +71,58 @@ void Updater::update()
                 else
                     requestFiles.append(curFile["name"].toString());
             }
-            if((requestFiles.length()>0)||updateExe)
+            if((!updateExe)||(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok))
             {
-                if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
+                if(updateExe)
                 {
-                    if(updateExe)
+                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
+                    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+                    QNetworkReply* rep=manager.get(req);
+                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                    loop.exec();
+                    if(rep->error()==QNetworkReply::NoError)
                     {
-                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
-                        req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
-                        QNetworkReply* rep=manager.get(req);
-                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                        loop.exec();
-                        if(rep->error()==QNetworkReply::NoError)
-                        {
-                            QByteArray newExe=rep->readAll();
-                            QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
-                            QDir dir(QApplication::applicationDirPath());
-                            dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
-                            QFile file(path);
-                            file.open(QFile::WriteOnly|QFile::Truncate);
-                            file.write(newExe);
-                            file.close();
-                        }
+                        QByteArray newExe=rep->readAll();
+                        QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
+                        QDir dir(QApplication::applicationDirPath());
+                        dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
+                        QFile file(path);
+                        file.open(QFile::WriteOnly|QFile::Truncate);
+                        file.write(newExe);
+                        file.close();
                     }
-                    for(int i=0;i<requestFiles.length();i++)
+                }
+                for(int i=0;i<requestFiles.length();i++)
+                {
+                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
+                    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+                    QNetworkReply* rep=manager.get(req);
+                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                    loop.exec();
+                    if(rep->error()==QNetworkReply::NoError)
                     {
-                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
-                        req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
-                        QNetworkReply* rep=manager.get(req);
-                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                        loop.exec();
-                        if(rep->error()==QNetworkReply::NoError)
-                        {
-                            QByteArray data=rep->readAll();
-                            QString name=toPath(requestFiles[i]);
-                            QFile file(name);
-                            file.open(QFile::WriteOnly|QFile::Truncate);
-                            file.write(data);
-                            file.flush();
-                            file.close();
-                        }
-                        else
-                            qDebug()<<rep->errorString();
+                        QByteArray data=rep->readAll();
+                        QString name=toPath(requestFiles[i]);
+                        QFile file(name);
+                        file.open(QFile::WriteOnly|QFile::Truncate);
+                        file.write(data);
+                        file.flush();
+                        file.close();
                     }
-                    QMessageBox::information(NULL,"Update fetig","Update Fertig, bitte noch einmal starten.");
+                    else
+                        qDebug()<<rep->errorString();
+                }
+                if(updateExe)
+                {
+                    QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
                     exit(0);
                 }
                 else
+                {
+                    BlockList::blocks.clear();
+                    BlockList bl;
                     return;
+                }
             }else
             {
                 emit showMessage("Keine Neuen Updates",10*1000);

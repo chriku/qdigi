@@ -15,6 +15,7 @@ os.execute("cd .. && sudo umount mnt")
 os.execute("cd .. && sshfs root@a20-olimex-2:/media/usb-stick/site/q/downloads mnt")
 if os.execute("sudo ./build") then
   os.execute("rm -rf win;mkdir win")
+  os.execute("cp qdigi.zip ../mnt/")
   os.execute("cd win && unzip ../qdigi.zip")
   os.execute("cp -r win/qdigi/* ~/mnt/")
   U=io.open("/tmp/message")

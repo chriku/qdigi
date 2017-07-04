@@ -16,6 +16,8 @@ void ImpulseWidget::nextField()
         {
             if(values.last()["C"]==c["C"])
                 return;
+            else if(values.length()>0)
+                values.last().insert("C",c["C"]);
         }
         else
             if(values.last()==c)

@@ -614,6 +614,12 @@ void DigiView::timeout()
 {
     timer.setInterval(Settings::final()->simulationTime());
     error=!curSchematic->simulate();
+    if(recording==true)
+    {
+        for(auto label:curSchematic->impulseLabels)
+            dialog.widget->pushValue(label->name,label->state);
+        dialog.widget->nextField();
+    }
 }
 
 void DigiView::contextMenuEvent(QContextMenuEvent *event)

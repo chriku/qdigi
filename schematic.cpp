@@ -920,11 +920,5 @@ bool Schematic::simulate(QList<Schematic*> stack)
         for(int i=0;i<offen.length();i++)
             blocks[offen[i].first]->pins[offen[i].second].state=2;
     }
-    /*if(recording==true)
-    {
-        for(auto label:impulseLabels)
-            dialog.widget->pushValue(label->name,label->state);
-        dialog.widget->nextField();
-    }*/
     return !error;
 }

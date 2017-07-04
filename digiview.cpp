@@ -616,6 +616,12 @@ void DigiView::timeout()
     error=!curSchematic->simulate();
     if(error)
         mwp->statusBar()->showMessage(curSchematic->errorStr,1000);
+    if(recording==true)
+    {
+        for(auto label:curSchematic->impulseLabels)
+            dialog.widget->pushValue(label->name,label->state);
+        dialog.widget->nextField();
+    }
 }
 
 void DigiView::contextMenuEvent(QContextMenuEvent *event)

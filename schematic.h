@@ -46,6 +46,7 @@ public:
     QList<QString> getOutputs();
     QList<QPair<QString, int> > getOutputList();
     bool simulate(QList<Schematic *> stack=QList<Schematic*>());
+    QString errorStr;
 
 signals:
 void purgeSelection();

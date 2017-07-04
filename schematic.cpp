@@ -821,7 +821,7 @@ bool Schematic::simulate(QList<Schematic*> stack)
                             ok=false;
                             blocks[k]->pins[l].state=2;
                             blocks[i]->pins[j].state=2;
-                            //bar->showMessage("Zwei Ausgänge",1000);
+                            errorStr="Zwei Ausgänge";
                             return false;
                         }
                     }
@@ -894,7 +894,7 @@ bool Schematic::simulate(QList<Schematic*> stack)
             }
         if(!roundOk)
         {
-            //bar->showMessage("Offene Eingänge",1000);
+            errorStr="Offene Eingänge";
             return false;
         }
     }

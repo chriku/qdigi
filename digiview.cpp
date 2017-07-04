@@ -614,6 +614,8 @@ void DigiView::timeout()
 {
     timer.setInterval(Settings::final()->simulationTime());
     error=!curSchematic->simulate();
+    if(error)
+        mwp->statusBar()->showMessage(curSchematic->errorStr,1000);
 }
 
 void DigiView::contextMenuEvent(QContextMenuEvent *event)

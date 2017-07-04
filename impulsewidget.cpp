@@ -23,6 +23,7 @@ void ImpulseWidget::nextField()
                 return;
             }
     }
+    qDebug()<<c;
     values.append(c);
     update();
 }

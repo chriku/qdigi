@@ -15,18 +15,21 @@ void Schematic::loadJson(QByteArray json)
     loadJson(QJsonDocument::fromJson(json).object());
 }
 
-void Schematic::loadJson(QJsonObject json)
+void Schematic::loadJson(QJsonObject json,bool delIt)
 {
     emit purgeSelection();
-    lines.clear();
-    for(int i=0;i<blocks.length();i++)
-        blocks[i]->deleteLater();
-    blocks.clear();
-    vias.clear();
-    texts.clear();
-    items.clear();
-    impulseLabels.clear();
-    jumpLabels.clear();
+    if(delIt)
+    {
+        lines.clear();
+        for(int i=0;i<blocks.length();i++)
+            blocks[i]->deleteLater();
+        blocks.clear();
+        vias.clear();
+        texts.clear();
+        items.clear();
+        impulseLabels.clear();
+        jumpLabels.clear();
+    }
     QJsonObject root=json;
     name=root["name"].toString();
     QJsonArray l=root["lines"].toArray();
@@ -108,83 +111,97 @@ void Schematic::loadJson(QJsonObject json)
 }
 QJsonObject Schematic::exportJSON()
 {
+    return exportJSONPart(items);
+}
+
+QJsonObject Schematic::exportJSONPart(QList<Item*> eitems)
+{
     QJsonObject root;
     root.insert("name",name);
     QJsonArray depends;
-    for(int i=0;i<<blocks.length();i++)
-        if(blocks[i]->subItem)
-            depends.append(blocks[i]->name);
-    root.insert("depends",depends);
     QJsonArray l;
-    for(int i=0;i<lines.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x1",lines[i]->line.x1());
-        c.insert("y1",lines[i]->line.y1());
-        c.insert("x2",lines[i]->line.x2());
-        c.insert("y2",lines[i]->line.y2());
-        c.insert("color",lines[i]->color.name());
-        l.append(c);
-    }
-    root.insert("lines",l);
+    QJsonArray k;
+    QJsonArray v;
     QJsonArray t;
-    for(int i=0;i<texts.length();i++)
+    QJsonArray j;
+    QJsonArray g;
+    for(int i=0;i<eitems.length();i++)
     {
-        QJsonObject c;
-        c.insert("x",texts[i]->pos.x());
-        c.insert("y",texts[i]->pos.y());
-        c.insert("text",texts[i]->text);
-        c.insert("color",texts[i]->color.name());
-        t.append(c);
+        Item* item=eitems[i];
+        Block* block=(Block*)item;
+        Line* line=(Line*)item;
+        Via* via=(Via*)item;
+        Text* text=(Text*)item;
+        ImpulseLabel* il=(ImpulseLabel*)item;
+        JumpLabel* jl=(JumpLabel*)item;
+        if(isBlock(item))
+        {
+            if(block->subItem)
+                depends.append(block->name);
+            QJsonObject c;
+            c.insert("x",block->pos.x());
+            c.insert("y",block->pos.y());
+            c.insert("name",block->name);
+            c.insert("color",block->color.name());
+            QJsonArray pins;
+            for(int j=0;j<block->pins.length();j++)
+            {
+                QJsonObject obj;
+                obj.insert("type",block->pins[j].type);
+                pins.append(obj);
+            }
+            c.insert("pins",pins);
+            g.append(c);
+        }
+        if(isLine(item))
+        {
+            QJsonObject c;
+            c.insert("x1",line->line.x1());
+            c.insert("y1",line->line.y1());
+            c.insert("x2",line->line.x2());
+            c.insert("y2",line->line.y2());
+            c.insert("color",line->color.name());
+            l.append(c);
+        }
+        if(isText(item))
+        {
+            QJsonObject c;
+            c.insert("x",text->pos.x());
+            c.insert("y",text->pos.y());
+            c.insert("text",text->text);
+            c.insert("color",text->color.name());
+            t.append(c);
+        }
+        if(isImpulseLabel(item))
+        {
+            QJsonObject c;
+            c.insert("x",il->pos.x());
+            c.insert("y",il->pos.y());
+            c.insert("name",il->name);
+            j.append(c);
+        }
+        if(isJumpLabel(item))
+        {
+            QJsonObject c;
+            c.insert("x",jl->pos.x());
+            c.insert("y",jl->pos.y());
+            c.insert("name",jl->name);
+            k.append(c);
+        }
+        if(isVia(item))
+        {
+            QJsonObject c;
+            c.insert("x",via->pos.x());
+            c.insert("y",via->pos.y());
+            v.append(c);
+        }
     }
     root.insert("texts",t);
-    QJsonArray j;
-    for(int i=0;i<impulseLabels.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",impulseLabels[i]->pos.x());
-        c.insert("y",impulseLabels[i]->pos.y());
-        c.insert("name",impulseLabels[i]->name);
-        j.append(c);
-    }
     root.insert("impulseLabels",j);
-    QJsonArray k;
-    for(int i=0;i<jumpLabels.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",jumpLabels[i]->pos.x());
-        c.insert("y",jumpLabels[i]->pos.y());
-        c.insert("name",jumpLabels[i]->name);
-        k.append(c);
-    }
+    root.insert("lines",l);
     root.insert("jumpLabels",k);
-    QJsonArray g;
-    for(int i=0;i<blocks.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",blocks[i]->pos.x());
-        c.insert("y",blocks[i]->pos.y());
-        c.insert("name",blocks[i]->name);
-        c.insert("color",blocks[i]->color.name());
-        QJsonArray pins;
-        for(int j=0;j<blocks[i]->pins.length();j++)
-        {
-            QJsonObject obj;
-            obj.insert("type",blocks[i]->pins[j].type);
-            pins.append(obj);
-        }
-        c.insert("pins",pins);
-        g.append(c);
-    }
     root.insert("blocks",g);
-    QJsonArray v;
-    for(int i=0;i<vias.length();i++)
-    {
-        QJsonObject c;
-        c.insert("x",vias[i]->pos.x());
-        c.insert("y",vias[i]->pos.y());
-        v.append(c);
-    }
+    root.insert("depends",depends);
     root.insert("vias",v);
     return root;
 }

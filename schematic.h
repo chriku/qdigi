@@ -34,9 +34,10 @@ public:
 
     QList<QPair<int,int> > getItemsForOutput(QPoint pos, QList<int> *witems);
     QList<int> getNet(QLine in);
-    void loadJson(QJsonObject json);
+    void loadJson(QJsonObject json, bool delIt=true);
     void loadJson(QByteArray json);
     QJsonObject exportJSON();
+    QJsonObject exportJSONPart(QList<Item*> eitems);
     void addBlock(QPoint pos, QString type);
     void check();
     void cleanUp();

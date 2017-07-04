@@ -14,6 +14,8 @@ public:
     QList<QMap<QString,bool> > values;
     QMap<QString,bool> cur;
     void paintEvent(QPaintEvent *event);
+    QPicture draw();
+    void exportImage();
 signals:
 
 public slots:

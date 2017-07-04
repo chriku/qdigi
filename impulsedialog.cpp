@@ -13,3 +13,8 @@ ImpulseDialog::~ImpulseDialog()
 {
     delete ui;
 }
+
+void ImpulseDialog::on_exportImage_clicked()
+{
+    widget->exportImage();
+}

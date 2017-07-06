@@ -12,12 +12,11 @@ QNetworkReply*grep;
 Updater::Updater(QObject *parent) : QObject(parent)
 {
     startUpdate();
-    authCount++;
+    authCount=0;
 }
 
 void Updater::update()
 {
-    qDebug()<<"Update Finished"<<grep->errorString();
     QEventLoop loop;
     if(grep->error()==QNetworkReply::NoError)
     {
@@ -182,6 +181,15 @@ QString Updater::toPath(QString in)
 
 void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 {
+    if(authCount==0)
+    {
+        if(Settings::final()->saveFile->value("proxy_user").isValid()&&Settings::final()->saveFile->value("proxy_pass").isValid())
+        {
+            auth->setUser(Settings::final()->saveFile->value("proxy_user").toString());
+            auth->setPassword(Settings::final()->saveFile->value("proxy_pass").toString());
+        }
+        authCount=1;
+    }
     bool ok;
     QString username=QInputDialog::getText(NULL,"Login","Username",QLineEdit::Normal,"",&ok);
     if(!ok)
@@ -195,6 +203,8 @@ void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
         authCount=2;
         return;
     }
+    Settings::final()->saveFile->setValue("proxy_user",username);
+    Settings::final()->saveFile->setValue("proxy_pass",password);
     auth->setUser(username);
     auth->setPassword(password);
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>885</width>
-    <height>605</height>
+    <width>1292</width>
+    <height>666</height>
    </rect>
   </property>
   <property name="font">
@@ -29,15 +29,26 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout_7">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
-       <widget class="QCheckBox" name="simulation">
-        <property name="text">
-         <string>Simulation</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="simulation">
+          <property name="text">
+           <string>Simulation</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="share">
+          <property name="text">
+           <string>Teilen...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QScrollArea" name="scrollArea">
@@ -65,6 +76,7 @@
            <height>5000</height>
           </size>
          </property>
+         <zorder>horizontalLayoutWidget</zorder>
         </widget>
        </widget>
       </item>
@@ -148,7 +160,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -224,7 +236,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -300,7 +312,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -376,7 +388,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -452,7 +464,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -528,7 +540,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -604,7 +616,7 @@
           <x>0</x>
           <y>0</y>
           <width>168</width>
-          <height>275</height>
+          <height>336</height>
          </rect>
         </property>
         <attribute name="label">
@@ -675,6 +687,14 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page_subItem">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>168</width>
+          <height>336</height>
+         </rect>
+        </property>
         <attribute name="label">
          <string>Untermodule</string>
         </attribute>
@@ -752,7 +772,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>885</width>
+     <width>1292</width>
      <height>19</height>
     </rect>
    </property>

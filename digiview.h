@@ -78,6 +78,7 @@ public:
     int dragIdx;
     QPoint startBlock;
     bool save(QUrl where=QUrl());
+    QJsonObject exportFull();
     void load(QUrl where);
     QPoint toGrid(QPoint in);
     void contextMenuEvent(QContextMenuEvent *event);

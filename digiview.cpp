@@ -468,12 +468,7 @@ bool DigiView::save(QUrl where)
     QString w=where.toLocalFile();
     if(!w.endsWith(".qdigi"))
         w+=".qdigi";
-    QJsonObject root=rootSchematic->exportJSON();
-    QJsonArray childSchema;
-    for(auto child:childSchematics)
-        childSchema.append(child->exportJSON());
-    root.insert("children",childSchema);
-    QByteArray data=QJsonDocument(root).toJson(QJsonDocument::Compact);
+    QByteArray data=QJsonDocument(exportFull()).toJson(QJsonDocument::Compact);
     if(where.scheme()=="file")
     {
         int err=0;
@@ -498,6 +493,16 @@ bool DigiView::save(QUrl where)
         }
     }
     return true;
+}
+
+QJsonObject DigiView::exportFull()
+{
+    QJsonObject root=rootSchematic->exportJSON();
+    QJsonArray childSchema;
+    for(auto child:childSchematics)
+        childSchema.append(child->exportJSON());
+    root.insert("children",childSchema);
+    return root;
 }
 
 void DigiView::load(QUrl where)

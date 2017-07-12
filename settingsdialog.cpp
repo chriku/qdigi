@@ -56,17 +56,6 @@ void SettingsDialog::load()
     ui->simulationTime->setValue(Settings::final()->simulationTime());
 }
 
-void SettingsDialog::on_changeLicense_clicked()
-{
-    QInputDialog dialog;
-    dialog.setInputMode(QInputDialog::TextInput);
-    dialog.setWindowTitle("QDigi");
-    dialog.setLabelText("Lizenzschlüssel eingeben");
-    dialog.exec();
-    QString lic=dialog.textValue();
-    Settings::final()->setLicense(lic);
-}
-
 void SettingsDialog::on_background_clicked()
 {
     Settings::final()->setBackground(QColorDialog::getColor(Settings::final()->background(),NULL,"QDigi"));

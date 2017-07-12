@@ -74,8 +74,8 @@ void Updater::update()
             {
                 if(updateExe)
                 {
-                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+root["exeName"].toString()));
-                    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+root["exeName"].toString()));
+                    req.setRawHeader("token",Settings::final()->token().toUtf8());
                     QNetworkReply* rep=manager.get(req);
                     connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
                     loop.exec();
@@ -93,8 +93,8 @@ void Updater::update()
                 }
                 for(int i=0;i<requestFiles.length();i++)
                 {
-                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/q/downloads/"+requestFiles[i]));
-                    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+requestFiles[i]));
+                    req.setRawHeader("token",Settings::final()->token().toUtf8());
                     QNetworkReply* rep=manager.get(req);
                     connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
                     loop.exec();
@@ -130,7 +130,7 @@ void Updater::update()
             }
         }
     }else if(grep->error()==QNetworkReply::AuthenticationRequiredError){
-        Settings::final()->setLicense("");
+        Settings::final()->resetToken();
         //QMessageBox::warning(NULL,"QDigi","Falscher Lizenzschlüssel\nBitte beim nächsten Start Gültigen Schlüssel eingeben");
         //exit(0);
     }
@@ -218,8 +218,8 @@ void Updater::startUpdate()
     QString platform="windows";
 #endif
     qDebug()<<"Starting Update";
-    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update?platform="+platform));
-    req.setRawHeader("LICENSE",Settings::final()->license().toUtf8());
+    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update.cgi?platform="+platform));
+    req.setRawHeader("token",Settings::final()->token().toUtf8());
     grep=manager.get(req);
     //if(Settings::final()->license().isEmpty())
     //    return;

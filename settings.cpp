@@ -2,9 +2,14 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QDir>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QDebug>
-
+#include <QUrlQuery>
+#include "passworddialog.h"
 Settings* settings=NULL;
+extern QNetworkAccessManager manager;
 Settings::Settings(QObject *parent) : QObject(parent)
 {
     oauth_id="167107903260-s3lk7i287aidt7qj2l82ml6rsd3b2cot.apps.googleusercontent.com";
@@ -30,11 +35,10 @@ Settings::Settings(QObject *parent) : QObject(parent)
     m_lastFile=saveFile->value("lastFile","").toUrl();
     m_rasterSize=saveFile->value("rasterSize",5).toInt();
     m_penWidth=saveFile->value("penWidth",0.1).toDouble();
-    m_license=saveFile->value("licenseKey","").toString();
-    qDebug()<<"LIC"<<m_license;
     m_background=saveFile->value("background",QColor(Qt::white)).value<QColor>();
     m_refresh_token=saveFile->value("refresh_token","").toString();
     m_simulationTime=saveFile->value("simulationTime",10).toInt();
+    m_token=saveFile->value("token").toString();
 }
 
 Settings* Settings::final()
@@ -203,16 +207,50 @@ QList<QColor> Settings::colors()
     return ret;
 }
 
-void Settings::setLicense(QString lic, bool session)
+QString Settings::token()
 {
-    if(!session)
-        saveFile->setValue("licenseKey",lic);
-    m_license=lic;
-}
-
-QString Settings::license()
-{
-    return m_license;
+    qDebug()<<lastToken.secsTo(QDateTime::currentDateTime());
+    if((!m_token.isEmpty())||(lastToken.secsTo(QDateTime::currentDateTime())>60))
+    {
+        QNetworkRequest req;
+        req.setUrl(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/login.cgi"));
+        req.setRawHeader("token",m_token.toUtf8());
+        QNetworkReply* rep=manager.get(req);
+        QEventLoop loop;
+        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+        loop.exec();
+        if(rep->error()==QNetworkReply::NoError)
+        {
+            lastToken=QDateTime::currentDateTime();
+            return m_token;
+        }
+        else
+            m_token="";
+    }
+    while(m_token.isEmpty())
+    {
+        PasswordDialog pwdd;
+        if(pwdd.exec()==QDialog::Accepted)
+        {
+            QNetworkRequest req;
+            req.setUrl(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/login.cgi"));
+            QUrlQuery query;
+            query.addQueryItem("username",pwdd.username->text());
+            query.addQueryItem("password",pwdd.password->text());
+            QNetworkReply* rep=manager.post(req,query.toString().toUtf8());
+            QEventLoop loop;
+            connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+            loop.exec();
+            if(rep->error()==QNetworkReply::NoError)
+            {
+                m_token=rep->rawHeader("token");
+                saveFile->setValue("token",m_token);
+            }
+        }
+        else
+            return "";
+    }
+    return m_token;
 }
 
 void Settings::setLua(QString key, QString value)
@@ -232,5 +270,11 @@ QString Settings::getLua(QString key)
 
 bool Settings::licensePay()
 {
-    return !license().isEmpty();
+    return true;
+}
+
+void Settings::resetToken()
+{
+    qDebug()<<"RESETTING TOKEN";
+    m_token="";
 }

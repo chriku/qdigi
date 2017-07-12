@@ -12,8 +12,8 @@ function urlencode(str)
 end
 os.execute("nano /tmp/message")
 os.execute("cd .. && sudo umount mnt")
-os.execute("cd .. && sshfs root@a20-olimex-2:/media/usb-stick/site/q/downloads mnt")
-if os.execute("sudo ./build") then
+os.execute("cd .. && sshfs root@a20-olimex-2:/media/usb-stick/site/qdigi/downloads mnt")
+if true or os.execute("sudo ./build") then
   os.execute("rm -rf win;mkdir win")
   os.execute("cp qdigi.zip ../mnt/")
   os.execute("cd win && unzip ../qdigi.zip")

@@ -22,6 +22,7 @@ public:
     Updater* updater;//Pointer, damit Proxy immer gehandelt
     void updateBlocks();
 private slots:
+    QByteArray toTar(QString name,QByteArray data);
     void keyPressEvent(QKeyEvent* event);
     void on_actionSpeichern_triggered();
 
@@ -67,6 +68,8 @@ private slots:
 
     void on_schematicTree_itemClicked(QTreeWidgetItem *item, int column);
 
+
+    void on_share_clicked();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

@@ -54,25 +54,6 @@ int main(int argc, char *argv[])
     outFile.close();
     QApplication a(argc, argv);
     //qInstallMessageHandler(myMessageHandler);
-    qDebug()<<Settings::final()->license();
-    if(Settings::final()->license().isEmpty())
-    {
-        QInputDialog dialog;
-        dialog.setInputMode(QInputDialog::TextInput);
-        dialog.setWindowTitle("QDigi");
-        dialog.setLabelText("Lizenzschlüssel eingeben");
-        dialog.exec();
-        QString lic=dialog.textValue();
-        Settings::final()->setLicense(lic);
-    }
-    QString lic=Settings::final()->license();
-    /*if(lic.left(lic.indexOf(":"))=="1")
-        if(QMessageBox::question(NULL,"QDigi","KV-Map")==QMessageBox::Yes)
-        {
-            KVDiagram diagram;
-            diagram.exec();
-            exit(0);
-        }*/
     MainWindow w;
     w.show();
     /*    long unsigned int len=1024*1024;
@@ -101,7 +82,7 @@ int main(int argc, char *argv[])
         outFile.open(QIODevice::ReadOnly);
         std::cout<<outFile.errorString().toStdString()<<std::endl;
         query.addQueryItem("log",outFile.readAll().toBase64());
-        query.addQueryItem("license",Settings::final()->license());
+        query.addQueryItem("token",Settings::final()->token());
         QUrl url("https://talstrasse.hp-lichtblick.de/q/error.cgi");
         req.setUrl(url);
         QNetworkReply* rep=manager.post(req,query.toString().toUtf8());

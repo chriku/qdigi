@@ -6,6 +6,8 @@ PasswordDialog::PasswordDialog(QWidget *parent) :
     ui(new Ui::PasswordDialog)
 {
     ui->setupUi(this);
+    username=ui->username;
+    password=ui->password;
 }
 
 PasswordDialog::~PasswordDialog()

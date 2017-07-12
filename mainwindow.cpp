@@ -12,7 +12,11 @@
 #include <QMessageBox>
 #include "gdrive.h"
 #include "remotedrivelist.h"
-
+#include "microtar.h"
+extern "C" {
+#include "zip.h"
+}
+extern QNetworkAccessManager manager;
 QMap<QAction*,RemoteDrive*> actionMap;
 QTimer utimer;
 
@@ -384,4 +388,34 @@ void MainWindow::updateBlocks()
     ui->output->blockList=outp;
     ui->subItem->blockList=sub;
     ui->subItem->makeCols();
+}
+
+void MainWindow::on_share_clicked()
+{
+    bool ok;
+    QString name=QInputDialog::getText(NULL,"Name","Name eingeben",QLineEdit::Normal,"",&ok);
+    if(ok)
+    {
+        QImage image=ui->digiView->exportImage();
+        QByteArray png;
+        {
+            QBuffer buf(&png);
+            image.save(&buf,"PNG");
+        }
+        QByteArray data=QJsonDocument(ui->digiView->exportFull()).toJson();
+        QByteArray tar=toTar("name.txt",name.toUtf8());
+        tar+=toTar("preview.png",png);
+        tar+=toTar("1.json",data);
+        QNetworkRequest req;
+        req.setUrl(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/uploadGallery.cgi"));
+        req.setRawHeader("token",Settings::final()->token().toUtf8());
+        manager.post(req,tar);
+    }
+}
+
+QByteArray MainWindow::toTar(QString name, QByteArray data)
+{
+    mtar_t mt;
+    mt.write=[](mtar_t *tar, const void *data, unsigned size)->int{};
+    return "";
 }

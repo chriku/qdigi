@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <math.h>
 #include <QUrl>
+#include <QDateTime>
 
 class Settings : public QObject
 {
@@ -24,7 +25,7 @@ public:
     Q_PROPERTY(double penWidth READ penWidth WRITE setPenWidth)
     Q_PROPERTY(int rasterSize READ rasterSize WRITE setRasterSize)
     Q_PROPERTY(QUrl lastFile READ lastFile WRITE setLastFile)
-    Q_PROPERTY(QString license READ license WRITE setLicense)
+    Q_PROPERTY(QString token READ token RESET resetToken)
     Q_PROPERTY(QString applicationDir READ applicationDir WRITE setApplicationDir)
     Q_PROPERTY(bool defaultSimu READ defaultSimu WRITE setDefaultSimu)
     Q_PROPERTY(GRID gridType READ gridType WRITE setGridType)
@@ -41,7 +42,7 @@ public:
     QColor m_background;
     QList<QColor> m_colors;
     QUrl m_lastFile;
-    QString m_license;
+    QString m_token;
     bool m_defaultSimu;
     int m_rasterSize;
     double gridSize();
@@ -51,7 +52,9 @@ public:
     QString applicationDir();
     bool defaultSimu();
     static Settings* final();
-    QString license();
+    QString token();
+    QDateTime lastToken;
+    void resetToken();
     bool licensePay();
     QColor background();
     QString refresh_token();
@@ -62,7 +65,6 @@ public:
     void setSimulationTime(int time,bool session=false);
     void setColors(QList<QColor> col,bool session=false);
     void setApplicationDir(QString dir,bool session=false);
-    void setLicense(QString lic,bool session=false);
     void setPenWidth(double wid,bool session=false);
     void setRasterSize(int size,bool session=false);
     void setLastFile(QUrl file,bool session=false);

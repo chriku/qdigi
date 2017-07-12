@@ -121,7 +121,8 @@ SOURCES += main.cpp\
     helpdialog.cpp \
     jumplabel.cpp \
     subitemblock.cpp \
-    luablock.cpp
+    luablock.cpp \
+    microtar.c
 
 QMAKE_INCDIR += ./lua
 
@@ -200,7 +201,8 @@ HEADERS  += mainwindow.h \
     helpdialog.h \
     jumplabel.h \
     subitemblock.h \
-    luablock.h
+    luablock.h \
+    microtar.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \

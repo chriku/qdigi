@@ -1,4 +1,5 @@
 #include <QInputDialog>
+#include <QProgressDialog>
 #include "subitemblock.h"
 #include "helpdialog.h"
 #include "updater.h"
@@ -403,19 +404,39 @@ void MainWindow::on_share_clicked()
             image.save(&buf,"PNG");
         }
         QByteArray data=QJsonDocument(ui->digiView->exportFull()).toJson();
-        QByteArray tar=toTar("name.txt",name.toUtf8());
+        QByteArray tar;
+        tar.append(1,(char)1);
+        tar+=toTar("name.txt",name.toUtf8());
         tar+=toTar("preview.png",png);
         tar+=toTar("1.json",data);
         QNetworkRequest req;
         req.setUrl(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/uploadGallery.cgi"));
         req.setRawHeader("token",Settings::final()->token().toUtf8());
-        manager.post(req,tar);
+        QNetworkReply* rep=manager.post(req,tar);
+        QProgressDialog *dialog=new QProgressDialog;
+        dialog->setMinimum(0);
+        dialog->setMaximum(0);
+        connect(rep,&QNetworkReply::finished,[rep,&dialog](){
+            qDebug()<<rep->errorString();
+            qDebug()<<rep->readAll();
+            dialog->close();
+            dialog->deleteLater();
+        });
+        dialog->exec();
     }
 }
 
 QByteArray MainWindow::toTar(QString name, QByteArray data)
 {
-    mtar_t mt;
-    mt.write=[](mtar_t *tar, const void *data, unsigned size)->int{};
-    return "";
+    QByteArray ret;
+    QDataStream ds(&ret,QIODevice::WriteOnly);
+    ds.setByteOrder(QDataStream::LittleEndian);
+    QByteArray n=name.toUtf8();
+    quint8 nlen=n.length();
+    ds<<nlen;
+    ds.writeRawData(n.data(),n.length());
+    quint64 dlen=data.length();
+    ds<<dlen;
+    ds.writeRawData(data.data(),data.length());
+    return ret;
 }

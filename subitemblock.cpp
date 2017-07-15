@@ -49,6 +49,9 @@ QPicture SubitemBlock::draw()
     painter.setPen(pen);
     painter.setBrush(Qt::white);
     painter.drawRect(QRectF(0.5*Settings::final()->gridSize(),0.5*Settings::final()->gridSize(),width*Settings::final()->gridSize(),height*Settings::final()->gridSize()));
+    QFont font;
+    font.setPixelSize(Settings::final()->gridSize()*0.75);
+    painter.setFont(font);
     painter.drawText(QRectF(0.5*Settings::final()->gridSize(),0.5*Settings::final()->gridSize(),width*Settings::final()->gridSize(),height*Settings::final()->gridSize()),Qt::AlignCenter,m_data->name);
     for(int i=0;i<pins.length();i++)
     {

@@ -403,11 +403,19 @@ void MainWindow::on_share_clicked()
             QBuffer buf(&png);
             image.save(&buf,"PNG");
         }
-        QByteArray data=QJsonDocument(ui->digiView->exportFull()).toJson();
+        QByteArray png2;
+        QByteArray data=QJsonDocument(ui->digiView->exportFull()).toJson(QJsonDocument::Compact);
         QByteArray tar;
         tar.append(1,(char)1);
         tar+=toTar("name.txt",name.toUtf8());
-        tar+=toTar("preview.png",png);
+        tar+=toTar("image.png",png);
+        for(int i=300;i<=1200;i+=300)
+        {
+            QByteArray png;
+            QBuffer buf(&png);
+            image.scaledToWidth(i).save(&buf,"PNG");
+            tar+=toTar("300.png",png);
+        }
         tar+=toTar("1.json",data);
         QNetworkRequest req;
         req.setUrl(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/uploadGallery.cgi"));
@@ -439,4 +447,9 @@ QByteArray MainWindow::toTar(QString name, QByteArray data)
     ds<<dlen;
     ds.writeRawData(data.data(),data.length());
     return ret;
+}
+
+void MainWindow::on_action_ber_triggered()
+{
+    QMessageBox::about(NULL,"Über","<a href=\"https://talstrasse.hp-lichtblick.de/qdigi/index.cgi\">Website</a>");
 }

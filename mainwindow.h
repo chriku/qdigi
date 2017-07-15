@@ -71,6 +71,8 @@ private slots:
 
     void on_share_clicked();
 
+    void on_action_ber_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

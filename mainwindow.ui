@@ -76,7 +76,6 @@
            <height>5000</height>
           </size>
          </property>
-         <zorder>horizontalLayoutWidget</zorder>
         </widget>
        </widget>
       </item>
@@ -820,11 +819,18 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
+   <widget class="QMenu" name="menu_ber">
+    <property name="title">
+     <string>Hilfe</string>
+    </property>
+    <addaction name="action_ber"/>
+   </widget>
    <addaction name="menuDatei"/>
    <addaction name="menuBearbeiten"/>
    <addaction name="menuAnsicht"/>
    <addaction name="menuAuswahl"/>
    <addaction name="menuAnderes"/>
+   <addaction name="menu_ber"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget_2">
@@ -1011,6 +1017,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Y, Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="action_ber">
+   <property name="text">
+    <string>Über...</string>
    </property>
   </action>
  </widget>

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     outFile.write("Start Logging\r\n");
     outFile.close();
     QApplication a(argc, argv);
-    //qInstallMessageHandler(myMessageHandler);
+    qInstallMessageHandler(myMessageHandler);
     MainWindow w;
     w.show();
     /*    long unsigned int len=1024*1024;

@@ -11,4 +11,5 @@ end
 function getState()
   return pins[1] or pins[2]
 end
-return {width=3,height=3,name="OR",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,2,"OUTPUT"}},category="base",alt={"AND"},description="OR-Gatter mit 2 Eingängen"}
+return {width=3,height=3,name="OHR",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,2,"OUTPUT"}},category="base",alt={"AND"},description="OR-Gatter mit 2 Eingängen"}
+

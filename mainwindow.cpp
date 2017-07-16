@@ -403,7 +403,6 @@ void MainWindow::on_share_clicked()
             QBuffer buf(&png);
             image.save(&buf,"PNG");
         }
-        QByteArray png2;
         QByteArray data=QJsonDocument(ui->digiView->exportFull()).toJson(QJsonDocument::Compact);
         QByteArray tar;
         tar.append(1,(char)1);
@@ -413,8 +412,8 @@ void MainWindow::on_share_clicked()
         {
             QByteArray png;
             QBuffer buf(&png);
-            image.scaledToWidth(i).save(&buf,"PNG");
-            tar+=toTar("300.png",png);
+            image.scaledToWidth(i,Qt::SmoothTransformation).save(&buf,"PNG");
+            tar+=toTar(QString::number(i)+".png",png);
         }
         tar+=toTar("1.json",data);
         QNetworkRequest req;

@@ -26,6 +26,7 @@ void Updater::update()
         QJsonDocument doc=QJsonDocument::fromJson(resp,&error);
         if(error.error==error.NoError)
         {
+            qDebug()<<"NO ERROR";
             QJsonObject root=doc.object();
             QJsonArray rm=root["rm"].toArray();
             for(int i=0;i<rm.size();i++)
@@ -35,6 +36,7 @@ void Updater::update()
                 if(file.exists())
                     file.remove();
             }
+            qDebug()<<"RM"<<root["rm"];
             QString nhash=root["app"].toString();
             QString fname=QApplication::applicationFilePath();
             bool updateExe=false;
@@ -46,15 +48,18 @@ void Updater::update()
                 hash.addData(&file);
                 file.close();
                 QString chash=hash.result().toHex();
+                qDebug()<<"EXE"<<chash<<nhash;
                 if(chash.length()==nhash.length())
                     if(chash!=nhash)
                         updateExe=true;
             }
             QJsonArray files=root["files"].toArray();
+            qDebug()<<files;
             QStringList requestFiles;
             for(int i=0;i<files.size();i++)
             {
                 QJsonObject curFile=files[i].toObject();
+                qDebug()<<curFile;
                 QCryptographicHash hash(QCryptographicHash::Sha512);
                 QString name=toPath(curFile["name"].toString());
                 QFile file(name);
@@ -64,14 +69,19 @@ void Updater::update()
                     hash.addData(&file);
                     file.close();
                     QString chash=hash.result().toHex();
+                    qDebug()<<"HASH"<<curFile["name"].toString()<<chash<<curFile["hash"].toString();
                     if(curFile["hash"].toString()!=chash)
                         requestFiles.append(curFile["name"].toString());
                 }
                 else
+                {
                     requestFiles.append(curFile["name"].toString());
+                    qDebug()<<"MISSING"<<curFile["name"].toString();
+                }
             }
             if((!updateExe)||(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok))
             {
+                qDebug()<<"INSTALLING UNPADE"<<updateExe<<requestFiles;
                 if(updateExe)
                 {
                     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+root["exeName"].toString()));
@@ -138,6 +148,7 @@ void Updater::update()
     {
         qDebug()<<grep->errorString();
     }
+    qDebug()<<"UPDATE FINISHED";
     //QTimer::singleShot(1000,&loop,SLOT(quit()));
     //loop.exec();
 }

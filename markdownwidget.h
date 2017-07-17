@@ -17,6 +17,7 @@ struct word_t {
 enum TYPE {
     TYPE_EMPTY,
     TYPE_TEXT,
+    TYPE_IMAGE,
     TYPE_HEADLINE_1,
     TYPE_HEADLINE_2,
     TYPE_HEADLINE_3,
@@ -46,6 +47,7 @@ HelpDialog* hd;
     void resize(int w, int h);
     QPixmap renderText(QString text, int width, QList<QPair<QRect, QString> > *linkP,int fontSize);
     int getFontSize(TYPE what);
+    QPixmap renderImage(QString line, int width);
     QPixmap renderUL(QStringList items,int width, QList<QPair<QRect, QString> > *linkP);
     QPixmap renderOL(QStringList items,int width, QList<QPair<QRect, QString> > *linkP);
     QPixmap renderLine(int width);

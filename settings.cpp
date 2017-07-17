@@ -81,6 +81,24 @@ QString Settings::applicationDir()
 {
     return m_applicationDir;
 }
+QString Settings::username()
+{
+    if(m_username.isEmpty())
+    {
+        QNetworkRequest req;
+        req.setUrl(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/login.cgi"));
+        req.setRawHeader("token",m_token.toUtf8());
+        QNetworkReply* rep=manager.get(req);
+        QEventLoop loop;
+        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+        loop.exec();
+        if(rep->error()==QNetworkReply::NoError)
+        {
+            m_username=rep->readAll().replace("\n","");
+        }
+    }
+    return m_username;
+}
 
 QColor Settings::background()
 {

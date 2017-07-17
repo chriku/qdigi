@@ -57,6 +57,7 @@ public:
     void resetToken();
     bool licensePay();
     QColor background();
+    QString username();
     QString refresh_token();
     GRID gridType();
     QList<QColor> colors();
@@ -76,6 +77,7 @@ public:
     void setLua(QString key,QString value);
     QString getLua(QString key);
     int m_simulationTime;
+    QString m_username;
 signals:
 
 public slots:

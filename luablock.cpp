@@ -6,7 +6,7 @@
 
 LuaBlock::LuaBlock(QObject *parent) : Block(parent)
 {
-subItem=false;
+    subItem=false;
 }
 
 QPicture LuaBlock::draw()
@@ -245,8 +245,9 @@ bool LuaBlock::getState(int pin) {
             } else
                 qDebug() << "ERR4" << lua_tostring(L, -1)<<name;
         } else
-            qDebug() << "Warning: "
-                     << "Missing State at" << name;
+            lua_pop(L,1);
+        /*  qDebug() << "Warning: "
+                     << "Missing State at" << name;*/
         lua_getglobal(L,"state");
         lua_rawseti(L,LUA_REGISTRYINDEX,state);
     }

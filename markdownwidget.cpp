@@ -1,5 +1,7 @@
 #include "markdownwidget.h"
 #include <QDebug>
+#include <QMessageBox>
+#include <QDir>
 #include <QApplication>
 #include <math.h>
 #include <QScreen>
@@ -7,6 +9,7 @@
 #include <QPicture>
 #include <QPainter>
 #include "helpdialog.h"
+#include "settings.h"
 
 MarkDownWidget::MarkDownWidget(QWidget *parent) : QWidget(parent)
 {
@@ -34,6 +37,9 @@ void operator<<(QDebug& debug,const line_t line)
     {
     case TYPE_EMPTY:
         debug<<"Empty(";
+        break;
+    case TYPE_IMAGE:
+        debug<<"Image(";
         break;
     case TYPE_TEXT:
         debug<<"TEXT(";
@@ -100,6 +106,12 @@ QPixmap MarkDownWidget::render()
         {
             out.content.remove(0,6);
             out.type=TYPE_HEADLINE_6;
+            lineTypes.append(out);
+        }
+        else if(in.startsWith("->"))
+        {
+            out.content.remove(0,2);
+            out.type=TYPE_IMAGE;
             lineTypes.append(out);
         }
         else if(in.startsWith("#####"))
@@ -198,6 +210,11 @@ QPixmap MarkDownWidget::render()
         case TYPE_HR:
         {
             paragraphs.append(renderLine(width));
+        }
+            break;
+        case TYPE_IMAGE:
+        {
+            paragraphs.append(renderImage(lineTypes[i].content,width));
         }
             break;
         case TYPE_OL:
@@ -386,6 +403,19 @@ QPixmap MarkDownWidget::renderOL(QStringList items,int width, QList<QPair<QRect,
 }
 
 
+QPixmap MarkDownWidget::renderImage(QString line,int width)
+{
+    if(line.contains(" "))
+        line=line.left(line.indexOf(" "));
+    QDir dir(Settings::final()->applicationDir());
+    dir.cd("help");
+    if(!QFile(dir.absoluteFilePath(line)).exists())
+        QMessageBox::warning(NULL,"Datei nicht gefunden",line);
+    QPixmap ret(dir.absoluteFilePath(line));
+    return ret.scaledToWidth(width,Qt::SmoothTransformation);
+}
+
+
 QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, QString> > *linkP, int fontSize)
 {
     QList<word_t> words;
@@ -492,7 +522,7 @@ QPixmap MarkDownWidget::renderText(QString text, int width, QList<QPair<QRect, Q
         {
             font.setUnderline(true);
             if(hd->getFile(words[i].linkT).length()>0)
-            color=Qt::blue;
+                color=Qt::blue;
             else
                 color=Qt::red;
         }
@@ -598,7 +628,7 @@ int MarkDownWidget::getFontSize(TYPE what)
         break;
     default:
         return mm*3.0;
-break;
+        break;
     }
     return mm*3.0;
 }

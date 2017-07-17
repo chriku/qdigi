@@ -1,4 +1,6 @@
 #include "updater.h"
+#include <QSystemTrayIcon>
+#include <QMenu>
 #include <QMessageBox>
 #include "blocklist.h"
 #include <QBitmap>
@@ -37,22 +39,35 @@ void Updater::update()
                     file.remove();
             }
             qDebug()<<"RM"<<root["rm"];
-            QString nhash=root["app"].toString();
+#ifdef Q_OS_WIN
+            QString nhash=root["wapp"].toString();
+#else
+            QString nhash=root["lapp"].toString();
+#endif
             QString fname=QApplication::applicationFilePath();
             bool updateExe=false;
-            if(fname.endsWith(".exe"))
-            {
-                QCryptographicHash hash(QCryptographicHash::Sha512);
-                QFile file(fname);
-                file.open(QFile::ReadOnly);
-                hash.addData(&file);
-                file.close();
-                QString chash=hash.result().toHex();
-                qDebug()<<"EXE"<<chash<<nhash;
-                if(chash.length()==nhash.length())
+            QCryptographicHash hash(QCryptographicHash::Sha512);
+            QFile file(fname);
+            file.open(QFile::ReadOnly);
+            hash.addData(&file);
+            file.close();
+            QString chash=hash.result().toHex();
+            qDebug()<<"EXE"<<chash<<nhash;
+            if(chash.length()==nhash.length())
+                if(Settings::final()->username()!="admin")
                     if(chash!=nhash)
+                    {
+                        QSystemTrayIcon *icon=new QSystemTrayIcon;
+                        icon->setIcon(QIcon(":/icon.png"));
+                        icon->setContextMenu(new QMenu());
+                        icon->show();
+#ifdef Q_OS_WIN
+                        icon->showMessage("QDigi","qdigi.exe aktualisieren");
+#else
+                        icon->showMessage("QDigi","qdigi aktualisieren");
+#endif
                         updateExe=true;
-            }
+                    }
             QJsonArray files=root["files"].toArray();
             qDebug()<<files;
             QStringList requestFiles;
@@ -76,65 +91,85 @@ void Updater::update()
                 else
                 {
                     requestFiles.append(curFile["name"].toString());
-                    qDebug()<<"MISSING"<<curFile["name"].toString();
+                    QSystemTrayIcon *icon=new QSystemTrayIcon;
+                    icon->setIcon(QIcon(":/icon.png"));
+                    icon->setContextMenu(new QMenu());
+                    icon->show();
+                    icon->showMessage("QDigi",requestFiles.last()+" aktualisieren");
                 }
             }
-            if((!updateExe)||(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok))
+            if(updateExe||(requestFiles.length()>0))
             {
-                qDebug()<<"INSTALLING UNPADE"<<updateExe<<requestFiles;
-                if(updateExe)
+                if((!updateExe)||(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok))
                 {
-                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+root["exeName"].toString()));
-                    req.setRawHeader("token",Settings::final()->token().toUtf8());
-                    QNetworkReply* rep=manager.get(req);
-                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                    loop.exec();
-                    if(rep->error()==QNetworkReply::NoError)
+                    qDebug()<<"INSTALLING UNPADE"<<updateExe<<requestFiles;
+                    if(updateExe)
                     {
-                        QByteArray newExe=rep->readAll();
-                        QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
-                        QDir dir(QApplication::applicationDirPath());
-                        dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
-                        QFile file(path);
-                        file.open(QFile::WriteOnly|QFile::Truncate);
-                        file.write(newExe);
-                        file.close();
+#ifdef Q_OS_WIN
+                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+root["exeName"].toString()+".exe"));
+#else
+                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+root["exeName"].toString()));
+#endif
+                        req.setRawHeader("token",Settings::final()->token().toUtf8());
+                        QNetworkReply* rep=manager.get(req);
+                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                        loop.exec();
+                        if(rep->error()==QNetworkReply::NoError)
+                        {
+                            QByteArray newExe=rep->readAll();
+#ifdef Q_OS_WIN
+                            QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi.exe");
+#else
+                            QString path=QDir(QApplication::applicationDirPath()).absoluteFilePath("qdigi");
+#endif
+                            QDir dir(QApplication::applicationDirPath());
+                            dir.rename(QApplication::applicationFilePath(),QApplication::applicationFilePath()+".old");
+                            QFile file(path);
+                            file.open(QFile::WriteOnly|QFile::Truncate);
+                            file.write(newExe);
+                            file.close();
+                            file.setPermissions(file.permissions()|QFile::ExeUser|QFile::ExeGroup|QFile::ExeOther|QFile::ExeOwner);
+                        }
                     }
-                }
-                for(int i=0;i<requestFiles.length();i++)
-                {
-                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+requestFiles[i]));
-                    req.setRawHeader("token",Settings::final()->token().toUtf8());
-                    QNetworkReply* rep=manager.get(req);
-                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                    loop.exec();
-                    if(rep->error()==QNetworkReply::NoError)
+                    for(int i=0;i<requestFiles.length();i++)
                     {
-                        QByteArray data=rep->readAll();
-                        QString name=toPath(requestFiles[i]);
-                        QFile file(name);
-                        file.open(QFile::WriteOnly|QFile::Truncate);
-                        file.write(data);
-                        file.flush();
-                        file.close();
+                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+requestFiles[i]));
+                        req.setRawHeader("token",Settings::final()->token().toUtf8());
+                        QNetworkReply* rep=manager.get(req);
+                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                        loop.exec();
+                        if(rep->error()==QNetworkReply::NoError)
+                        {
+                            QByteArray data=rep->readAll();
+                            QString name=toPath(requestFiles[i]);
+                            QFile file(name);
+                            file.open(QFile::WriteOnly|QFile::Truncate);
+                            file.write(data);
+                            file.flush();
+                            file.close();
+                        }
+                        else
+                            qDebug()<<rep->errorString();
+                    }
+                    if(updateExe)
+                    {
+                        QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
+                        exit(0);
                     }
                     else
-                        qDebug()<<rep->errorString();
-                }
-                if(updateExe)
-                {
-                    QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
-                    exit(0);
-                }
-                else
-                {
-                    BlockList::blocks.clear();
-                    BlockList bl;
-                    return;
+                    {
+                        BlockList::blocks.clear();
+                        BlockList bl;
+                        return;
+                    }
                 }
             }else
             {
-                emit showMessage("Keine Neuen Updates",10*1000);
+                QSystemTrayIcon *icon=new QSystemTrayIcon;
+                icon->setIcon(QIcon(":/icon.png"));
+                icon->setContextMenu(new QMenu());
+                icon->show();
+                icon->showMessage("QDigi","Keine Updates");
                 qDebug()<<"NO NEW UPDATES";
                 return;
             }

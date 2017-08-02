@@ -66,10 +66,12 @@ void Updater::update()
 #else
                         icon->showMessage("QDigi","qdigi aktualisieren");
 #endif
+                        QTimer::singleShot(10000,[icon](){
+                            icon->deleteLater();
+                        });
                         updateExe=true;
                     }
             QJsonArray files=root["files"].toArray();
-            qDebug()<<files;
             QStringList requestFiles;
             for(int i=0;i<files.size();i++)
             {
@@ -95,7 +97,10 @@ void Updater::update()
                     icon->setIcon(QIcon(":/icon.png"));
                     icon->setContextMenu(new QMenu());
                     icon->show();
-                    icon->showMessage("QDigi",requestFiles.last()+" aktualisieren");
+                    icon->showMessage("QDigi",requestFiles.last()+" aktualisieren",QSystemTrayIcon::Information);
+                    QTimer::singleShot(10000,[icon](){
+                        icon->deleteLater();
+                    });
                 }
             }
             if(updateExe||(requestFiles.length()>0))
@@ -147,6 +152,14 @@ void Updater::update()
                             file.write(data);
                             file.flush();
                             file.close();
+                            QSystemTrayIcon *icon=new QSystemTrayIcon;
+                            icon->setIcon(QIcon(":/icon.png"));
+                            icon->setContextMenu(new QMenu());
+                            icon->show();
+                            icon->showMessage("QDigi",requestFiles[i]+" aktualisiert");
+                            QTimer::singleShot(10000,[icon](){
+                                icon->deleteLater();
+                            });
                         }
                         else
                             qDebug()<<rep->errorString();
@@ -170,6 +183,9 @@ void Updater::update()
                 icon->setContextMenu(new QMenu());
                 icon->show();
                 icon->showMessage("QDigi","Keine Updates");
+                QTimer::singleShot(10000,[icon](){
+                    icon->deleteLater();
+                });
                 qDebug()<<"NO NEW UPDATES";
                 return;
             }

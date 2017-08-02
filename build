@@ -3,7 +3,6 @@
 # This simple script builds the the application for Windows
 # using a cross compiler.
 #
-set -e
 make clean
 rm -rf qdigi.zip
 rm -rf qdigi.exe
@@ -11,6 +10,7 @@ rm -rf qdigi
 rm -f qdigi
 mkdir  qdigi
 # Build the image
+set -e
 docker build -t qtdyn .
 
 ## in den Container gehen:

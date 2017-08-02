@@ -62,6 +62,7 @@ void LuaBlock::load(QString fileName) {
     QFile file(fileName);
     file.open(QFile::ReadOnly);
     QString data = file.readAll();
+    file.close();
     luaL_openlibs(L);
     // luaopen_socket_core(L);
     // lua_setglobal(L,"socket");

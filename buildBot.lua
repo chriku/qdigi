@@ -13,7 +13,8 @@ end
 os.execute("nano /tmp/message")
 os.execute("cd .. && sudo umount mnt")
 os.execute("cd .. && sshfs root@a20-olimex-2:/media/usb-stick/site/qdigi/downloads mnt")
-if os.execute("sudo ./build") and os.execute("mkdir -p lbuild && cd lbuild && /usr/local/Qt-5.8-static/bin/qmake ../qdigi.pro && make -j8") then
+if os.execute("./build") and os.execute("mkdir -p lbuild && cd lbuild && /usr/local/Qt-5.10-static/bin/qmake ../qdigi.pro && make -j8") then
+  os.execute("cp INSTALL install.sh lbuild")
   os.execute("cd lbuild && tar -czf qdigi.tar.gz qdigi")
   os.execute("rm -rf win;mkdir win")
   os.execute("cp qdigi.zip ../mnt/")

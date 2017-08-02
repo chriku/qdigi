@@ -39,7 +39,7 @@ cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libgcc_s_sjlj-1.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libglib-2.0-0.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libharfbuzz-0.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libiconv-2.dll qdigi
-cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libidn-11.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libidn-11.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libintl-8.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libjpeg-9.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/liblzo2-2.dll qdigi

@@ -4,8 +4,8 @@
 #include <QTime>
 #include <QFile>
 extern "C" {
-#include <openssl/crypto.h>
-#include <openssl/rsa.h>
+//#include <openssl/crypto.h>
+//#include <openssl/rsa.h>
 }
 LuaBlock::LuaBlock(QObject *parent) : Block(parent)
 {

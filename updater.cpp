@@ -273,8 +273,10 @@ void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 
 void Updater::startUpdate()
 {
+#ifdef Q_PROCESSOR_X86_64
 #ifdef Q_OS_LINUX
     QString platform="linux";
+#endif
 #endif
 #ifdef Q_OS_WIN32
     QString platform="windows";

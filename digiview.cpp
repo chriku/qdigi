@@ -380,7 +380,6 @@ void DigiView::mouseMoveEvent(QMouseEvent *event)
         curPoint=toGrid(event->pos());
         if(drag)
         {
-            change();
             dragged=true;
             if(dragIdx>=0)
                 curSchematic->items[dragIdx]->pos+=curPoint-startPoint;

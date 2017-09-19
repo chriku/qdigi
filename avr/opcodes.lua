@@ -5,7 +5,8 @@ local function ioreg(r)
   return r+32
 end
 local function io(chip,reg,bit)
-  print("OUT",reg,chip.ram[ioreg(reg)],bit)
+  print("DDRA",chip.ram[ioreg(26)])
+  print("PORTA",chip.ram[ioreg(27)])
 end
 local function jump(chip,k)
   if k>=0 then
@@ -84,7 +85,7 @@ opcodes["1101"]=function(first)
     k=-(4095~k)
   end
    return 2,{name="rcall",k=k,exec=function(chip)
-     chip.stack[#chip.stack+1]=chip.PC
+     chip.stack[#chip.stack+1]=chip.PC+1
      jump(chip,k)
    end}
 end
@@ -179,6 +180,33 @@ opcodes["1001 1000"]=function(first)
     chip.PC=chip.PC+1
   end}
 end
+opcodes["0000 0001"]=function(first)
+  local r=first%16
+  local d=(first>>4)%16
+  r=r*2
+  d=d*2
+  return 2,{name="movw",r=r,d=d,exec=function(chip)
+    chip.ram[reg(d)]=chip.ram[reg(r)]
+    chip.PC=chip.PC+1
+  end}
+end
+opcodes["0011 0000"]=function(first)
+  local K=first%16
+  local d=(first>>4)%16
+  d=d+16
+  K=K|(((first>>8)%16)<<4)
+  return 2,{name="cpi",r=r,d=d,exec=function(chip)
+    chip.status.Z=0
+    if chip.ram[reg(d)]==K then
+      chip.status.Z=1
+    end
+    chip.status.C=0
+    if chip.ram[reg(d)]<K then
+      chip.status.C=1
+    end
+    chip.PC=chip.PC+1
+  end}
+end
 opcodes["1001 0100 1111 1000"]=function(first)
   return 2,{name="cli"}
 end
@@ -194,39 +222,51 @@ opcodes["1001 010. .... 1010"]=function(first)
     chip.PC=chip.PC+1
   end}
 end
-local function getCode(first,pos)
-  local f=first
-  local str=""
-  local i=0
-  for i=1,16 do
-    if (first%2)==0 then
-      str="0"..str
-    else
-      str="1"..str
-    end
-    if i%4==0 and i<16 then
-      str=" "..str
-    end
-    first=first>>1
+opcodes["0000 01"]=function(first)
+  local r=first%16
+  local d=(first>>4)%16
+  if (first>>8)%2==1 then
+    d=d|16
   end
-  first=f
-  for k,v in pairs(opcodes) do
-    if str:find("^"..k) then
-      return v(first)
-    end
+  if (first>>9)%2==1 then
+    r=r|16
   end
-  print(string.format("%08x: ",(pos-1))..str)
-  os.exit(0)
+  return 2,{name="cpc",r=r,d=d,exec=function(chip)
+    local v=chip.ram[reg(d)]-chip.ram[reg(r)]-chip.status.C
+    chip.status.N=0
+    if v>127 then
+      chip.status.N=1
+    end
+    chip.status.V=0
+    if v<0 then
+      chip.status.V=1
+    end
+    chip.status.C=0
+    if v<0 then
+      chip.status.C=1
+    end
+    if v~=0 then
+      chip.status.Z=1
+    end
+    chip.PC=chip.PC+1
+  end}
 end
-function parse(data)
-  local pos=1
-  local prog={}
-  while pos<=data:len() do
-    local first=string.unpack("<I2",data:sub(pos,pos+1))
-    local len,data=getCode(first,pos)
-    prog[(pos-1)/2]=data
-    pos=pos+len
-  end
-  return prog
+opcodes["1001 010"]=function(first)
+  local d=(first>>4)%32
+  return 2,{name="com",d=d,exec=function(chip)
+    local v=0xFF-chip.ram[reg(d)]
+    chip.ram[reg(d)]=v
+    chip.status.N=0
+    if v>127 then
+      chip.status.N=1
+    end
+    chip.status.V=0
+    chip.status.C=1
+    chip.status.Z=0
+    if v~=0 then
+      chip.status.Z=1
+    end
+    chip.PC=chip.PC+1
+  end}
 end
-
+return opcodes

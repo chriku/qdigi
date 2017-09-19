@@ -20,7 +20,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QDebug>
-#include <zip.h>
+//#include <zip.h>
 #include <math.h>
 
 
@@ -541,7 +541,7 @@ void DigiView::load(QUrl where)
         }
         else
         {
-            int err;
+            /*int err;
             zip_t *arch=zip_fdopen(file.handle(),0,&err);
             zip_file_t* vfile=zip_fopen(arch,"version.txt",0);
             QByteArray version(128,0);
@@ -565,7 +565,7 @@ void DigiView::load(QUrl where)
             {
                 QMessageBox::warning(NULL,"QDigi Fehler","Unbekanntes Dateiformat");
             }
-            zip_close(arch);
+            zip_close(arch);*/
             file.close();
         }
     }

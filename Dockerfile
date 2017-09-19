@@ -75,6 +75,7 @@ RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared libzip
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared yaml-cpp
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtsvg
 RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared file
+RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared openssl
 #COPY qtwebkit.diff /build/qtwebkit.diff
 #RUN patch /build/mxe/src/qtwebkit.mk </build/qtwebkit.diff
 #RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtwebkit
@@ -96,6 +97,7 @@ RUN mkdir /src
 COPY . /src
 
 # Switch to the source directory
+#RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared openssl
 WORKDIR /src
 
 # Now build the project

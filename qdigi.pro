@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui network
-
+#LIBS += -lssl -lcrypto
 RC_FILE = app.rc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -227,6 +227,6 @@ win32:DEFINES  += _WIN32
 DISTFILES += \
     qdigi.reg
 
-INCLUDEPATH += ./zip
+#INCLUDEPATH += ./zip
 CONFIG += link_pkgconfig
-PKGCONFIG += libzip
+#PKGCONFIG += libzip

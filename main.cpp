@@ -46,7 +46,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 int main(int argc, char *argv[])
 {
-    qDebug()<<"USING"<<QNetworkProxyFactory::usesSystemConfiguration();
+    //qDebug()<<"USING"<<QNetworkProxyFactory::usesSystemConfiguration();
     QNetworkProxyFactory::setUseSystemConfiguration(true);
     QFile outFile("out.txt");
     outFile.open(QIODevice::WriteOnly | QIODevice::Truncate);

@@ -273,13 +273,16 @@ void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 
 void Updater::startUpdate()
 {
+    QString platform="";
 #ifdef Q_PROCESSOR_X86_64
 #ifdef Q_OS_LINUX
-    QString platform="linux";
+    platform="linux";
 #endif
+#else
+    return;
 #endif
 #ifdef Q_OS_WIN32
-    QString platform="windows";
+    platform="windows";
 #endif
     qDebug()<<"Starting Update";
     QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/update.cgi?platform="+platform));

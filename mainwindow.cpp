@@ -15,7 +15,7 @@
 #include "remotedrivelist.h"
 #include "microtar.h"
 extern "C" {
-#include "zip.h"
+//#include "zip.h"
 }
 extern QNetworkAccessManager manager;
 QMap<QAction*,RemoteDrive*> actionMap;

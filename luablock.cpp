@@ -3,10 +3,15 @@
 #include "painter.h"
 #include <QTime>
 #include <QFile>
-
+extern "C" {
+#include <openssl/crypto.h>
+#include <openssl/rsa.h>
+}
 LuaBlock::LuaBlock(QObject *parent) : Block(parent)
 {
     subItem=false;
+    //RSA* rsa=RSA_new();
+    //RSA_free(rsa);
 }
 
 QPicture LuaBlock::draw()

@@ -28,6 +28,8 @@ cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Multimedia.dll qdigi
 #cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5PrintSupport.dll qdigi
 #cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Quick.dll qdigi
 #cp /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/Qt5Sql.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libssl.dll qdigi
+#cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libcrypto.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libbz2.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/icuin56.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/icuuc56.dll qdigi

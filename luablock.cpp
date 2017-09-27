@@ -7,8 +7,11 @@ extern "C" {
 //#include <openssl/crypto.h>
 //#include <openssl/rsa.h>
 }
-LuaBlock::LuaBlock(QObject *parent) : Block(parent)
+LuaBlock::LuaBlock(QString fileName,QObject *parent) : Block(parent)
 {
+    if(!usedBlocks.contains(fileName))
+        usedBlocks.insert(fileName,QList<Block*>());
+    usedBlocks[fileName].append(this);
     subItem=false;
     //RSA* rsa=RSA_new();
     //RSA_free(rsa);
@@ -18,6 +21,10 @@ QPicture LuaBlock::draw()
 {
     if(lua_gettop(L)!=0)
     {
+        qDebug()<<lua_gettop(L);
+        qDebug()<<"TYPE"<<lua_typename(L,lua_type(L,lua_gettop(L)));
+        if(lua_type(L,lua_gettop(L))==LUA_TSTRING)
+            qDebug()<<lua_tostring(L,lua_gettop(L));
         qDebug()<<"TOP ERROR";
     }
     QPicture ret;
@@ -78,7 +85,8 @@ void LuaBlock::load(QString fileName) {
         qDebug() << "ERR2" << lua_tostring(L, -1);
 }
 Block *LuaBlock::clone() {
-    LuaBlock *nblk = new LuaBlock;
+    LuaBlock *nblk = new LuaBlock(fileName);
+    nblk->fileName=fileName;
     nblk->mainRef=mainRef;
     nblk->L=L;
     init(nblk);
@@ -115,10 +123,8 @@ void LuaBlock::onclick(QPointF where) {
 void LuaBlock::onpress(QPointF where) {
     if(!valid)
         return;
-    qDebug()<<"TOP1"<<lua_gettop(L);
     lua_rawgeti(L,LUA_REGISTRYINDEX,state);
     lua_setglobal(L,"state");
-    qDebug()<<"TOP2"<<lua_gettop(L);
     lua_getglobal(L, "onpress");
     if (!lua_isnil(L, -1)) {
         lua_pushnumber(L, where.x());
@@ -132,7 +138,6 @@ void LuaBlock::onpress(QPointF where) {
         lua_pop(L,1);
     lua_getglobal(L,"state");
     lua_rawseti(L,LUA_REGISTRYINDEX,state);
-    qDebug()<<"TOP4"<<lua_gettop(L);
 }
 void LuaBlock::keyPress(int pos) {
     if(!valid)
@@ -301,13 +306,22 @@ QPointF LuaBlock::pointAt(QPolygonF spline, double pos, bool cyclic) {
 
 LuaBlock::~LuaBlock()
 {
+    usedBlocks[fileName].removeAll(this);
     luaL_unref(L,LUA_REGISTRYINDEX,state);
     //lua_close(L);
+}
+void LuaBlock::refresh()
+{
+    qDebug()<<"REFRESH"<<fileName;
+    load(fileName);
 }
 
 void LuaBlock::init(Block *blk2)
 {
     LuaBlock*blk=(LuaBlock*)blk2;
+    blk->pins.clear();
+    blk->contextMenu.clear();
+    blk->alt.clear();
     blk->valid=true;
     blk->checkable=false;
     lua_State*L=blk->L;

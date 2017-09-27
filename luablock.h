@@ -7,7 +7,8 @@ class LuaBlock : public Block
 {
     Q_OBJECT
 public:
-    explicit LuaBlock(QObject *parent = 0);
+    void refresh();
+    explicit LuaBlock(QString fileName, QObject *parent = 0);
     void load(QString fileName);
     lua_State*L;
     int state;

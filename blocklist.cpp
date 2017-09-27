@@ -15,8 +15,9 @@ BlockList::BlockList(QObject *parent) : QObject(parent)
         for(int i=0;i<files.length();i++)
             if(files[i].endsWith(".lua"))
             {
-                LuaBlock* b=new LuaBlock;
-                b->load(dir.absoluteFilePath(files[i]));
+                QString fn=dir.absoluteFilePath(files[i]);
+                LuaBlock* b=new LuaBlock(fn);
+                b->load(fn);
                 if(b->valid)
                     blocks.append(b);
             }

@@ -4,6 +4,9 @@ local file=io.open("avr.bin")
 local chip=avr(file:read("*a"))
 file:close()
 while true do
-  chip:doStep()
-  socket.sleep(0.01)
+  for i=1,250 do
+    chip:doStep()
+    socket.sleep(0.01)
+  end
+  chip:interrupt(0x0C)
 end

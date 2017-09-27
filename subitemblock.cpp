@@ -149,3 +149,8 @@ void SubitemBlock::simulate()
         }
     m_data->simulate();
 }
+
+void SubitemBlock::refresh()
+{
+
+}

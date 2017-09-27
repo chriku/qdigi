@@ -3,6 +3,9 @@ otime=0
 state=nil
 type=0
 function paintEvent(painter,color)
+  painter:setPen(color)
+  painter:setBrush("white")
+  painter:drawRect(0.5,0.5,9,9)
   if otime==0 then
     otime=time
   end
@@ -17,8 +20,6 @@ function paintEvent(painter,color)
   end
   painter:setPen("black")
   painter:setBrush()
-  painter:drawLine(1.5,2,2.5,2)
-  painter:drawLine(1.5,8,2.5,8)
   y=0
   if pos<0.5 then
     y=0
@@ -36,12 +37,10 @@ function paintEvent(painter,color)
       y=-y
     end
   end
-  painter:setBrush("white")
-  painter:drawRect(-1,-1,12,12)
   if type==0 then
-    painter:drawEllipse((12.0*pos)-1.0,(y*3.5)+5,0.5)
+    painter:drawEllipse((8.0*pos)+1,(y*3.5)+5,0.5)
   elseif type==1 then
-    px=(12.0*pos)-1.0
+    px=(8.0*pos)+1
     py=(y*3.5)+5
     h=0.5*math.sqrt(3.0)
     h1=h*(2.0^0.5)*0.5
@@ -50,15 +49,8 @@ function paintEvent(painter,color)
     painter:drawLine(px-0.5,py+h2,px,py-h1)
     painter:drawLine(px+0.5,py+h2,px,py-h1)
   else
-    painter:drawRect((12.0*pos)-1.5,(y*3.5)+4.5,1.0,1.0)
+    painter:drawRect((8.0*pos)+1.5,(y*3.5)+4.5,1.0,1.0)
   end
-  painter:setPen(nil)
-  painter:setBrush("white")
-  painter:drawRect(-1,0,1.5,10)
-  painter:drawRect(9.5,0,5,10)
-  painter:setPen(color)
-  painter:setBrush()
-  painter:drawRect(0.5,0.5,9,9)
 end
 function getState(pin)
   if pin==2 then
@@ -68,4 +60,4 @@ function getState(pin)
   end
   return false
 end
-return {width=9,height=9,name="Band",pins={{0,1,"INPUT"},{10,1,"OUTPUT"},{10,3,"OUTPUT"}},category="other",description="Band-Simulation"}
+return {width=9,height=9,name="Band",pins={{0,1,"INPUT"},{10,1,"OUTPUT"},{10,3,"OUTPUT"}},category="other",description="Schlechte Band-Simulation"}

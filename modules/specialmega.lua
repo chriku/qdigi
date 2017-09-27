@@ -5,7 +5,7 @@ function paintEvent(painter,color)
   painter:setPen(color)
   painter:drawRect(0.5,0.5,3,2)
   painter:setPen("black")
-  painter:drawText("NAND",0.5,0.5,3,2)
+  painter:drawText("SPECIAL",0.5,0.5,3,2)
 end
 
 function getState()

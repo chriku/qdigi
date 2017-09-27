@@ -20,6 +20,8 @@ class Block : public Item
 {
     Q_OBJECT
 public:
+    virtual void refresh()=0;
+    static QMap<QString,QList<Block*>> usedBlocks;
     bool subItem;
     explicit Block(QObject *parent = 0);
     virtual void keyPressNorm(QString key)=0;

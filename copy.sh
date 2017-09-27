@@ -5,6 +5,7 @@ set -e
 rm -rf qdigi/*
 
 
+ls /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll
 #cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
 #cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
 #cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
@@ -48,6 +49,7 @@ cp /build/mxe/usr/i686-w64-mingw32.shared/bin/liblzo2-2.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libnettle-6.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libpcre-1.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libpcre16-0.dll qdigi
+cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libpcre2-16-0.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libstdc++-6.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/libzip-4.dll qdigi
 cp /build/mxe/usr/i686-w64-mingw32.shared/bin/ssleay32.dll qdigi

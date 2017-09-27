@@ -8,6 +8,7 @@ class SubitemBlock : public Block
 {
     Q_OBJECT
 public:
+    void refresh();
     explicit SubitemBlock(Schematic* data,QObject *parent = 0);
 Schematic* m_data;
 QPicture draw();

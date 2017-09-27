@@ -1,39 +1,26 @@
-#define F_CPU 1000UL
-/* uC: AT90S2313 */
 #include <avr/io.h>
-#include <avr/interrupt.h>
-int value=0;
+
+void Delay(void);
+
 int main(void)
 {
-  DDRA=2;
-  // Timer 0 konfigurieren
-  TCCR0A = (1<<CS01); // Prescaler 8
+    // LEDs are on pins PD0 and PD5
+    DDRD |= ((1 << PD0) | (1 << PD5));
 
-  // Overflow Interrupt erlauben
-  TIMSK |= (1<<TOIE0);
-
-  // Global Interrupts aktivieren
-  sei();
-
-  while(1)
-  {
-    PORTA=value;
-    /* Sonstige Aktionen */
-  }
+    while(1)
+    {
+        PORTD &= ~(1 << PD0);           // switch PD0 LED off
+        PORTD |=  (1 << PD5);           // switch PD5 LED on
+        Delay();
+        PORTD &= ~(1 << PD5);           // switch PD5 LED off
+        PORTD |=  (1 << PD0);           // switch PD0 LED on
+        Delay();
+    }
 }
 
-/*
-Der Overflow Interrupt Handler
-wird aufgerufen, wenn TCNT0 von
-255 auf 0 wechselt (256 Schritte),
-d.h. ca. alle 2 ms
-*/
-#ifndef TIMER0_OVF_vect
-// Für ältere WinAVR Versionen z.B. WinAVR-20071221
-#define TIMER0_OVF_vect TIMER0_OVF0_vect
-#endif
-
-ISR (TIMER0_OVF_vect)
+void Delay(void)
 {
-  value=value^2;
+    volatile unsigned int del = 400;
+
+    while(del--);
 }

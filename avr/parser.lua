@@ -1,5 +1,5 @@
 local opcodes=require"opcodes"
-local function getCode(first,pos)
+local function getCode(first,pos,second)
   local f=first
   local str=""
   local i=0
@@ -17,7 +17,7 @@ local function getCode(first,pos)
   first=f
   for k,v in pairs(opcodes) do
     if str:find("^"..k) then
-      return v(first)
+      return v(first,second)
     end
   end
   print(string.format("%08x: ",(pos-1))..str)
@@ -28,7 +28,11 @@ return function(data)
   local prog={}
   while pos<=data:len() do
     local first=string.unpack("<I2",data:sub(pos,pos+1))
-    local len,data=getCode(first,pos)
+    local second=0
+    if (pos+3)<=data:len() then
+      second=string.unpack("<I2",data:sub(pos+2,pos+3))
+    end
+    local len,data=getCode(first,pos,second)
     prog[(pos-1)/2]=data
     pos=pos+len
   end

@@ -36,4 +36,5 @@ function getState(pin)
   end
   return state[pin-8]
 end
-return {width=3,height=9,name="Compare4",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"},{0,8,"INPUT"},{0,9,"INPUT"},{4,4,"OUTPUT"},{4,5,"OUTPUT"},{4,6,"OUTPUT"}},category="base",description="1 Bit Komparator"}
+return {width=3,height=9,name="Compare4",pins={{0,1,"INPUT"},{0,2,"INPUT"},{0,3,"INPUT"},{0,4,"INPUT"},{0,6,"INPUT"},{0,7,"INPUT"},{0,8,"INPUT"},{0,9,"INPUT"},{4,4,"OUTPUT"},{4,5,"OUTPUT"},{4,6,"OUTPUT"}},category="base",description="4 Bit Komparator"}
+

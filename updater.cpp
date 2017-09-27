@@ -8,6 +8,7 @@
 #include <QApplication>
 #include "settings.h"
 #include <QInputDialog>
+#include "block.h"
 
 extern QNetworkAccessManager manager;
 QNetworkReply*grep;
@@ -69,7 +70,13 @@ void Updater::update()
                         QTimer::singleShot(10000,[icon](){
                             icon->deleteLater();
                         });
+#ifdef Q_PROCESSOR_X86_64
                         updateExe=true;
+#else
+#ifndef Q_OS_LINUX
+                        updateExe=true;
+#endif
+#endif
                     }
             QJsonArray files=root["files"].toArray();
             QStringList requestFiles;
@@ -105,10 +112,9 @@ void Updater::update()
             }
             if(updateExe||(requestFiles.length()>0))
             {
-                if((!updateExe)||(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok))
+                if(updateExe)
                 {
-                    qDebug()<<"INSTALLING UNPADE"<<updateExe<<requestFiles;
-                    if(updateExe)
+                    if(QMessageBox::information(NULL,"Update Installieren","Neues Update Installieren?",QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok)
                     {
 #ifdef Q_OS_WIN
                         QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+root["exeName"].toString()+".exe"));
@@ -136,45 +142,57 @@ void Updater::update()
                             file.setPermissions(file.permissions()|QFile::ExeUser|QFile::ExeGroup|QFile::ExeOther|QFile::ExeOwner);
                         }
                     }
-                    for(int i=0;i<requestFiles.length();i++)
+                    else
+                        updateExe=false;
+                }
+                for(int i=0;i<requestFiles.length();i++)
+                {
+                    QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+requestFiles[i]));
+                    req.setRawHeader("token",Settings::final()->token().toUtf8());
+                    QNetworkReply* rep=manager.get(req);
+                    connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
+                    loop.exec();
+                    if(rep->error()==QNetworkReply::NoError)
                     {
-                        QNetworkRequest req(QUrl("https://talstrasse.hp-lichtblick.de/qdigi/downloads/"+requestFiles[i]));
-                        req.setRawHeader("token",Settings::final()->token().toUtf8());
-                        QNetworkReply* rep=manager.get(req);
-                        connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-                        loop.exec();
-                        if(rep->error()==QNetworkReply::NoError)
+                        QByteArray data=rep->readAll();
+                        QString name=toPath(requestFiles[i]);
+                        QFile file(name);
+                        file.open(QFile::WriteOnly|QFile::Truncate);
+                        file.write(data);
+                        file.flush();
+                        file.close();
+                        qDebug()<<"BLKNAME"<<name;
+                        if(Block::usedBlocks.contains(name))
                         {
-                            QByteArray data=rep->readAll();
-                            QString name=toPath(requestFiles[i]);
-                            QFile file(name);
-                            file.open(QFile::WriteOnly|QFile::Truncate);
-                            file.write(data);
-                            file.flush();
-                            file.close();
-                            QSystemTrayIcon *icon=new QSystemTrayIcon;
-                            icon->setIcon(QIcon(":/icon.png"));
-                            icon->setContextMenu(new QMenu());
-                            icon->show();
-                            icon->showMessage("QDigi",requestFiles[i]+" aktualisiert");
-                            QTimer::singleShot(10000,[icon](){
-                                icon->deleteLater();
-                            });
+                            qDebug()<<Block::usedBlocks[name];
+                            for(auto block:Block::usedBlocks[name])
+                            {
+                                qDebug()<<block->name;
+                                block->refresh();
+                            }
                         }
-                        else
-                            qDebug()<<rep->errorString();
-                    }
-                    if(updateExe)
-                    {
-                        QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
-                        exit(0);
+                        QSystemTrayIcon *icon=new QSystemTrayIcon;
+                        icon->setIcon(QIcon(":/icon.png"));
+                        icon->setContextMenu(new QMenu());
+                        icon->show();
+                        icon->showMessage("QDigi",requestFiles[i]+" aktualisiert");
+                        QTimer::singleShot(10000,[icon](){
+                            icon->deleteLater();
+                        });
                     }
                     else
-                    {
-                        BlockList::blocks.clear();
-                        BlockList bl;
-                        return;
-                    }
+                        qDebug()<<rep->errorString();
+                }
+                if(updateExe)
+                {
+                    QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
+                    exit(0);
+                }
+                else
+                {
+                    BlockList::blocks.clear();
+                    BlockList bl;
+                    return;
                 }
             }else
             {
@@ -274,12 +292,8 @@ void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 void Updater::startUpdate()
 {
     QString platform="";
-#ifdef Q_PROCESSOR_X86_64
 #ifdef Q_OS_LINUX
     platform="linux";
-#endif
-#else
-    return;
 #endif
 #ifdef Q_OS_WIN32
     platform="windows";

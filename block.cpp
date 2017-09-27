@@ -12,6 +12,7 @@ extern "C" {
 #include "luasocket.h"
 }
 
+QMap<QString,QList<Block*>> Block::usedBlocks;
 QFileSystemWatcher *watcher=NULL;
 
 Block::Block(QObject *parent) : Item(parent) {

@@ -7,7 +7,7 @@ function paintEvent(painter,color)
     state=false
   end
   if pins[2] and pins[1] then
-    state=0
+    state=false
   end
   painter:setPen(color)
   painter:setBrush()
@@ -26,3 +26,4 @@ function getState(pin)
   end
 end
 return {width=3,height=3,name="RS-FlipFlop",pins={{0,1,"INPUT"},{0,3,"INPUT"},{4,1,"OUTPUT"},{4,3,"OUTPUT"}},category="flip",description="FlipFlop mit Set und Reset"}
+

@@ -9,7 +9,6 @@
 #include <QPicture>
 #include <QTime>
 #include <QList>
-#include "impulsedialog.h"
 #include "schematic.h"
 
 
@@ -41,7 +40,6 @@ public:
     Schematic* rootSchematic;
     Schematic* curSchematic;
     QList<Schematic*> childSchematics;
-    ImpulseDialog dialog;
     bool error;
     QList<QPair<QColor,QString> > loadColorProfile();
     QList<int> selection;

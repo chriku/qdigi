@@ -1,4 +1,4 @@
-desktop=require"desktop"
+--[[desktop=require"desktop"
 settings=require"settings"
 hserver=require"http.server"
 http=require"http"
@@ -56,3 +56,4 @@ function save(where,data)
   print(http.post("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",data,header))
 end
 return {name="Google",prefix="gdrive",save=save}
+--]]

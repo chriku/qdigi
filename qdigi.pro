@@ -18,7 +18,7 @@ win32:LIBS += -lws2_32
 SOURCES += main.cpp\
         mainwindow.cpp \
     digiview.cpp \
-    block.cpp \
+    items/block.cpp \
     dragview.cpp \
     blocklist.cpp \
     settings.cpp \
@@ -45,8 +45,6 @@ SOURCES += main.cpp\
 #    compat.c \
 #    buffer.c \
 #    auxiliar.c
-    kvdiagram.cpp \
-    gdrive.cpp \
     filechoose.cpp \
     remotedrive.cpp \
     remotedrivelist.cpp \
@@ -104,32 +102,31 @@ SOURCES += main.cpp\
     #lua/unixstream.c \
     #lua/usocket.c \
     #lua/wsocket.c \
-    lualibcollection.cpp \
-    luahttp.cpp \
-    luasettings.cpp \
-    luadesktop.cpp \
-    luahttpserver.cpp \
-    impulsedialog.cpp \
-    impulsewidget.cpp \
-    item.cpp \
-    line.cpp \
-    text.cpp \
-    via.cpp \
+    items/item.cpp \
+    items/line.cpp \
+    items/text.cpp \
+    items/via.cpp \
     schematic.cpp \
-    impulselabel.cpp \
+    items/impulselabel.cpp \
     markdownwidget.cpp \
     helpdialog.cpp \
-    jumplabel.cpp \
-    subitemblock.cpp \
-    luablock.cpp \
-    microtar.c
+    items/jumplabel.cpp \
+    items/subitemblock.cpp \
+    items/luablock.cpp \
+    extension/extension.cpp \
+    extension/extensionloader.cpp \
+    extension/dirloader.cpp \
+    extension/ziploader.cpp \
+    extension/module.cpp \
+    extension/blockmodule.cpp \
+    items/extensionblock.cpp
 
 QMAKE_INCDIR += ./lua
 
 
 HEADERS  += mainwindow.h \
     digiview.h \
-    block.h \
+    items/block.h \
     dragview.h \
     blocklist.h \
     settings.h \
@@ -137,8 +134,6 @@ HEADERS  += mainwindow.h \
     updater.h \
     painter.h \
     passworddialog.h \
-    kvdiagram.h \
-    gdrive.h \
     filechoose.h \
     remotedrive.h \
     remotedrivelist.h \
@@ -184,33 +179,30 @@ HEADERS  += mainwindow.h \
     #lua/unixstream.h \
     #lua/usocket.h \
     #lua/wsocket.h \
-    lualibcollection.h \
-    luahttp.h \
-    luasettings.h \
-    luadesktop.h \
-    luahttpserver.h \
-    impulsedialog.h \
-    impulsewidget.h \
-    item.h \
-    line.h \
-    text.h \
-    via.h \
+    items/item.h \
+    items/line.h \
+    items/text.h \
+    items/via.h \
     schematic.h \
-    impulselabel.h \
+    items/impulselabel.h \
     markdownwidget.h \
     helpdialog.h \
-    jumplabel.h \
-    subitemblock.h \
-    luablock.h \
-    microtar.h
+    items/jumplabel.h \
+    items/subitemblock.h \
+    items/luablock.h \
+    extension/extension.h \
+    extension/extensionloader.h \
+    extension/dirloader.h \
+    extension/ziploader.h \
+    extension/module.h \
+    extension/blockmodule.h \
+    items/extensionblock.h
 android:SOURCES = crypto/arm_arch.h \
 crypto/armcap.c
 FORMS    += mainwindow.ui \
     settingsdialog.ui \
     passworddialog.ui \
-    kvdiagram.ui \
     filechoose.ui \
-    impulsedialog.ui \
     helpdialog.ui
 INCLUDEPATH += ./crypto/ ./crypto/include/
 RESOURCES += images.qrc \

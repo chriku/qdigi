@@ -7,10 +7,11 @@ class LuaBlock : public Block
 {
     Q_OBJECT
 public:
-    void refresh();
     explicit LuaBlock(QString fileName, QObject *parent = 0);
-    void load(QString fileName);
+    ~LuaBlock();
     lua_State*L;
+    void refresh();
+    void load(QString fileName);
     int state;
     int mainRef;
     void pushGlobal(lua_State*L);
@@ -26,7 +27,6 @@ public:
     bool getState(int pin);
     void keyPressNorm(QString key);
     void keyPress(int pos);
-    ~LuaBlock();
     void simulate();
 
 signals:

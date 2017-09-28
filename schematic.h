@@ -3,11 +3,11 @@
 
 #include <QObject>
 #include <QJsonObject>
-#include "impulselabel.h"
-#include "jumplabel.h"
-#include "line.h"
-#include "text.h"
-#include "via.h"
+#include "items/impulselabel.h"
+#include "items/jumplabel.h"
+#include "items/line.h"
+#include "items/text.h"
+#include "items/via.h"
 #include "blocklist.h"
 
 

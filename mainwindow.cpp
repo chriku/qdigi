@@ -1,6 +1,6 @@
 #include <QInputDialog>
 #include <QProgressDialog>
-#include "subitemblock.h"
+#include "items/subitemblock.h"
 #include "helpdialog.h"
 #include "updater.h"
 #include "mainwindow.h"
@@ -11,9 +11,7 @@
 #include "blocklist.h"
 #include <QDebug>
 #include <QMessageBox>
-#include "gdrive.h"
 #include "remotedrivelist.h"
-#include "microtar.h"
 extern "C" {
 //#include "zip.h"
 }
@@ -276,9 +274,9 @@ void MainWindow::on_actionAuf_Updates_pr_fen_triggered()
 
 void MainWindow::on_actionImpulsdiagramm_erstellen_triggered()
 {
-    ui->digiView->dialog.widget->values.clear();
+    //ui->digiView->dialog.widget->values.clear();
     ui->digiView->recording=true;
-    ui->digiView->dialog.show();
+    //ui->digiView->dialog.show();
 }
 
 void MainWindow::on_helpBlock_clicked()

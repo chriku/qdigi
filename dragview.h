@@ -2,7 +2,7 @@
 #define DRAGVIEW_H
 
 #include <QTableWidget>
-#include "block.h"
+#include "items/block.h"
 
 class DragView : public QTableWidget
 {

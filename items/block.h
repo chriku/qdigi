@@ -21,11 +21,19 @@ class Block : public Item
     Q_OBJECT
 public:
     virtual void refresh()=0;
-    static QMap<QString,QList<Block*>> usedBlocks;
-    bool subItem;
     explicit Block(QObject *parent = 0);
     virtual void keyPressNorm(QString key)=0;
     virtual void keyPress(int pos)=0;
+    virtual Block* clone()=0;
+    virtual void onclick(QPointF where)=0;
+    virtual void onpress(QPointF where)=0;
+    virtual void onrelease(QPointF where)=0;
+    virtual void execContext(int idx)=0;
+    virtual bool getState(int pin)=0;
+    virtual void simulate()=0;
+
+    static QMap<QString,QList<Block*>> usedBlocks;
+    bool subItem;
     QString description;
     QList<bool> fake;
     bool useFake;
@@ -35,25 +43,13 @@ public:
     QString category;
     QString name;
     QList<pin_t> pins;
-    virtual Block* clone()=0;
     int width;
     int height;
-    virtual void onclick(QPointF where)=0;
-    virtual void onpress(QPointF where)=0;
-    virtual void onrelease(QPointF where)=0;
-    virtual void execContext(int idx)=0;
-    virtual bool getState(int pin)=0;
-    virtual void simulate()=0;
     ~Block();
     QRectF clickRect();
     QPointF unmap(QPointF p);
     QPicture draw();
     bool valid;
-
-
-
-    //QRectF pinsRect();
-
 signals:
 
 };

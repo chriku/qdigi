@@ -1,7 +1,7 @@
 #include "blocklist.h"
 #include <QDir>
 #include "settings.h"
-#include "luablock.h"
+#include "items/luablock.h"
 
 QList<Block*> BlockList::blocks;
 

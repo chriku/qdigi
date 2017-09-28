@@ -1,0 +1,6 @@
+{
+"version":0,
+"name":"ampel3",
+"main":"main.lua",
+"permissions":["block"]
+}

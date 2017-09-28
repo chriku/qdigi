@@ -1,6 +1,4 @@
-#include "impulsedialog.h"
 #include "remotedrivelist.h"
-#include "gdrive.h"
 #include <QApplication>
 #include <QInputDialog>
 #include <QDesktopServices>
@@ -621,10 +619,10 @@ void DigiView::timeout()
     if(error)
         mwp->statusBar()->showMessage(curSchematic->errorStr,1000);
     if(recording==true)
-    {
+    {/*
         for(auto label:curSchematic->impulseLabels)
-            dialog.widget->pushValue(label->name,label->state);
-        dialog.widget->nextField();
+           dialog.widget->pushValue(label->name,label->state);
+        dialog.widget->nextField();*/
     }
 }
 

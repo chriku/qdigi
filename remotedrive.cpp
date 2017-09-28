@@ -2,13 +2,12 @@
 #include <QDebug>
 #include <QUrl>
 #include <QInputDialog>
-#include "lualibcollection.h"
 
 RemoteDrive::RemoteDrive(QString fileName, QObject *parent) : QObject(parent)
 {
+    return;
     L=luaL_newstate();
     luaL_openlibs(L);
-    LuaLibCollection::push(L);
     saveFileIdx=-1;
     if(luaL_loadfile(L,fileName.toUtf8().data())!=LUA_OK)
     {
@@ -46,6 +45,7 @@ RemoteDrive::RemoteDrive(QString fileName, QObject *parent) : QObject(parent)
 
 bool RemoteDrive::save(QUrl where, QByteArray data)
 {
+    return false;
     if(saveFileIdx>=0)
     {
         where.setScheme("");
@@ -71,6 +71,7 @@ bool RemoteDrive::save(QUrl where, QByteArray data)
 
 QUrl RemoteDrive::saveUrl()
 {
+    return QUrl();
     QString fName=QInputDialog::getText(NULL,"Dateiname","Dateiname");
     QUrl ret("prefix:"+fName);
     ret.setScheme(prefix);

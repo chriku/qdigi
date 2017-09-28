@@ -1,21 +1,22 @@
+#include "blocklist.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <iostream>
 #include "mainwindow.h"
 #include <QApplication>
 #include "updater.h"
-#include "kvdiagram.h"
 #include "settings.h"
-#include "gdrive.h"
 #include "helpdialog.h"
+#include "extension/extension.h"
+
 QNetworkAccessManager manager;
 
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <winreg.h>
 #endif
-QString logs;
-void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
+//QString logs;
+/*void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
     QString txt;
     switch (type) {
@@ -42,53 +43,21 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     QTextStream ts(&outFile);
     ts << txt << endl;
     outFile.close();
-}
-
+}*/
 int main(int argc, char *argv[])
 {
-    //qDebug()<<"USING"<<QNetworkProxyFactory::usesSystemConfiguration();
+    BlockList bl;
     QNetworkProxyFactory::setUseSystemConfiguration(true);
-    QFile outFile("out.txt");
+    /*QFile outFile("out.txt");
     outFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
     outFile.write("Start Logging\r\n");
-    outFile.close();
+    outFile.close();*/
     QApplication a(argc, argv);
-    qInstallMessageHandler(myMessageHandler);
+    //qInstallMessageHandler(myMessageHandler);
+    QDir dir("/home/christian/qdigi/extensions");
+    for(auto file:dir.entryList())
+        Extension* e=new Extension(dir.absoluteFilePath(file));
     MainWindow w;
     w.show();
-    /*    long unsigned int len=1024*1024;
-    char value[len];
-    for(int i=0;i<len;i++)
-        value[i]=0;
-    HKEY hKey;
-    if(0!=RegOpenKeyEx(HKEY_CLASSES_ROOT,TEXT(".qdigi\\shell\\Open"),NULL,REG_BINARY,&hKey))
-    else
-    {
-    qDebug()<<RegGetValue(hKey,TEXT("command"),TEXT(""),RRF_RT_ANY,NULL,value,&len);
-    QByteArray val(value,len);
-    while(val.at(val.length()-1)==0)
-        val=val.left(val.length()-1);
-    qDebug()<<val;
-    }
-        #*/
-    qDebug()<<"EXEC";
     a.exec();
-    qDebug()<<"DONE";
-    QNetworkRequest req;
-    QUrlQuery query;
-    if(1==1)
-    {
-        QFile outFile("out.txt");
-        outFile.open(QIODevice::ReadOnly);
-        std::cout<<outFile.errorString().toStdString()<<std::endl;
-        query.addQueryItem("log",outFile.readAll().toBase64());
-        query.addQueryItem("token",Settings::final()->token());
-        QUrl url("https://talstrasse.hp-lichtblick.de/q/error.cgi");
-        req.setUrl(url);
-        QNetworkReply* rep=manager.post(req,query.toString().toUtf8());
-        QEventLoop loop;
-        QObject::connect(rep,SIGNAL(finished()),&loop,SLOT(quit()));
-        loop.exec();
-        std::cerr<<rep->errorString().toStdString()<<std::endl<<rep->readAll().data()<<std::endl;
-    }
 }

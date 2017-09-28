@@ -8,7 +8,7 @@
 #include <QApplication>
 #include "settings.h"
 #include <QInputDialog>
-#include "block.h"
+#include "items/block.h"
 
 extern QNetworkAccessManager manager;
 QNetworkReply*grep;
@@ -55,7 +55,9 @@ void Updater::update()
             QString chash=hash.result().toHex();
             qDebug()<<"EXE"<<chash<<nhash;
             if(chash.length()==nhash.length())
+#ifdef Q_OS_LINUX
                 if(Settings::final()->username()!="admin")
+#endif
                     if(chash!=nhash)
                     {
                         QSystemTrayIcon *icon=new QSystemTrayIcon;
@@ -183,17 +185,8 @@ void Updater::update()
                     else
                         qDebug()<<rep->errorString();
                 }
-                if(updateExe)
-                {
-                    QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
-                    exit(0);
-                }
-                else
-                {
-                    BlockList::blocks.clear();
-                    BlockList bl;
-                    return;
-                }
+                QMessageBox::information(NULL,"Update fertig","Update Fertig, bitte noch einmal starten.");
+                exit(0);
             }else
             {
                 QSystemTrayIcon *icon=new QSystemTrayIcon;
@@ -291,6 +284,7 @@ void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 
 void Updater::startUpdate()
 {
+    return;
     QString platform="";
 #ifdef Q_OS_LINUX
     platform="linux";

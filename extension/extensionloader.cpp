@@ -12,7 +12,7 @@ ExtensionLoader::ExtensionLoader(QObject *parent) : QObject(parent)
 ExtensionLoader* ExtensionLoader::getLoader(QString path)
 {
     QFileInfo fileinfo(path);
-    if(fileinfo.isDir())
-        return new DirLoader(path);
+    //if(fileinfo.isDir())
+    //    return new DirLoader(path);
     return NULL;
 }

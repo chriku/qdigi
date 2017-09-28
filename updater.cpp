@@ -284,7 +284,6 @@ void Updater::authenticationRequired(QNetworkProxy proxy, QAuthenticator*auth)
 
 void Updater::startUpdate()
 {
-    return;
     QString platform="";
 #ifdef Q_OS_LINUX
     platform="linux";

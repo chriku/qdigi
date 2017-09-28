@@ -222,3 +222,4 @@ DISTFILES += \
 #INCLUDEPATH += ./zip
 CONFIG += link_pkgconfig
 #PKGCONFIG += libzip
+QMAKE_CXXFLAGS += -std=c++17

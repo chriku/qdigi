@@ -1,3 +1,3 @@
-* Elemente in Zweierreihen
-* Mehrefachmarkierungen
-* Sortierung für Elemente
+* Updater just with Internet
+* Encrypt Modules with Platform hash
+* Move Website from Telegram to Email

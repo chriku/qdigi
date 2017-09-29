@@ -72,5 +72,5 @@ return {width=11,height=5,name="Garage",pins={{0,1,"INPUT"},{0,2,"INPUT"}
 ,{11,1,"OUTPUT"}
 ,{11,2,"OUTPUT"}
 ,{11,3,"OUTPUT"}
-},category="other",description="Garage"}
+},category="other",description="Garagentor"}
 

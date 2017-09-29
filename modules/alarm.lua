@@ -23,5 +23,5 @@ function paintEvent(painter,color)
 end
 function getState(pin)
 end
-return {width=1,height=1,name="Alarm",pins={{0,1,"INPUT"}},category="out",description="Alarm Leuchte"}
+return {width=1,height=1,name="Alarm",pins={{0,1,"INPUT"}},category="out",description="Alarm Leuchte",alt={"OUT"}}
 

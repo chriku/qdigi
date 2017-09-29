@@ -49,7 +49,7 @@ function paintEvent(painter,color)
     painter:drawLine(px-0.5,py+h2,px,py-h1)
     painter:drawLine(px+0.5,py+h2,px,py-h1)
   else
-    painter:drawRect((8.0*pos)+1.5,(y*3.5)+4.5,1.0,1.0)
+    painter:drawRect((8.0*pos)+0.5,(y*3.5)+4.5,1.0,1.0)
   end
 end
 function getState(pin)

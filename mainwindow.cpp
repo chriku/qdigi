@@ -25,9 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->digiView->mwp=this;
-    if(Settings::final()->licensePay())
+    //if(Settings::final()->licensePay())
         ui->ad->hide();
-    updater=new Updater;
     QMenu* remSave=new QMenu;
     RemoteDriveList rlist;
     for(int i=0;i<rlist.drives.length();i++)
@@ -52,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBox->setCurrentWidget(ui->page_base);
     isChanged=false;
     updateLc();
-    connect(updater,SIGNAL(showMessage(QString,int)),ui->statusBar,SLOT(showMessage(QString,int)));
     updateSchematicTree();
     updateBlocks();
 }
@@ -269,7 +267,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::on_actionAuf_Updates_pr_fen_triggered()
 {
-    updater->startUpdate();
 }
 
 void MainWindow::on_actionImpulsdiagramm_erstellen_triggered()

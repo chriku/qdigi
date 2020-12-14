@@ -9,7 +9,7 @@ BlockList::BlockList(QObject *parent) : QObject(parent)
 {
     if(blocks.isEmpty())
     {
-        QDir dir(Settings::final()->applicationDir());
+        QDir dir=QDir::current();
         dir.cd("modules");
         QStringList files=dir.entryList();
         for(int i=0;i<files.length();i++)

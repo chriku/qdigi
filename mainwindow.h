@@ -4,7 +4,6 @@
 #include <QTreeWidgetItem>
 #include <QMainWindow>
 #include <QMap>
-#include "updater.h"
 namespace Ui {
 class MainWindow;
 }
@@ -19,7 +18,6 @@ public:
     ~MainWindow();
     bool isChanged;
     QMap<QAction*,QUrl> lastChangedActions;
-    Updater* updater;//Pointer, damit Proxy immer gehandelt
     void updateBlocks();
 private slots:
     QByteArray toTar(QString name,QByteArray data);

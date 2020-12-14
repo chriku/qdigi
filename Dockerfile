@@ -21,7 +21,7 @@
 #
 
 
-FROM debian:jessie
+FROM debian:buster
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
@@ -59,7 +59,7 @@ RUN apt-get install -y --no-install-recommends \
 	subversion \
 	texinfo \
 	unzip \
-	wget
+	wget lzip liblz-dev libssl-dev openssl
 
 # see http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
 
@@ -69,13 +69,14 @@ WORKDIR  /build
 RUN git clone https://github.com/mxe/mxe.git
 
 # Build cross environment
-RUN cd mxe -j8 && make MXE_TARGETS=i686-w64-mingw32.shared qtbase
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtmultimedia
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared libzip
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared yaml-cpp
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtsvg
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared file
-RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared openssl
+RUN cd mxe && make -j MXE_VERBOSE=1 V=1 VERBOSE=1 MXE_TARGETS=i686-w64-mingw32.shared cmake
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared qtbase
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared qtmultimedia
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared libzip
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared yaml-cpp
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared qtsvg
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared file
+RUN cd mxe && make -j MXE_TARGETS=i686-w64-mingw32.shared openssl
 #COPY qtwebkit.diff /build/qtwebkit.diff
 #RUN patch /build/mxe/src/qtwebkit.mk </build/qtwebkit.diff
 #RUN cd mxe && make MXE_TARGETS=i686-w64-mingw32.shared qtwebkit
@@ -101,7 +102,7 @@ COPY . /src
 WORKDIR /src
 
 # Now build the project
-RUN qmake qdigi.pro && make -j 8
+RUN qmake qdigi.pro && make -j
 #RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/bin/*.dll qdigi
 #RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/qt5/plugins/* qdigi
 #RUN cp -r /build/mxe/usr/i686-w64-mingw32.shared/bin/*.dll qdigi
